@@ -1,0 +1,211 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>INFT3107 Midterm Quiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single exam-sheet column; header with progress ruler, one question card, sticky action bar at the bottom */
+:root{
+  --bg:#f3f5f8; --paper:#ffffff; --ink:#18212f; --muted:#5d6878; --line:#d9dee6;
+  --accent:#1f4f9a; --accent-soft:#e6edf8; --ok:#1d7a4c; --ok-soft:#e3f3ea; --bad:#b4372d; --bad-soft:#fbe8e5;
+  --warn:#8a5a00; --warn-soft:#fdf1d8;
+  --f-q:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-ui:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141c; --paper:#171e2a; --ink:#e6ebf2; --muted:#9aa5b5; --line:#2a3445;
+  --accent:#7ea6ea; --accent-soft:#1d2a40; --ok:#5cc591; --ok-soft:#173226; --bad:#f08a7f; --bad-soft:#3a1f1d;
+  --warn:#e9b85a; --warn-soft:#352a14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141c; --paper:#171e2a; --ink:#e6ebf2; --muted:#9aa5b5; --line:#2a3445;
+  --accent:#7ea6ea; --accent-soft:#1d2a40; --ok:#5cc591; --ok-soft:#173226; --bad:#f08a7f; --bad-soft:#3a1f1d;
+  --warn:#e9b85a; --warn-soft:#352a14; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 120px}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-direction:column;gap:10px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.course{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--f-q);font-weight:600;font-size:clamp(22px,5vw,28px);margin:0;text-wrap:balance;line-height:1.2}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ruler{display:grid;grid-template-columns:repeat(18,1fr);gap:3px}
+.tick{height:26px;border:0;border-radius:4px;background:var(--line);color:var(--muted);font:500 10px var(--f-mono);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
+.tick.cur{outline:2px solid var(--accent);outline-offset:1px;color:var(--ink)}
+.tick.ok{background:var(--ok);color:var(--paper)} .tick.bad{background:var(--bad);color:var(--paper)} .tick.open{background:var(--accent);color:var(--paper)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:16px}
+.qhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.qnum{font-family:var(--f-mono);font-size:13px;color:var(--accent)}
+.tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.qtext{font-family:var(--f-q);font-size:19px;line-height:1.45;margin:0;text-wrap:pretty}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start;text-align:left;width:100%;background:var(--paper);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:focus-visible,.btn:focus-visible,.tick:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.letter{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font:600 13px var(--f-mono)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)} .opt.sel .letter{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.right .letter{background:var(--ok);border-color:var(--ok);color:var(--paper)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)} .opt.wrong .letter{background:var(--bad);border-color:var(--bad);color:var(--paper)}
+.opt:disabled{cursor:default}
+.explain{border-radius:8px;padding:14px 16px;font-size:15px;display:flex;flex-direction:column;gap:6px}
+.explain.ok{background:var(--ok-soft)} .explain.bad{background:var(--bad-soft)} .explain.info{background:var(--accent-soft)}
+.explain b{font-weight:700}
+.note{background:var(--warn-soft);color:var(--ink);border-radius:8px;padding:10px 14px;font-size:14px}
+.note b{color:var(--warn)}
+textarea{width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--line);border-radius:8px;padding:12px;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-ui)}
+.model ul{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);
+  padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+.bar .in{max-width:680px;margin:0 auto;display:flex;gap:10px}
+.btn{flex:1;min-height:48px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:600 15px var(--f-ui);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.small{flex:0 0 auto;padding:0 18px}
+.result{text-align:left;display:flex;flex-direction:column;gap:14px}
+.big{font-family:var(--f-q);font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;color:var(--muted)}
+.rev{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.rev li{display:grid;grid-template-columns:44px 1fr;gap:10px;font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.rev li .m{font:600 12px var(--f-mono)}
+.rev li.ok .m{color:var(--ok)} .rev li.bad .m{color:var(--bad)} .rev li.skip .m{color:var(--muted)} .rev li.open .m{color:var(--accent)}
+.rev .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:440px){.qtext{font-size:17.5px}.card{padding:18px 15px}.tick{height:22px;font-size:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="top">
+      <span class="course">INFT3107 · Midterm · Variant 2</span>
+      <span class="score" id="score"></span>
+    </div>
+    <h1>Basics of Information Systems</h1>
+    <div class="ruler" id="ruler" aria-label="Навигация по вопросам"></div>
+  </header>
+  <main class="card" id="card" aria-live="polite"></main>
+</div>
+<div class="bar"><div class="in" id="bar"></div></div>
+
+<script>
+const Q=[
+{t:"A company has 10 million customer records, but many are incomplete, duplicated, or outdated. Another company has 1,000 complete and recently updated records. What is the most appropriate conclusion?",
+o:["The first company necessarily has better information because it has more records.","Both companies have equally reliable information because both use databases.","The second company may have more useful information because its data quality is higher.","The first company has better information because duplicated records improve accuracy.","The second company has less useful information because its database is smaller."],
+a:[2],e:"Ценность информации определяет качество данных (полнота, актуальность, отсутствие дублей), а не объём. 10 млн «грязных» записей дают меньше пользы, чем 1000 чистых."},
+{t:"Which statement correctly distinguishes data from information?",
+o:["Data are raw facts, while information is data interpreted in a meaningful format for a purpose.","Data are processed results, while information consists of unorganized facts.","Data and information are identical because both consist of facts.","Data are used only by computers, while information is used only by people.","Data represent decisions, while information represents the technology used to make them."],
+a:[0],e:"Данные — сырые факты (например, «42»). Информация — данные, обработанные и поданные в осмысленном виде для цели («42 заказа за день, на 10% больше вчерашнего»). В B определения перевёрнуты."},
+{t:"Which of the following are examples of qualitative data?",
+o:["Statistics, financial information, marketing trends expressed in numbers.","Costs of goods, sales per month, profit per quarter.","Names, addresses, photographs, videos, descriptions, opinions.","Data collected and entered by users or automatically.","Calculate and analyze information."],
+a:[2],e:"Качественные данные описывают свойства и не выражаются числами: имена, фото, мнения. A и B — количественные (числа), D — способ сбора, E — вообще действие."},
+{t:"What is the difference between application control and general control?",
+o:["Application control manages memory and hardware resources, while general control manages application programs.","Application control is built into the system: firewalls, encryption, access control; general control is a process for how the system is used, for example, routine password updates.","Application control gathers data from customers and records, while general control calculates and analyzes information.","Application control stores data securely, while general control retrieves reports from storage.","Application control provides information to users, while general control collects data automatically."],
+a:[1],e:"По лекции: application control встроен в саму систему (технические механизмы), general control — это процесс и правила использования системы людьми (например, регулярная смена паролей). Остальные варианты описывают функции ОС или обработку данных, а не контроль."},
+{t:"What does a switching cost mean in the context of a business?",
+o:["The expense of replacing outdated company technology.","The cost of moving products between company locations.","The expense of changing suppliers for business operations.","What a customer loses by leaving a company.","The cost of introducing a product to a new market."],
+a:[2],e:"Switching cost — затраты на смену поставщика (перенастройка процессов, обучение, контракты). Высокие switching costs ослабляют силу поставщиков/покупателей в модели Портера."},
+{t:"Which of the following correctly lists the five competitive forces?",
+o:["Supplier power, barriers to entry, rivalry, substitutes, customer power.","Substitutes, supplier power, customer power, barriers to entry, rivalry.","Substitutes, supplier power, customer power, barriers to entry, innovation.","Substitutes, supplier power, customer power, barriers to entry, rivalry.","Rivalry, barriers to entry, supplier power, customer power, differentiation."],
+a:[0,1,3],e:"Пять сил Портера: соперничество (rivalry), барьеры входа (новые игроки), товары-заменители, сила поставщиков, сила покупателей. C и E неверны: innovation и differentiation — не силы, а стратегии.",
+n:"На листе варианты A, B и D перечисляют одни и те же пять сил (B и D вообще совпадают дословно), поэтому здесь засчитывается любой из них. На экзамене, скорее всего, ожидался B."},
+{t:"Which storage type is recommended when the lowest cost per storage is the main priority?",
+o:["An SSD, because it is faster and has no moving parts.","An SSD, because it is cheaper and more durable than a hard disk.","A hard disk, because it offers the lowest cost per storage.","RAM, because it stores large amounts of data at a low cost.","An SSD for the operating system and a hard disk for the rest."],
+a:[2],e:"HDD даёт самую низкую цену за гигабайт. SSD быстрее, но дороже за единицу объёма (поэтому B ложь), RAM — самая дорогая и энергозависимая."},
+{t:"Which statement correctly describes integrated computing?",
+o:["Computers connected through removable media.","Computers designed exclusively for portable use.","Computers that rely on cloud storage for all operations.","Computers with larger screens and longer battery life.","Computers inside everyday objects that were once purely mechanical."],
+a:[4],e:"Integrated (embedded) computing — компьютеры, встроенные в привычные предметы: автомобили, холодильники, термостаты. Основа Internet of Things."},
+{t:"What is one characteristic of many laptops and notebooks mentioned in the lecture?",
+o:["Many weigh less than 4 pounds and have longer battery life.","They weigh under 3 pounds and are 0.68 inches thick.","They have no hard drive, use cloud storage, need Wi-Fi, and run browsers and a word processor.","They use a 3D printer as their primary output device.","They do not support wireless networking."],
+a:[0],e:"Общая черта ноутбуков: лёгкие (до ~4 фунтов) и с долгой работой от батареи. B — характеристики конкретной тонкой модели, C — описание облачного ноутбука (Chromebook), а не ноутбуков в целом.",
+n:"Ответ зависит от формулировки на слайде. Если в лекции «many laptops» описаны иначе, сверься со слайдом."},
+{t:"How can a company avoid competing mainly on price when many products are similar?",
+o:["Open standards, same products, price war.","A unique product, higher price.","Little difference between models, price decides.","Buyers compare prices, minimal profit margins.","Hundreds of makers worldwide, thin profit margins."],
+a:[1],e:"Стратегия дифференциации: уникальный продукт позволяет держать более высокую цену. Остальные варианты описывают как раз рынок товаров-«одинаковок» с ценовой войной."},
+{t:"What is the main purpose of enterprise software?",
+o:["To manage the computer's hardware and system resources.","To help an individual complete a specific task.","To connect the whole company and manage big business processes.","To translate instructions between the OS and a hardware device.","To create programs using a programming language."],
+a:[2],e:"Enterprise software (ERP, CRM, SCM) связывает отделы компании и поддерживает сквозные бизнес-процессы. A — ОС, B — прикладная программа, D — драйвер, E — среда разработки."},
+{t:"Who is responsible for fixing problems with on-premise systems and cloud computing, respectively?",
+o:["The provider fixes both on-premise and cloud systems.","The company's IT team fixes both on-premise and cloud systems.","The provider fixes on-premise systems, while the company's IT team fixes cloud systems.","The company and the provider always share responsibility equally.","The company's IT team fixes on-premise systems, while the provider fixes cloud systems."],
+a:[4],e:"On-premise — серверы стоят у компании, чинит своя IT-команда. Cloud — инфраструктура у провайдера, её обслуживает провайдер. Порядок «respectively» важен: C — то же, но наоборот."},
+{t:"Which statement correctly describes the Waterfall model?",
+o:["Software is built in small parts, with frequent customer feedback.","Each step is finished completely before the next step starts.","The team changes the plan after every short work period.","The customer gives feedback throughout the development process.","The first working product is delivered after the first sprint."],
+a:[1],e:"Waterfall — последовательные фазы (требования → дизайн → разработка → тестирование → внедрение), следующая начинается только после завершения предыдущей. A, C, D, E описывают Agile/Scrum."},
+{t:"In the Anthony framework, strategic data are generally:",
+o:["Detailed and time-sensitive.","Transactional and updated continuously.","Summarized for daily operational control.","Aggregated and less time-sensitive than management data.","Limited to individual customer transactions."],
+a:[3],e:"Пирамида Энтони: operational (детальные, срочные) → management (сводки) → strategic (агрегированные, долгосрочные, менее срочные). Чем выше уровень, тем больше агрегация."},
+{t:"Which statement correctly distinguishes validity from accuracy?",
+o:["Validity measures whether data are current, while accuracy measures whether records are unique.","Validity checks whether data follow rules, while accuracy checks whether they are true in the real world.","Validity measures whether fields are complete, while accuracy measures whether systems agree.","Validity checks whether data are unique, while accuracy measures whether required fields are filled.","Validity measures whether data are consistent, while accuracy measures whether they follow a standard format."],
+a:[1],e:"Validity: значение соответствует правилам (формат даты, допустимый диапазон). Accuracy: значение верно в реальности. Пример: возраст «35» валиден, но неточен, если человеку 40."},
+{t:"Data retention refers to:",
+o:["Protecting personal data from unauthorized disclosure.","Storing data for a defined period through archiving and purging.","Preventing unauthorized users from accessing information.","Ensuring that data remain accurate throughout their life cycle.","Combining information from multiple systems into one dataset."],
+a:[1],e:"Retention — политика хранения: сколько держать данные, когда архивировать и когда удалять (purge). A — privacy, C — security, D — integrity, E — integration."},
+{open:true,t:"A company is choosing between an off-the-shelf software package and a custom-built solution. Explain two factors it should consider and justify when custom-built software would be the better choice.",
+m:["<b>Стоимость и время.</b> Готовый пакет дешевле и внедряется быстро; custom требует больших вложений и месяцев разработки.","<b>Соответствие процессам.</b> Готовое ПО заставляет подстраивать процессы под себя; custom строится точно под требования компании.","Также можно назвать: поддержку и обновления, масштабируемость, интеграцию с текущими системами, риски проекта.","<b>Когда custom лучше:</b> если процессы компании уникальны и дают конкурентное преимущество (например, своя логистика или алгоритм ценообразования), а готовые решения их не покрывают. Тогда высокая цена окупается тем, что конкуренты не могут купить то же самое."]},
+{open:true,t:"A team discovers that several records in its dataset are duplicated and some required values are missing. Explain how the team can address these two data quality problems and describe one role responsible for establishing data rules.",
+m:["<b>Дубликаты:</b> найти по ключевым полям (ID, email), объединить или удалить лишние записи (deduplication); на будущее задать уникальный ключ / unique constraint, чтобы повтор не вставлялся.","<b>Пропуски:</b> уточнить значения у источника или восстановить из других систем; на будущее сделать поля обязательными (NOT NULL, валидация в форме ввода).","<b>Роль: Data Steward.</b> Отвечает за качество данных в своей области: задаёт правила (форматы, обязательные поля, уникальность), следит за их соблюдением и исправлением ошибок. Также подходит Data Owner, который утверждает эти правила."]}
+];
+const L="ABCDE";
+const S=Q.map(()=>({pick:null,done:false,text:"",shown:false}));
+let cur=0;
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function isRight(i){return Q[i].a.includes(S[i].pick)}
+function status(i){const q=Q[i],s=S[i];if(q.open)return s.shown?"open":"";if(!s.done)return"";return isRight(i)?"ok":"bad"}
+function scoreTxt(){const mc=Q.filter(q=>!q.open).length;let ok=0,done=0;Q.forEach((q,i)=>{if(!q.open&&S[i].done){done++;if(isRight(i))ok++}});return{ok,done,mc}}
+function renderRuler(){$("ruler").innerHTML=Q.map((q,i)=>`<button class="tick ${status(i)} ${i===cur?"cur":""}" data-i="${i}" aria-label="Вопрос ${i+1}">${i+1}</button>`).join("");
+  const s=scoreTxt();$("score").textContent=`${s.ok} / ${s.mc} верно · отвечено ${s.done}`}
+function render(){
+  renderRuler();
+  if(cur===Q.length)return renderResult();
+  const q=Q[cur],s=S[cur];let h=`<div class="qhead"><span class="qnum">Question ${cur+1} of ${Q.length}</span><span class="tag">${q.open?"Open · 2 pts":"Single answer · 1 pt"}</span></div><p class="qtext">${esc(q.t)}</p>`;
+  if(!q.open){
+    h+=`<div class="opts">`+q.o.map((o,j)=>{let c="";if(s.done){if(q.a.includes(j))c="right";else if(j===s.pick)c="wrong"}else if(j===s.pick)c="sel";
+      return `<button class="opt ${c}" data-j="${j}" ${s.done?"disabled":""}><span class="letter">${L[j]}</span><span>${esc(o)}</span></button>`}).join("")+`</div>`;
+    if(s.done){const ok=isRight(cur);h+=`<div class="explain ${ok?"ok":"bad"}"><b>${ok?"Верно.":"Неверно. Правильный ответ: "+q.a.map(k=>L[k]).join(", ")+"."}</b><span>${q.e}</span></div>`;if(q.n)h+=`<div class="note"><b>Важно.</b> ${q.n}</div>`}
+  }else{
+    h+=`<label for="ans${cur}" class="tag" style="align-self:flex-start">Ваш ответ</label><textarea id="ans${cur}" placeholder="Напишите ответ своими словами, затем сравните с образцом">${esc(s.text)}</textarea>`;
+    if(s.shown)h+=`<div class="explain info model"><b>Образец ответа — ключевые пункты</b><ul>${q.m.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+  }
+  $("card").innerHTML=h;
+  const ta=$("card").querySelector("textarea");if(ta)ta.addEventListener("input",e=>{S[cur].text=e.target.value});
+  renderBar();
+}
+function renderBar(){
+  const q=Q[cur],s=S[cur];let main;
+  if(cur===Q.length){$("bar").innerHTML=`<button class="btn" id="b-review">К вопросу 1</button><button class="btn primary" id="b-reset">Пройти заново</button>`;return}
+  if(!q.open)main=s.done?`<button class="btn primary" id="b-next">${cur===Q.length-1?"Результат":"Дальше"}</button>`:`<button class="btn primary" id="b-check" ${s.pick===null?"disabled":""}>Проверить</button>`;
+  else main=s.shown?`<button class="btn primary" id="b-next">${cur===Q.length-1?"Результат":"Дальше"}</button>`:`<button class="btn primary" id="b-show">Показать образец</button>`;
+  $("bar").innerHTML=`<button class="btn small" id="b-prev" ${cur===0?"disabled":""} aria-label="Назад">←</button>${main}`;
+}
+function renderResult(){
+  const s=scoreTxt();const pct=Math.round(s.ok/s.mc*100);
+  let h=`<div class="result"><span class="course">Итог по вопросам 1–16</span><div class="big">${s.ok}<small> / ${s.mc} · ${pct}%</small></div>
+  <p style="margin:0;color:var(--muted)">Открытые вопросы 17–18 оцените сами по образцу. Нажмите на строку, чтобы вернуться к вопросу.</p><ul class="rev">`;
+  Q.forEach((q,i)=>{const st=status(i)||"skip";const m=q.open?(S[i].shown?"OPEN":"—"):(S[i].done?(isRight(i)?"✓ "+L[S[i].pick]:"✗ "+L[S[i].pick]):"—");
+    h+=`<li class="${st}" data-i="${i}"><span class="m">${i+1}. ${m}</span><span class="t">${esc(q.t)}</span></li>`});
+  $("card").innerHTML=h+`</ul></div>`;renderBar();
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-i],[data-j],button");if(!t)return;
+  if(t.dataset.j!==undefined&&!S[cur].done){S[cur].pick=+t.dataset.j;return render()}
+  if(t.dataset.i!==undefined){cur=+t.dataset.i;render();window.scrollTo({top:0});return}
+  switch(t.id){
+    case"b-check":S[cur].done=true;render();break;
+    case"b-show":S[cur].shown=true;render();break;
+    case"b-next":cur++;render();window.scrollTo({top:0});break;
+    case"b-prev":cur--;render();window.scrollTo({top:0});break;
+    case"b-review":cur=0;render();break;
+    case"b-reset":S.forEach(s=>Object.assign(s,{pick:null,done:false,text:"",shown:false}));cur=0;render();break;
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="TEXTAREA"||cur===Q.length)return;const k=e.key.toUpperCase();
+  if(!Q[cur].open&&!S[cur].done&&L.includes(k)&&k.length===1){S[cur].pick=L.indexOf(k);render()}
+  else if(e.key==="Enter"){const b=$("b-check")||$("b-next");if(b&&!b.disabled)b.click()}
+});
+render();
+</script>
+
+</body></html>
