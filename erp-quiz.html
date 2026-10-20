@@ -1,0 +1,234 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ERP Quiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single exam-sheet column; header with progress ruler, one question card, sticky action bar at the bottom */
+:root{
+  --bg:#f3f5f8; --paper:#ffffff; --ink:#18212f; --muted:#5d6878; --line:#d9dee6;
+  --accent:#1f4f9a; --accent-soft:#e6edf8; --ok:#1d7a4c; --ok-soft:#e3f3ea; --bad:#b4372d; --bad-soft:#fbe8e5;
+  --warn:#8a5a00; --warn-soft:#fdf1d8;
+  --f-q:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-ui:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141c; --paper:#171e2a; --ink:#e6ebf2; --muted:#9aa5b5; --line:#2a3445;
+  --accent:#7ea6ea; --accent-soft:#1d2a40; --ok:#5cc591; --ok-soft:#173226; --bad:#f08a7f; --bad-soft:#3a1f1d;
+  --warn:#e9b85a; --warn-soft:#352a14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141c; --paper:#171e2a; --ink:#e6ebf2; --muted:#9aa5b5; --line:#2a3445;
+  --accent:#7ea6ea; --accent-soft:#1d2a40; --ok:#5cc591; --ok-soft:#173226; --bad:#f08a7f; --bad-soft:#3a1f1d;
+  --warn:#e9b85a; --warn-soft:#352a14; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 120px}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-direction:column;gap:10px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.course{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--f-q);font-weight:600;font-size:clamp(22px,5vw,28px);margin:0;text-wrap:balance;line-height:1.2}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ruler{display:grid;grid-template-columns:repeat(18,1fr);gap:3px}
+.tick{height:26px;border:0;border-radius:4px;background:var(--line);color:var(--muted);font:500 10px var(--f-mono);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
+.tick.cur{outline:2px solid var(--accent);outline-offset:1px;color:var(--ink)}
+.tick.ok{background:var(--ok);color:var(--paper)} .tick.bad{background:var(--bad);color:var(--paper)} .tick.open{background:var(--accent);color:var(--paper)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:16px}
+.qhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.qnum{font-family:var(--f-mono);font-size:13px;color:var(--accent)}
+.tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.qtext{font-family:var(--f-q);font-size:19px;line-height:1.45;margin:0;text-wrap:pretty}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start;text-align:left;width:100%;background:var(--paper);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:focus-visible,.btn:focus-visible,.tick:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.letter{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font:600 13px var(--f-mono)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)} .opt.sel .letter{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.right .letter{background:var(--ok);border-color:var(--ok);color:var(--paper)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)} .opt.wrong .letter{background:var(--bad);border-color:var(--bad);color:var(--paper)}
+.opt:disabled{cursor:default}
+.explain{border-radius:8px;padding:14px 16px;font-size:15px;display:flex;flex-direction:column;gap:6px}
+.explain.ok{background:var(--ok-soft)} .explain.bad{background:var(--bad-soft)} .explain.info{background:var(--accent-soft)}
+.explain b{font-weight:700}
+.note{background:var(--warn-soft);color:var(--ink);border-radius:8px;padding:10px 14px;font-size:14px}
+.note b{color:var(--warn)}
+textarea{width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--line);border-radius:8px;padding:12px;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-ui)}
+.model ul{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);
+  padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+.bar .in{max-width:680px;margin:0 auto;display:flex;gap:10px}
+.btn{flex:1;min-height:48px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:600 15px var(--f-ui);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.small{flex:0 0 auto;padding:0 18px}
+.result{text-align:left;display:flex;flex-direction:column;gap:14px}
+.big{font-family:var(--f-q);font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;color:var(--muted)}
+.vsw{display:flex;gap:6px}
+.vsw button{border:1.5px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:4px 12px;font:600 12px var(--f-ui);cursor:pointer}
+.vsw button.on{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.rev{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.rev li{display:grid;grid-template-columns:44px 1fr;gap:10px;font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.rev li .m{font:600 12px var(--f-mono)}
+.rev li.ok .m{color:var(--ok)} .rev li.bad .m{color:var(--bad)} .rev li.skip .m{color:var(--muted)} .rev li.open .m{color:var(--accent)}
+.rev .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:440px){.qtext{font-size:17.5px}.card{padding:18px 15px}.tick{height:22px;font-size:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="top">
+      <span class="course" id="course">ERP · Quiz</span>
+      <span class="score" id="score"></span>
+    </div>
+    <h1>ERP, CRM &amp; Supply Chain</h1>
+    <div class="vsw" id="vsw" aria-label="Вариант"></div>
+    <div class="ruler" id="ruler" aria-label="Навигация по вопросам"></div>
+  </header>
+  <main class="card" id="card" aria-live="polite"></main>
+</div>
+<div class="bar"><div class="in" id="bar"></div></div>
+
+<script>
+// Variant 1
+const Q1=[
+{t:"A bank estimates long-term profit from each customer. Which measure?",
+o:["Acquisition cost","Monthly sales","Conversion rate","Market share","Churn rate","Lifetime value"],
+a:[5],e:"Customer Lifetime Value (CLV) — прогноз прибыли от клиента за всё время отношений с ним. Acquisition cost — сколько стоило его привлечь, churn rate — доля ушедших клиентов, monthly sales — только короткий период."},
+{t:"Workers fear ERP automation will cost jobs. Management ignores them. Risk?",
+o:["Employee resistance","Price volatility","Currency exposure","Seasonal demand","Credit defaults","Patent disputes"],
+a:[0],e:"Если страхи сотрудников игнорировать, они саботируют внедрение: не пользуются системой, ведут учёт по-старому. Change management (обучение, объяснение) снижает это сопротивление."},
+{t:"A company tests warehouse layouts digitally before building. Method?",
+o:["Invoice matching","Simulation modeling","Price skimming","Customer profiling","Sales automation","Loyalty analysis"],
+a:[1],e:"Simulation modeling — проверка вариантов на цифровой модели (digital twin) до реальных затрат. Так можно сравнить планировки склада без строительства."},
+{t:"Employees keep spreadsheets despite a new ERP. What is weak?",
+o:["Data storage","User adoption","Internet speed","Server capacity","Customer demand","Supplier variety"],
+a:[1],e:"Система внедрена, но люди ею не пользуются — слабое принятие (user adoption). Параллельные Excel-таблицы ломают единый источник данных ERP."},
+{t:"A manufacturer keeps extra goods because deliveries are uncertain. Purpose?",
+o:["Supplier replacement","Price promotion","Shortage protection","Tax reduction","Market expansion","Product differentiation"],
+a:[2],e:"Это safety stock (страховой запас): защищает от дефицита, когда поставки могут задержаться. Цена — рост holding costs."},
+{t:"Factory sensors warn that equipment may fail. Main benefit?",
+o:["Higher stock","Fewer suppliers","Reduced downtime","More advertising","Longer repairs","Extra paperwork"],
+a:[2],e:"Predictive maintenance (IoT-датчики): оборудование чинят до поломки, поэтому линия меньше простаивает. Ремонты становятся короче, а не длиннее."},
+{t:"A retailer and supplier jointly forecast and replenish. Which integration?",
+o:["Warehouse robotics","Financial auditing","Customer segmentation","Planning synchronization","Product identification","Price discrimination"],
+a:[3],e:"Совместное прогнозирование и пополнение (CPFR) — синхронизация планов в цепочке поставок. Это снижает bullwhip effect и дефицит."},
+{t:"A salesperson records shelf stock, prices and displays for each shop. Purpose?",
+o:["Payroll processing","Factory scheduling","Staff attendance","Credit scoring","Tax filing","Account management"],
+a:[5],e:"Это работа с клиентскими точками в операционном CRM (account management): данные по каждому магазину помогают планировать визиты, заказы и выкладку."},
+{t:"A clothing retailer adjusts stock using daily sales. What improves?",
+o:["Demand responsiveness","Wage accuracy","Office capacity","Supplier count","Credit terms","Tax reporting"],
+a:[0],e:"Ежедневные данные продаж позволяют быстро подстраивать запасы под спрос (как Zara): меньше дефицита популярных моделей и меньше остатков непопулярных."},
+{t:"Purchases require five unnecessary approvals. What should happen first?",
+o:["More supervisors","New database","Server upgrade","Process redesign","Workflow automation","Stock expansion"],
+a:[3],e:"Сначала нужно перестроить процесс (BPR) и убрать лишние согласования. Если автоматизировать плохой процесс, получится тот же плохой процесс, только быстрее."}
+];
+// Variant 2
+const Q2=[
+{t:"An ERP license is cheap but customization and support are costly. Compare?",
+o:["Total ownership cost","Install duration","License price","Vendor size","Interface design","Module count"],
+a:[0],e:"TCO (total cost of ownership) включает лицензию, кастомизацию, внедрение, обучение и поддержку. Сравнивать только цену лицензии обманчиво."},
+{t:"A retailer stores 25 units while demand stays low. Which cost rises?",
+o:["Conversion costs","Shortage costs","Shipping discounts","Advertising costs","Holding costs","Acquisition costs"],
+a:[4],e:"Лишний товар на складе увеличивает holding costs: хранение, страховка, замороженные деньги, порча. Shortage costs растут в обратной ситуации, при нехватке."},
+{t:"Which capability helps identify customers likely to stop buying?",
+o:["Procurement software","Warehouse management","Analytical CRM","Payroll software","Operational CRM","Production planning"],
+a:[2],e:"Analytical CRM анализирует данные клиентов и предсказывает отток (churn). Operational CRM автоматизирует повседневные продажи и обслуживание, но не прогнозирует."},
+{t:"What shared data most helps suppliers reduce demand distortion?",
+o:["Retail sales","Office addresses","Supplier prices","Shipping tariffs","Payroll figures","Promotion costs"],
+a:[0],e:"Demand distortion — это bullwhip effect. Если поставщик видит реальные продажи в магазинах (point-of-sale), он планирует по настоящему спросу, а не по раздутым заказам."},
+{t:"A supplier owns store goods until the retailer sells them. Arrangement?",
+o:["Trade credit","Leasing","Consignment","Prepayment","Factoring","Direct purchase"],
+a:[2],e:"Consignment: товар стоит в магазине, но принадлежит поставщику, пока не продан. Ритейлер не тратит деньги на запас заранее."},
+{t:"Incorrect ERP data spreads from purchasing to accounting. Main risk?",
+o:["Staff turnover","Data quality","Market volatility","Lead time","Customer churn","Supplier power"],
+a:[1],e:"В ERP одна общая база, поэтому ошибка, введённая в одном модуле, сразу попадает во все остальные. Главный риск — качество данных."},
+{t:"A company rents extra computing power for three months. This is?",
+o:["Cloud computing","Local hosting","Fixed infrastructure","Server ownership","Paper processing","Product outsourcing"],
+a:[0],e:"Облако даёт ресурсы по требованию и с оплатой по факту использования: арендовали на пик и отказались. Свои серверы пришлось бы купить навсегда."},
+{t:"A newsvendor orders before knowing demand. Main trade-off?",
+o:["Credit vs depreciation","Branding vs pricing","Payroll vs rent","Security vs automation","Recruitment vs training","Shortages vs leftovers"],
+a:[5],e:"Newsvendor problem: если заказать мало, будет дефицит и упущенные продажи; если много, останутся непроданные остатки. Оптимальный заказ балансирует эти два риска."},
+{t:"A salesperson leaves. Where can their successor check earlier discussions?",
+o:["Demand forecasts","Factory schedule","Machine logs","Supplier ratings","Interaction history","Cost accounting"],
+a:[4],e:"CRM хранит историю взаимодействий с клиентом (звонки, письма, встречи). Знания о клиенте остаются в компании, а не уходят вместе с сотрудником."},
+{t:"ERP is installed, but departments keep incompatible procedures. Main risk?",
+o:["Faster reporting","Lower license costs","Better coordination","Poor integration","Improved data quality","Simpler processes"],
+a:[3],e:"ERP работает, только если процессы согласованы. Если каждый отдел действует по-своему, данные и процессы не стыкуются, и выгоды от интеграции нет. Остальные варианты — это плюсы, а не риски."}
+];
+const VARS={1:Q1,2:Q2};
+const VNOTE={};
+const L="ABCDEF";
+const num=i=>Q[i].no??i+1; // sheet number (no) for variants with gaps
+let V=2,Q,S,cur=0;
+function setVar(n){V=n;Q=VARS[n];S=Q.map(()=>({pick:null,done:false,text:"",shown:false}));cur=0;try{localStorage.setItem("erp-variant",n)}catch(e){}
+  $("course").textContent=`ERP · Quiz · Variant ${n}`+(VNOTE[n]||"");
+  $("vsw").innerHTML=Object.keys(VARS).map(k=>`<button class="${k==n?"on":""}" data-v="${k}">Вариант ${k}</button>`).join("");
+  $("ruler").style.gridTemplateColumns=`repeat(${Math.max(Q.length,11)},1fr)`}
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function isRight(i){return Q[i].a.includes(S[i].pick)}
+function status(i){const q=Q[i],s=S[i];if(q.open)return s.shown?"open":"";if(!s.done)return"";return isRight(i)?"ok":"bad"}
+function scoreTxt(){const mc=Q.filter(q=>!q.open).length;let ok=0,done=0;Q.forEach((q,i)=>{if(!q.open&&S[i].done){done++;if(isRight(i))ok++}});return{ok,done,mc}}
+function renderRuler(){$("ruler").innerHTML=Q.map((q,i)=>`<button class="tick ${status(i)} ${i===cur?"cur":""}" data-i="${i}" aria-label="Вопрос ${num(i)}">${num(i)}</button>`).join("");
+  const s=scoreTxt();$("score").textContent=`${s.ok} / ${s.mc} верно · отвечено ${s.done}`}
+function render(){
+  renderRuler();
+  if(cur===Q.length)return renderResult();
+  const q=Q[cur],s=S[cur];let h=`<div class="qhead"><span class="qnum">Question ${num(cur)}${q.no?` · ${cur+1} of ${Q.length}`:` of ${Q.length}`}</span><span class="tag">${q.open?"Open · 2 pts":"Single answer · 1 pt"}</span></div><p class="qtext">${esc(q.t)}</p>`;
+  if(!q.open){
+    h+=`<div class="opts">`+q.o.map((o,j)=>{let c="";if(s.done){if(q.a.includes(j))c="right";else if(j===s.pick)c="wrong"}else if(j===s.pick)c="sel";
+      return `<button class="opt ${c}" data-j="${j}" ${s.done?"disabled":""}><span class="letter">${L[j]}</span><span>${esc(o)}</span></button>`}).join("")+`</div>`;
+    if(s.done){const ok=isRight(cur);h+=`<div class="explain ${ok?"ok":"bad"}"><b>${ok?"Верно.":"Неверно. Правильный ответ: "+q.a.map(k=>L[k]).join(", ")+"."}</b><span>${q.e}</span></div>`;if(q.n)h+=`<div class="note"><b>Важно.</b> ${q.n}</div>`}
+  }else{
+    h+=`<label for="ans${cur}" class="tag" style="align-self:flex-start">Ваш ответ</label><textarea id="ans${cur}" placeholder="Напишите ответ своими словами, затем сравните с образцом">${esc(s.text)}</textarea>`;
+    if(s.shown)h+=`<div class="explain info model"><b>Образец ответа — ключевые пункты</b><ul>${q.m.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+  }
+  $("card").innerHTML=h;
+  const ta=$("card").querySelector("textarea");if(ta)ta.addEventListener("input",e=>{S[cur].text=e.target.value});
+  renderBar();
+}
+function renderBar(){
+  const q=Q[cur],s=S[cur];let main;
+  if(cur===Q.length){$("bar").innerHTML=`<button class="btn" id="b-review">К вопросу 1</button><button class="btn primary" id="b-reset">Пройти заново</button>`;return}
+  if(!q.open)main=s.done?`<button class="btn primary" id="b-next">${cur===Q.length-1?"Результат":"Дальше"}</button>`:`<button class="btn primary" id="b-check" ${s.pick===null?"disabled":""}>Проверить</button>`;
+  else main=s.shown?`<button class="btn primary" id="b-next">${cur===Q.length-1?"Результат":"Дальше"}</button>`:`<button class="btn primary" id="b-show">Показать образец</button>`;
+  $("bar").innerHTML=`<button class="btn small" id="b-prev" ${cur===0?"disabled":""} aria-label="Назад">←</button>${main}`;
+}
+function renderResult(){
+  const s=scoreTxt();const pct=Math.round(s.ok/s.mc*100);
+  const no=Q.length-Q.filter(q=>q.open).length;
+  let h=`<div class="result"><span class="course">Итог по вопросам ${num(0)}–${num(s.mc-1)}</span><div class="big">${s.ok}<small> / ${s.mc} · ${pct}%</small></div>
+  <p style="margin:0;color:var(--muted)">${no<Q.length?`Открытые вопросы ${no+1}–${Q.length} оцените сами по образцу. `:""}Нажмите на строку, чтобы вернуться к вопросу.</p><ul class="rev">`;
+  Q.forEach((q,i)=>{const st=status(i)||"skip";const m=q.open?(S[i].shown?"OPEN":"—"):(S[i].done?(isRight(i)?"✓ "+L[S[i].pick]:"✗ "+L[S[i].pick]):"—");
+    h+=`<li class="${st}" data-i="${i}"><span class="m">${num(i)}. ${m}</span><span class="t">${esc(q.t)}</span></li>`});
+  $("card").innerHTML=h+`</ul></div>`;renderBar();
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-i],[data-j],[data-v],button");if(!t)return;
+  if(t.dataset.v!==undefined){setVar(+t.dataset.v);render();window.scrollTo({top:0});return}
+  if(t.dataset.j!==undefined&&!S[cur].done){S[cur].pick=+t.dataset.j;return render()}
+  if(t.dataset.i!==undefined){cur=+t.dataset.i;render();window.scrollTo({top:0});return}
+  switch(t.id){
+    case"b-check":S[cur].done=true;render();break;
+    case"b-show":S[cur].shown=true;render();break;
+    case"b-next":cur++;render();window.scrollTo({top:0});break;
+    case"b-prev":cur--;render();window.scrollTo({top:0});break;
+    case"b-review":cur=0;render();break;
+    case"b-reset":S.forEach(s=>Object.assign(s,{pick:null,done:false,text:"",shown:false}));cur=0;render();break;
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="TEXTAREA"||cur===Q.length)return;const k=e.key.toUpperCase();
+  if(!Q[cur].open&&!S[cur].done&&L.includes(k)&&k.length===1){S[cur].pick=L.indexOf(k);render()}
+  else if(e.key==="Enter"){const b=$("b-check")||$("b-next");if(b&&!b.disabled)b.click()}
+});
+{let v=1;try{const s=+localStorage.getItem("erp-variant");if(VARS[s])v=s}catch(e){}setVar(v)}
+render();
+</script>
+
+</body></html>
