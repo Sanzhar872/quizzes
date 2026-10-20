@@ -190,37 +190,38 @@ a:[0],e:"ОС — главная программа, управляющая ко
 ];
 // Variant 3 (incomplete: only questions 2–10 of the sheet were photographed with all options)
 const Q3=[
-{t:"A company wants to develop a new information system to improve its business operations. Which professional is responsible for identifying the company's needs and designing the concept of a new or redesigned system?",
+{no:2,t:"A company wants to develop a new information system to improve its business operations. Which professional is responsible for identifying the company's needs and designing the concept of a new or redesigned system?",
 o:["A programmer who writes code according to the system's design and requirements.","A computer engineer who designs the physical computing devices used by the organization.","A systems analyst who identifies business needs and develops the concept for a new or redesigned system.","An IT support specialist who provides initial assistance to users experiencing technical problems.","A trainer who teaches employees how to use specific computer applications and tools."],
 a:[2],e:"Systems analyst — мост между бизнесом и IT: выясняет потребности компании и проектирует концепцию системы. Программист потом пишет код по этому дизайну, инженер делает железо, support помогает пользователям."},
-{t:"What is the meaning of output in an Information System?",
+{no:3,t:"What is the meaning of output in an Information System?",
 o:["Data collected and entered by users or automatically.","Information given to users, retrieved securely and easily.","Tasks that make data useful.","Keep it secure, reliable and accessible.","Take it out of storage."],
 a:[1],e:"Цикл IS: input (A) → processing (C) → storage (D) → retrieval (E) → output (B — информация, выданная пользователю). Тот же набор вариантов, что в вопросе о processing, но ответ другой."},
-{t:"Which of the following correctly lists the five operations of an IS?",
+{no:4,t:"Which of the following correctly lists the five operations of an IS?",
 o:["Store, capture, retrieve, process, disseminate.","Capture, retrieve, process, disseminate, store.","Process, store, capture, disseminate, retrieve.","Retrieve, disseminate, store, capture, process.","Capture, process, store, retrieve, disseminate."],
 a:[4],e:"Операции идут в логическом порядке: сначала собрать (capture), потом обработать (process), сохранить (store), достать (retrieve) и распространить (disseminate). Во всех вариантах одни и те же пять слов, важен именно порядок."},
-{t:"Which digital business model matches each description correctly?",
+{no:5,t:"Which digital business model matches each description correctly?",
 o:["Subscription – brings buyers and sellers together.","Affiliate – recurring payments for ongoing services.","Marketplace – commissions for promoting other businesses.","Freemium – free basic service, paid premium.","Advertising – the public pledges funds for an idea."],
 a:[3],e:"Freemium: база бесплатно, премиум за деньги (Spotify, Zoom). В остальных описания перепутаны: subscription — регулярные платежи, marketplace — сводит покупателей и продавцов, affiliate — комиссия за продвижение, а «public pledges funds» — это crowdfunding."},
-{t:"Which of the following correctly describes competitive advantage?",
+{no:6,t:"Which of the following correctly describes competitive advantage?",
 o:["Increasing sales by expanding into every market.","Using technology to replace all manual activities.","Offering more value or lower costs than rivals.","Providing the same products at similar prices.","Improving internal processes without changing costs."],
 a:[2],e:"Конкурентное преимущество — давать клиенту больше ценности или работать дешевле, чем конкуренты (дифференциация или лидерство по издержкам). D — это как раз отсутствие преимущества."},
-{t:"What determines bus speed according to the lecture?",
+{no:7,t:"What determines bus speed according to the lecture?",
 o:["The number of cores and the processor's clock speed.","The speed of data transfer and the number of bits moved at one time.","The amount of RAM and the capacity of long-term storage.","The size of the motherboard and the number of connected devices.","The number of applications and the available storage capacity."],
 a:[1],e:"Шина — «дорога» для данных внутри компьютера. Её скорость зависит от частоты передачи и ширины (сколько бит идёт за раз). A описывает скорость процессора, а не шины."},
-{t:"Which statement correctly compares a hard disk and an SSD?",
+{no:8,t:"Which statement correctly compares a hard disk and an SSD?",
 o:["A hard disk uses flash memory, while an SSD uses spinning platters.","A hard disk is lighter and faster, while an SSD is cheaper.","A hard disk has no moving parts, while an SSD uses a read/write arm.","A hard disk is more expensive, while an SSD is slower.","A hard disk uses spinning platters, while an SSD uses flash memory."],
 a:[4],e:"HDD — вращающиеся пластины и головка чтения, SSD — флеш-память без движущихся частей. A и C — то же самое наоборот; B и D тоже перевёрнуты (SSD быстрее и дороже)."},
-{t:"Which characteristic of the MacBook Air is mentioned in the lecture?",
+{no:9,t:"Which characteristic of the MacBook Air is mentioned in the lecture?",
 o:["Many weigh less than 4 pounds and have longer battery life.","They weigh under 3 pounds and are 0.68 inches thick.","They have no hard drive, use cloud storage, need Wi-Fi, and run browsers and a word processor.","They use a 3D printer as their primary output device.","They do not support wireless networking."],
 a:[1],e:"MacBook Air — пример ультратонкого ноутбука: меньше 3 фунтов и 0,68 дюйма толщиной. A — общая черта ноутбуков, C — описание облачного ноутбука (Chromebook)."},
-{t:"Which statement about computer output devices is correct?",
+{no:10,t:"Which statement about computer output devices is correct?",
 o:["Displays, speakers, and printers are output devices.","A computer can use only one display.","Projectors are input devices.","3D printers display information only on a screen.","Speakers are used to enter data into a computer."],
 a:[0],e:"Устройства вывода выдают результат человеку: экран, колонки, принтер (и проектор, и 3D-принтер тоже). Остальные утверждения ложные: мониторов можно несколько, проектор и колонки — вывод, а не ввод."}
 ];
 const VARS={1:Q1,2:Q2,3:Q3};
 const VNOTE={1:" (неполный)",3:" (вопросы 2–10)"};
 const L="ABCDE";
+const num=i=>Q[i].no??i+1; // sheet number (no) for variants with gaps
 let V=2,Q,S,cur=0;
 function setVar(n){V=n;Q=VARS[n];S=Q.map(()=>({pick:null,done:false,text:"",shown:false}));cur=0;try{localStorage.setItem("inft-variant",n)}catch(e){}
   $("course").textContent=`INFT3107 · Midterm · Variant ${n}`+(VNOTE[n]||"");
@@ -231,12 +232,12 @@ const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 function isRight(i){return Q[i].a.includes(S[i].pick)}
 function status(i){const q=Q[i],s=S[i];if(q.open)return s.shown?"open":"";if(!s.done)return"";return isRight(i)?"ok":"bad"}
 function scoreTxt(){const mc=Q.filter(q=>!q.open).length;let ok=0,done=0;Q.forEach((q,i)=>{if(!q.open&&S[i].done){done++;if(isRight(i))ok++}});return{ok,done,mc}}
-function renderRuler(){$("ruler").innerHTML=Q.map((q,i)=>`<button class="tick ${status(i)} ${i===cur?"cur":""}" data-i="${i}" aria-label="Вопрос ${i+1}">${i+1}</button>`).join("");
+function renderRuler(){$("ruler").innerHTML=Q.map((q,i)=>`<button class="tick ${status(i)} ${i===cur?"cur":""}" data-i="${i}" aria-label="Вопрос ${num(i)}">${num(i)}</button>`).join("");
   const s=scoreTxt();$("score").textContent=`${s.ok} / ${s.mc} верно · отвечено ${s.done}`}
 function render(){
   renderRuler();
   if(cur===Q.length)return renderResult();
-  const q=Q[cur],s=S[cur];let h=`<div class="qhead"><span class="qnum">Question ${cur+1} of ${Q.length}</span><span class="tag">${q.open?"Open · 2 pts":"Single answer · 1 pt"}</span></div><p class="qtext">${esc(q.t)}</p>`;
+  const q=Q[cur],s=S[cur];let h=`<div class="qhead"><span class="qnum">Question ${num(cur)}${q.no?` · ${cur+1} of ${Q.length}`:` of ${Q.length}`}</span><span class="tag">${q.open?"Open · 2 pts":"Single answer · 1 pt"}</span></div><p class="qtext">${esc(q.t)}</p>`;
   if(!q.open){
     h+=`<div class="opts">`+q.o.map((o,j)=>{let c="";if(s.done){if(q.a.includes(j))c="right";else if(j===s.pick)c="wrong"}else if(j===s.pick)c="sel";
       return `<button class="opt ${c}" data-j="${j}" ${s.done?"disabled":""}><span class="letter">${L[j]}</span><span>${esc(o)}</span></button>`}).join("")+`</div>`;
@@ -259,10 +260,10 @@ function renderBar(){
 function renderResult(){
   const s=scoreTxt();const pct=Math.round(s.ok/s.mc*100);
   const no=Q.length-Q.filter(q=>q.open).length;
-  let h=`<div class="result"><span class="course">Итог по вопросам 1–${s.mc}</span><div class="big">${s.ok}<small> / ${s.mc} · ${pct}%</small></div>
+  let h=`<div class="result"><span class="course">Итог по вопросам ${num(0)}–${num(s.mc-1)}</span><div class="big">${s.ok}<small> / ${s.mc} · ${pct}%</small></div>
   <p style="margin:0;color:var(--muted)">${no<Q.length?`Открытые вопросы ${no+1}–${Q.length} оцените сами по образцу. `:""}Нажмите на строку, чтобы вернуться к вопросу.</p><ul class="rev">`;
   Q.forEach((q,i)=>{const st=status(i)||"skip";const m=q.open?(S[i].shown?"OPEN":"—"):(S[i].done?(isRight(i)?"✓ "+L[S[i].pick]:"✗ "+L[S[i].pick]):"—");
-    h+=`<li class="${st}" data-i="${i}"><span class="m">${i+1}. ${m}</span><span class="t">${esc(q.t)}</span></li>`});
+    h+=`<li class="${st}" data-i="${i}"><span class="m">${num(i)}. ${m}</span><span class="t">${esc(q.t)}</span></li>`});
   $("card").innerHTML=h+`</ul></div>`;renderBar();
 }
 document.addEventListener("click",e=>{
