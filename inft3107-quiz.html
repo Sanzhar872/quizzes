@@ -67,6 +67,9 @@ textarea{width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--li
 .result{text-align:left;display:flex;flex-direction:column;gap:14px}
 .big{font-family:var(--f-q);font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
 .big small{font-size:20px;color:var(--muted)}
+.vsw{display:flex;gap:6px}
+.vsw button{border:1.5px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:4px 12px;font:600 12px var(--f-ui);cursor:pointer}
+.vsw button.on{background:var(--accent);border-color:var(--accent);color:var(--paper)}
 .rev{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
 .rev li{display:grid;grid-template-columns:44px 1fr;gap:10px;font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
 .rev li .m{font:600 12px var(--f-mono)}
@@ -79,10 +82,11 @@ textarea{width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--li
 <div class="wrap">
   <header>
     <div class="top">
-      <span class="course">INFT3107 · Midterm · Variant 2</span>
+      <span class="course" id="course">INFT3107 · Midterm</span>
       <span class="score" id="score"></span>
     </div>
     <h1>Basics of Information Systems</h1>
+    <div class="vsw" id="vsw" aria-label="Вариант"></div>
     <div class="ruler" id="ruler" aria-label="Навигация по вопросам"></div>
   </header>
   <main class="card" id="card" aria-live="polite"></main>
@@ -90,7 +94,8 @@ textarea{width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--li
 <div class="bar"><div class="in" id="bar"></div></div>
 
 <script>
-const Q=[
+// Variant 2
+const Q2=[
 {t:"A company has 10 million customer records, but many are incomplete, duplicated, or outdated. Another company has 1,000 complete and recently updated records. What is the most appropriate conclusion?",
 o:["The first company necessarily has better information because it has more records.","Both companies have equally reliable information because both use databases.","The second company may have more useful information because its data quality is higher.","The first company has better information because duplicated records improve accuracy.","The second company has less useful information because its database is smaller."],
 a:[2],e:"Ценность информации определяет качество данных (полнота, актуальность, отсутствие дублей), а не объём. 10 млн «грязных» записей дают меньше пользы, чем 1000 чистых."},
@@ -146,9 +151,81 @@ m:["<b>Стоимость и время.</b> Готовый пакет деше�
 {open:true,t:"A team discovers that several records in its dataset are duplicated and some required values are missing. Explain how the team can address these two data quality problems and describe one role responsible for establishing data rules.",
 m:["<b>Дубликаты:</b> найти по ключевым полям (ID, email), объединить или удалить лишние записи (deduplication); на будущее задать уникальный ключ / unique constraint, чтобы повтор не вставлялся.","<b>Пропуски:</b> уточнить значения у источника или восстановить из других систем; на будущее сделать поля обязательными (NOT NULL, валидация в форме ввода).","<b>Роль: Data Steward.</b> Отвечает за качество данных в своей области: задаёт правила (форматы, обязательные поля, уникальность), следит за их соблюдением и исправлением ошибок. Также подходит Data Owner, который утверждает эти правила."]}
 ];
+// Variant 1 (incomplete: only questions 1–11 were photographed with their options)
+const Q1=[
+{t:"What is an Information System (IS)?",
+o:["A computer program used exclusively for calculations.","A collection of interconnected components that collect, process, store, and share data to support decisions.","A physical device used to connect computers to the Internet.","A database that stores information without processing it.","A network used only for communication between employees."],
+a:[1],e:"IS — это система взаимосвязанных компонентов (hardware, software, data, procedures, people), которая собирает, обрабатывает, хранит и распространяет данные для принятия решений. Остальные варианты описывают лишь одну часть (программу, сеть, БД)."},
+{t:"A shop owner records daily sales in a paper notebook, calculates total revenue, and uses the results to decide what products to order. Why can this be considered an Information System?",
+o:["Every Information System must use an electronic device.","A notebook automatically processes data without human involvement.","The system uses only technology and does not involve people.","It transforms recorded data into useful information for decision-making.","It stores information but does not support any business activity."],
+a:[3],e:"IS не обязана быть компьютерной. Здесь есть ввод (записи продаж), обработка (подсчёт выручки), вывод (итог) и решение (что заказать) — значит, это информационная система, хоть и бумажная."},
+{t:"What is the job of an operating system (OS)?",
+o:["Programs that let computers perform specific tasks.","Manages memory and hardware resources; interface for users; manages application programs.","Writes code for the analyst design.","Detailed instructions and policies for the system.","Information given to users, retrieved securely and easily."],
+a:[1],e:"ОС управляет памятью и железом, даёт интерфейс пользователю и запускает приложения (Windows, macOS, Android). A — это прикладные программы, D — процедуры (procedures), E — вывод информации."},
+{t:"What is the meaning of processing in an Information System?",
+o:["Data collected and entered by users or automatically.","Information given to users, retrieved securely and easily.","Tasks that make data useful.","Keep it secure, reliable and accessible.","Take it out of storage."],
+a:[2],e:"Цикл IS: input (A — сбор данных) → processing (C — вычисления и анализ, которые делают данные полезными) → storage (D) → retrieval (E) → output (B)."},
+{t:"Which characteristics must a resource have to support a lasting competitive advantage, according to the lecture?",
+o:["Profitable, efficient, scalable, easy to maintain.","Valuable, common, easy to imitate, without substitutes.","Rare, inexpensive, widely available, difficult to maintain.","Valuable, profitable, efficient, difficult to replace.","Valuable, rare, tough to imitate, without substitutes."],
+a:[4],e:"Модель VRIN: Valuable, Rare, Inimitable, Non-substitutable. Если ресурс обычный или легко копируется (B, C), конкуренты быстро догонят."},
+{t:"What is the main difference between operational effectiveness and strategic positioning?",
+o:["Operational effectiveness lowers prices; strategic positioning increases advertising.","Operational effectiveness implies doing the same tasks better than rivals; strategic positioning involves different activities or different ways of performing them.","Operational effectiveness changes the business model; strategic positioning reduces manual work.","Operational effectiveness develops new markets; strategic positioning improves routine tasks.","Operational effectiveness focuses on customers; strategic positioning focuses on suppliers."],
+a:[1],e:"По Портеру: operational effectiveness — делать то же самое, что конкуренты, но лучше (быстрее, дешевле); его легко скопировать. Strategic positioning — делать другое или по-другому, это и даёт устойчивое преимущество."},
+{t:"Which of the following correctly lists the five components of a computer?",
+o:["CPU, RAM, hard disk, software, network connection.","Motherboard, processor, operating system, memory, input/output.","Network connection, CPU, RAM, applications, storage.","Network connection, motherboard, CPU, storage/memory, input/output.","Motherboard, bus, CPU, hard disk, software."],
+a:[3],e:"Компоненты компьютера — это железо: материнская плата, процессор, память/хранилище, устройства ввода-вывода, сетевое подключение. В остальных вариантах затесалось ПО (software, operating system, applications) или слишком узкие детали (bus).",
+n:"Не путай с пятью компонентами информационной системы (hardware, software, data, procedures, people) — это другой вопрос."},
+{t:"Which statement correctly describes Moore's Law as presented in the lecture?",
+o:["GPU performance doubles every two years at the same price.","CPU clock speed doubles every year regardless of price.","Computing power doubles every two years at the same price.","Storage capacity doubles every month at the same price.","RAM capacity doubles every four years regardless of price."],
+a:[2],e:"Закон Мура в формулировке лекции: вычислительная мощность (число транзисторов) удваивается примерно каждые два года при той же цене. Остальные варианты подменяют объект (GPU, RAM, storage) или срок."},
+{t:"Which of the following is NOT one of the five simple rules for safe peripherals?",
+o:["Never plug in a device you do not know.","Switch off ports that nobody needs.","Encrypt lost drives so their data is unreadable to others.","Update the software of printers, scanners, and cameras.","Replace peripheral devices every year."],
+a:[4],e:"Правила безопасности касаются неизвестных устройств, лишних портов, шифрования и обновления прошивок. Ежегодная замена устройств ничего не защищает, это просто трата денег."},
+{t:"Which statement describes a commodity in the computer market?",
+o:["Hundreds of makers worldwide; little difference between models; buyers compare prices; minimal profit margins.","Hundreds of makers worldwide; unique products; buyers compare quality; high profit margins.","Little difference between models; prices do not matter; minimal profit margins.","Same parts; buyers focus on product uniqueness; high profit margins.","Many makers worldwide; different models; price does not decide; minimal profit margins."],
+a:[0],e:"Commodity — товар-«одинаковка»: много производителей, модели почти не отличаются, решает цена, маржа минимальная (например, обычные ПК и флешки). В C, D, E есть противоречия: если модели одинаковы, цена как раз решает."},
+{t:"What is the main role of an operating system?",
+o:["The main software that manages the computer.","A translator between the OS and one hardware device.","Software saved permanently inside a hardware chip.","Small programs that keep the computer clean, fast, and safe.","Programs that help a person do a specific task."],
+a:[0],e:"ОС — главная программа, управляющая компьютером. B — драйвер, C — прошивка (firmware), D — утилиты, E — прикладные программы."}
+];
+// Variant 3 (incomplete: only questions 2–10 of the sheet were photographed with all options)
+const Q3=[
+{t:"A company wants to develop a new information system to improve its business operations. Which professional is responsible for identifying the company's needs and designing the concept of a new or redesigned system?",
+o:["A programmer who writes code according to the system's design and requirements.","A computer engineer who designs the physical computing devices used by the organization.","A systems analyst who identifies business needs and develops the concept for a new or redesigned system.","An IT support specialist who provides initial assistance to users experiencing technical problems.","A trainer who teaches employees how to use specific computer applications and tools."],
+a:[2],e:"Systems analyst — мост между бизнесом и IT: выясняет потребности компании и проектирует концепцию системы. Программист потом пишет код по этому дизайну, инженер делает железо, support помогает пользователям."},
+{t:"What is the meaning of output in an Information System?",
+o:["Data collected and entered by users or automatically.","Information given to users, retrieved securely and easily.","Tasks that make data useful.","Keep it secure, reliable and accessible.","Take it out of storage."],
+a:[1],e:"Цикл IS: input (A) → processing (C) → storage (D) → retrieval (E) → output (B — информация, выданная пользователю). Тот же набор вариантов, что в вопросе о processing, но ответ другой."},
+{t:"Which of the following correctly lists the five operations of an IS?",
+o:["Store, capture, retrieve, process, disseminate.","Capture, retrieve, process, disseminate, store.","Process, store, capture, disseminate, retrieve.","Retrieve, disseminate, store, capture, process.","Capture, process, store, retrieve, disseminate."],
+a:[4],e:"Операции идут в логическом порядке: сначала собрать (capture), потом обработать (process), сохранить (store), достать (retrieve) и распространить (disseminate). Во всех вариантах одни и те же пять слов, важен именно порядок."},
+{t:"Which digital business model matches each description correctly?",
+o:["Subscription – brings buyers and sellers together.","Affiliate – recurring payments for ongoing services.","Marketplace – commissions for promoting other businesses.","Freemium – free basic service, paid premium.","Advertising – the public pledges funds for an idea."],
+a:[3],e:"Freemium: база бесплатно, премиум за деньги (Spotify, Zoom). В остальных описания перепутаны: subscription — регулярные платежи, marketplace — сводит покупателей и продавцов, affiliate — комиссия за продвижение, а «public pledges funds» — это crowdfunding."},
+{t:"Which of the following correctly describes competitive advantage?",
+o:["Increasing sales by expanding into every market.","Using technology to replace all manual activities.","Offering more value or lower costs than rivals.","Providing the same products at similar prices.","Improving internal processes without changing costs."],
+a:[2],e:"Конкурентное преимущество — давать клиенту больше ценности или работать дешевле, чем конкуренты (дифференциация или лидерство по издержкам). D — это как раз отсутствие преимущества."},
+{t:"What determines bus speed according to the lecture?",
+o:["The number of cores and the processor's clock speed.","The speed of data transfer and the number of bits moved at one time.","The amount of RAM and the capacity of long-term storage.","The size of the motherboard and the number of connected devices.","The number of applications and the available storage capacity."],
+a:[1],e:"Шина — «дорога» для данных внутри компьютера. Её скорость зависит от частоты передачи и ширины (сколько бит идёт за раз). A описывает скорость процессора, а не шины."},
+{t:"Which statement correctly compares a hard disk and an SSD?",
+o:["A hard disk uses flash memory, while an SSD uses spinning platters.","A hard disk is lighter and faster, while an SSD is cheaper.","A hard disk has no moving parts, while an SSD uses a read/write arm.","A hard disk is more expensive, while an SSD is slower.","A hard disk uses spinning platters, while an SSD uses flash memory."],
+a:[4],e:"HDD — вращающиеся пластины и головка чтения, SSD — флеш-память без движущихся частей. A и C — то же самое наоборот; B и D тоже перевёрнуты (SSD быстрее и дороже)."},
+{t:"Which characteristic of the MacBook Air is mentioned in the lecture?",
+o:["Many weigh less than 4 pounds and have longer battery life.","They weigh under 3 pounds and are 0.68 inches thick.","They have no hard drive, use cloud storage, need Wi-Fi, and run browsers and a word processor.","They use a 3D printer as their primary output device.","They do not support wireless networking."],
+a:[1],e:"MacBook Air — пример ультратонкого ноутбука: меньше 3 фунтов и 0,68 дюйма толщиной. A — общая черта ноутбуков, C — описание облачного ноутбука (Chromebook)."},
+{t:"Which statement about computer output devices is correct?",
+o:["Displays, speakers, and printers are output devices.","A computer can use only one display.","Projectors are input devices.","3D printers display information only on a screen.","Speakers are used to enter data into a computer."],
+a:[0],e:"Устройства вывода выдают результат человеку: экран, колонки, принтер (и проектор, и 3D-принтер тоже). Остальные утверждения ложные: мониторов можно несколько, проектор и колонки — вывод, а не ввод."}
+];
+const VARS={1:Q1,2:Q2,3:Q3};
+const VNOTE={1:" (неполный)",3:" (вопросы 2–10)"};
 const L="ABCDE";
-const S=Q.map(()=>({pick:null,done:false,text:"",shown:false}));
-let cur=0;
+let V=2,Q,S,cur=0;
+function setVar(n){V=n;Q=VARS[n];S=Q.map(()=>({pick:null,done:false,text:"",shown:false}));cur=0;try{localStorage.setItem("inft-variant",n)}catch(e){}
+  $("course").textContent=`INFT3107 · Midterm · Variant ${n}`+(VNOTE[n]||"");
+  $("vsw").innerHTML=Object.keys(VARS).map(k=>`<button class="${k==n?"on":""}" data-v="${k}">Вариант ${k}</button>`).join("");
+  $("ruler").style.gridTemplateColumns=`repeat(${Math.max(Q.length,11)},1fr)`}
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 function isRight(i){return Q[i].a.includes(S[i].pick)}
@@ -181,14 +258,16 @@ function renderBar(){
 }
 function renderResult(){
   const s=scoreTxt();const pct=Math.round(s.ok/s.mc*100);
-  let h=`<div class="result"><span class="course">Итог по вопросам 1–16</span><div class="big">${s.ok}<small> / ${s.mc} · ${pct}%</small></div>
-  <p style="margin:0;color:var(--muted)">Открытые вопросы 17–18 оцените сами по образцу. Нажмите на строку, чтобы вернуться к вопросу.</p><ul class="rev">`;
+  const no=Q.length-Q.filter(q=>q.open).length;
+  let h=`<div class="result"><span class="course">Итог по вопросам 1–${s.mc}</span><div class="big">${s.ok}<small> / ${s.mc} · ${pct}%</small></div>
+  <p style="margin:0;color:var(--muted)">${no<Q.length?`Открытые вопросы ${no+1}–${Q.length} оцените сами по образцу. `:""}Нажмите на строку, чтобы вернуться к вопросу.</p><ul class="rev">`;
   Q.forEach((q,i)=>{const st=status(i)||"skip";const m=q.open?(S[i].shown?"OPEN":"—"):(S[i].done?(isRight(i)?"✓ "+L[S[i].pick]:"✗ "+L[S[i].pick]):"—");
     h+=`<li class="${st}" data-i="${i}"><span class="m">${i+1}. ${m}</span><span class="t">${esc(q.t)}</span></li>`});
   $("card").innerHTML=h+`</ul></div>`;renderBar();
 }
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-i],[data-j],button");if(!t)return;
+  const t=e.target.closest("[data-i],[data-j],[data-v],button");if(!t)return;
+  if(t.dataset.v!==undefined){setVar(+t.dataset.v);render();window.scrollTo({top:0});return}
   if(t.dataset.j!==undefined&&!S[cur].done){S[cur].pick=+t.dataset.j;return render()}
   if(t.dataset.i!==undefined){cur=+t.dataset.i;render();window.scrollTo({top:0});return}
   switch(t.id){
@@ -205,6 +284,7 @@ document.addEventListener("keydown",e=>{
   if(!Q[cur].open&&!S[cur].done&&L.includes(k)&&k.length===1){S[cur].pick=L.indexOf(k);render()}
   else if(e.key==="Enter"){const b=$("b-check")||$("b-next");if(b&&!b.disabled)b.click()}
 });
+{let v=2;try{const s=+localStorage.getItem("inft-variant");if(VARS[s])v=s}catch(e){}setVar(v)}
 render();
 </script>
 
