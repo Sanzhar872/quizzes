@@ -218,8 +218,44 @@ a:[1],e:"MacBook Air — пример ультратонкого ноутбук�
 o:["Displays, speakers, and printers are output devices.","A computer can use only one display.","Projectors are input devices.","3D printers display information only on a screen.","Speakers are used to enter data into a computer."],
 a:[0],e:"Устройства вывода выдают результат человеку: экран, колонки, принтер (и проектор, и 3D-принтер тоже). Остальные утверждения ложные: мониторов можно несколько, проектор и колонки — вывод, а не ввод."}
 ];
-const VARS={1:Q1,2:Q2,3:Q3};
-const VNOTE={1:" (неполный)",3:" (вопросы 2–10)"};
+// Variant 5 (incomplete: question 12 has no correct option visible on the photo)
+const Q5=[
+{no:1,t:"Which statement correctly describes the role of a Decision Support System (DSS)?",
+o:["It supports frontline workers who handle daily transactions.","It provides reports and budgets for middle managers.","It supports senior managers in making short-term decisions.","It supports top executives in developing organizational strategy.","It connects enterprise resources across an organization."],
+a:[2],e:"Пирамида систем: TPS — для сотрудников с ежедневными транзакциями (A), MIS — отчёты и бюджеты для middle managers (B), DSS — помогает senior managers принимать краткосрочные решения (C), ESS/EIS — стратегия для топ-руководства (D), ERP — связывает ресурсы всей компании (E)."},
+{no:2,t:"Which of the following are listed as characteristics of information quality?",
+o:["Hardware, software, networks, and procedures.","Technology, data, people, and process.","Evaluate, Direct, Monitor, and Build.","Consistent, complete, timely, and accurate.","Data, information, knowledge, and wisdom."],
+a:[3],e:"Качественная информация: согласованная, полная, своевременная и точная. A — компоненты IS, E — пирамида DIKW, C похоже на функции IT governance (Evaluate, Direct, Monitor)."},
+{no:3,t:"Which of the following are the six elements of an IS?",
+o:["Hardware, software, data, people, procedures, networks.","Environment, input, processing, output, control, feedback.","Capture, process, store, retrieve, disseminate, control.","Operating system, application software, hardware, data, people, procedures.","Location, network, user skills, storage, retrieval, dissemination."],
+a:[0],e:"Шесть элементов IS: hardware, software, data, people, procedures + networks. C — это операции IS (и то с лишним «control»), B — элементы системы вообще, в D ОС и приложения — это просто части software."},
+{no:4,t:"When is outsourcing appropriate, according to the lecture?",
+o:["When the company needs specific skills, updated equipment, or better security.","When the company needs new employees, larger teams, or more office space.","When the company needs faster service, temporary support, or shared databases.","When the company needs new employees, improved communication, or lower costs than training or hiring.","When the company needs specific skills, temporary support, or lower costs than training or hiring."],
+a:[4],e:"Аутсорсинг оправдан, когда нужны специфические навыки, которых нет в штате, временная помощь (проект, пик нагрузки) или это дешевле, чем обучать или нанимать своих. Остальные варианты подмешивают лишнее: нанять сотрудников, офис, общие базы."},
+{no:5,t:"Which of the following correctly distinguishes primary activities from support activities in the value chain?",
+o:["Primary activities support all departments; support activities help all primary activities.","Primary activities create the product; support activities help all primary activities.","Primary activities support all departments; support activities deliver products to customers.","Primary activities create the product; support activities focus on logistics.","Primary activities reduce costs; support activities help all primary activities."],
+a:[1],e:"Цепочка ценности Портера: primary activities напрямую создают и доставляют продукт (логистика, производство, маркетинг, сервис), support activities (HR, технологии, закупки, инфраструктура) обслуживают все основные. В D логистика — как раз primary."},
+{no:6,t:"Which statement best explains the relationship between IT and a company's competitive strategy?",
+o:["IT investments create lasting advantages regardless of the company's strategy.","A company should adopt the same information systems as its competitors.","Technology investments should prioritize operational efficiency over business goals.","A company should choose its strategy first, then select systems that support it.","A company should standardize its processes before choosing a competitive strategy."],
+a:[3],e:"Сначала стратегия, потом IT: системы выбирают под стратегию, а не наоборот. Сама по себе технология не даёт устойчивого преимущества (A), а копирование систем конкурентов (B) даёт максимум паритет."},
+{no:7,t:"Which storage type is recommended for a portable computer that is carried daily?",
+o:["A hard disk, because it is lighter and has no moving parts.","An SSD, because it is lighter and has no moving parts.","RAM, because it is more durable and stores files permanently.","A hard disk, because it is faster and more durable than an SSD.","An SSD for the operating system and a hard disk for the rest."],
+a:[1],e:"Для ноутбука, который носят каждый день, нужен SSD: он легче и без движущихся частей, поэтому не боится тряски и ударов. У HDD движущиеся части есть (A, D неверны), а RAM ничего не хранит постоянно (C). E — рекомендация для настольного ПК."},
+{no:8,t:"How does RAM affect a computer's speed?",
+o:["It determines how quickly data is transferred between components and how many bits are transferred at once.","It determines how much data can be stored permanently on the computer.","It helps the computer run faster when more RAM is available, in most cases.","It determines how quickly the CPU executes instructions and runs applications.","It determines how quickly the hard disk's arm reaches a track."],
+a:[2],e:"Чем больше RAM, тем больше данных и программ держится в быстрой памяти, и компьютер реже обращается к медленному диску, поэтому в большинстве случаев работает быстрее. A — это шина (bus), B — накопитель, D — процессор, E — время доступа HDD."},
+{no:9,t:"Which activity is associated with the “Maintain” stage of a device's life cycle?",
+o:["Checking the device's fit, cost, and compatibility.","Training people and keeping the device clean.","Replacing the device before it disrupts a process.","Keeping the device updated and repairing it.","Wiping data from the device."],
+a:[3],e:"Жизненный цикл устройства: выбор (A — подходит ли, цена, совместимость) → использование (B) → обслуживание (D — обновления и ремонт) → замена (C) → утилизация (E — стереть данные)."},
+{no:10,t:"Which factor makes e-waste recycling difficult?",
+o:["Short device lifespans, high production costs, and limited storage capacity.","Different device designs, limited battery life, and slow data transfer.","International competition, higher living standards, and increased device durability.","Cloud storage, wireless connections, and incompatible peripheral devices.","Complex value chains, differences in international laws, and actors cutting corners."],
+a:[4],e:"Переработку электроники затрудняют сложные международные цепочки, разные законы в разных странах и участники, которые экономят на безопасности (например, отправляют отходы в бедные страны). Остальные варианты — технические характеристики, не связанные с утилизацией."},
+{no:11,t:"A phased ERP implementation involves:",
+o:["Introducing the new system one department at a time.","Switching the whole company to the new system in one day.","Replacing all legacy systems before planning the project.","Installing separate databases for each company department.","Developing a custom ERP system for one specific customer."],
+a:[0],e:"Phased (поэтапное) внедрение — по одному отделу или модулю за раз, риск ниже. B — это big bang (direct cutover). D противоречит идее ERP с единой базой."}
+];
+const VARS={1:Q1,2:Q2,3:Q3,5:Q5};
+const VNOTE={1:" (неполный)",3:" (вопросы 2–10)",5:" (вопросы 1–11)"};
 const L="ABCDE";
 const num=i=>Q[i].no??i+1; // sheet number (no) for variants with gaps
 let V=2,Q,S,cur=0;
