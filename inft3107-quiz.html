@@ -252,10 +252,30 @@ o:["Short device lifespans, high production costs, and limited storage capacity.
 a:[4],e:"Переработку электроники затрудняют сложные международные цепочки, разные законы в разных странах и участники, которые экономят на безопасности (например, отправляют отходы в бедные страны). Остальные варианты — технические характеристики, не связанные с утилизацией."},
 {no:11,t:"A phased ERP implementation involves:",
 o:["Introducing the new system one department at a time.","Switching the whole company to the new system in one day.","Replacing all legacy systems before planning the project.","Installing separate databases for each company department.","Developing a custom ERP system for one specific customer."],
-a:[0],e:"Phased (поэтапное) внедрение — по одному отделу или модулю за раз, риск ниже. B — это big bang (direct cutover). D противоречит идее ERP с единой базой."}
+a:[0],e:"Phased (поэтапное) внедрение — по одному отделу или модулю за раз, риск ниже. B — это big bang (direct cutover). D противоречит идее ERP с единой базой."},
+{no:12,t:"The main security and privacy risk of cloud computing is that:",
+o:["Software updates depend on the company's internal IT team.","Hardware must be purchased before using cloud services.","Applications cannot be accessed outside the company building.","Cloud services require a separate physical server.","Data is stored on servers owned by someone else."],
+a:[4],e:"В облаке данные лежат на серверах провайдера, и компания не контролирует их физически: возможны утечки, доступ третьих лиц, хранение в другой юрисдикции. A–D описывают как раз on-premise, а не облако."},
+{no:13,t:"Social engineering attacks primarily target:",
+o:["Software weaknesses that allow attackers to access systems.","Network traffic that violates established security rules.","Human behavior that can be manipulated by attackers.","Data stored in systems without backup copies.","Computer files infected by malicious programs."],
+a:[2],e:"Социальная инженерия атакует людей, а не технику: фишинг, звонок «из IT-отдела» с просьбой сообщить пароль. A — эксплойт уязвимостей, E — вредоносное ПО."},
+{no:14,t:"Which type of structured data consists of aggregated and summarized information used for reporting and decisions?",
+o:["Operational data, focused on integrity and availability.","Master data, focused on accuracy and synchronization.","Reference data, focused on standards and compliance.","Analytic data, focused on integration and transformation.","Transactional data, focused on individual daily activities."],
+a:[3],e:"Analytic data — агрегированные и сводные данные (в хранилище данных) для отчётов и решений. Transactional — отдельные ежедневные операции, master — ключевые сущности (клиенты, товары), reference — справочники и коды."},
+{no:15,t:"Data democratization means making data:",
+o:["Available to more people, not only IT or data science, with security credentials.","Available to more teams, not only managers or business analysts, with access permissions.","Available to more departments, not only IT or data science, with shared databases.","Available to more users, not only data owners or data stewards, with approval procedures.","Available to more employees, not only analysts or developers, with reporting tools."],
+a:[0],e:"Демократизация данных — доступ к данным для широкого круга людей, а не только для IT и data science, но с контролем безопасности (учётные данные, права). Варианты отличаются деталями, ключевое здесь — «not only IT or data science» и защита доступа.",
+n:"Варианты очень похожи, A выбран по формулировке из лекции, которую я предполагаю. Сверьтесь со слайдом про data democratization."},
+{no:16,t:"Which statement describes data integrity?",
+o:["Data is accurate and reliable over the life cycle.","Data is available to more people across departments.","Data follows a standard format across systems.","Data is stored for a defined period.","Data is protected from unauthorized access."],
+a:[0],e:"Integrity — данные остаются точными и надёжными на протяжении всего жизненного цикла. B — democratization, C — standardization, D — retention, E — security."},
+{no:17,open:true,t:"A company needs to purchase laptops for its employees. Identify two costs beyond the initial purchase price that should be considered when calculating the Total Cost of Ownership (TCO), and explain why each cost matters.",
+m:["<b>TCO</b> = цена покупки + все расходы за срок службы устройства. Цена ноутбука — лишь малая часть общей стоимости.","<b>Поддержка и обслуживание:</b> ремонт, замена батарей, работа IT-специалистов, гарантия. Важно, потому что дешёвая модель может чаще ломаться и в итоге стоить дороже.","<b>Программное обеспечение и лицензии:</b> ОС, Office, антивирус, ежегодные подписки на каждого сотрудника. Важно, потому что это регулярные платежи на всё время использования.","Также подходят: обучение сотрудников, электроэнергия, настройка и установка, утилизация в конце срока, потери от простоя при поломке."]},
+{no:18,open:true,t:"A university wants to develop an information system that allows students to register for courses online. Write one functional requirement and define an acceptance criterion for it using the GIVEN–WHEN–THEN format.",
+m:["<b>Functional requirement:</b> The system shall allow a logged-in student to register for an available course section.","<b>Acceptance criterion:</b>","<b>GIVEN</b> a logged-in student and a course section that has free seats and no schedule conflict with the student's timetable,","<b>WHEN</b> the student selects the section and clicks «Register»,","<b>THEN</b> the system adds the course to the student's schedule, reduces the number of free seats by one, and shows a confirmation message.","Критерий должен быть проверяемым: конкретное условие, действие и наблюдаемый результат. Слова «быстро» и «удобно» не подходят."]}
 ];
 const VARS={1:Q1,2:Q2,3:Q3,5:Q5};
-const VNOTE={1:" (неполный)",3:" (вопросы 2–10)",5:" (вопросы 1–11)"};
+const VNOTE={1:" (неполный)",3:" (вопросы 2–10)"};
 const L="ABCDE";
 const num=i=>Q[i].no??i+1; // sheet number (no) for variants with gaps
 let V=2,Q,S,cur=0;
