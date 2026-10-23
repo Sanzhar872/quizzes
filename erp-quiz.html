@@ -160,7 +160,73 @@ a:[4],e:"CRM хранит историю взаимодействий с кли�
 o:["Faster reporting","Lower license costs","Better coordination","Poor integration","Improved data quality","Simpler processes"],
 a:[3],e:"ERP работает, только если процессы согласованы. Если каждый отдел действует по-своему, данные и процессы не стыкуются, и выгоды от интеграции нет. Остальные варианты — это плюсы, а не риски."}
 ];
-const VARS={1:Q1,2:Q2};
+// Variant 3
+const Q3=[
+{t:"A supplier misses a sudden retail sales spike. Which data feed helps?",
+o:["Real-time sales","Payment history","Forecast archives","Staff rosters","Annual budgets","Product branding"],
+a:[0],e:"Чтобы заметить резкий рост спроса, поставщику нужны продажи в реальном времени (POS-данные). Архивы прогнозов и годовые бюджеты показывают прошлое, а не то, что происходит сейчас."},
+{t:"A customer appears twice in CRM under different spellings. What should staff do?",
+o:["Price promotion","More inventory","Extra sales calls","Contact deduplication","Longer contracts","Faster hardware"],
+a:[3],e:"Дубликаты записей портят качество данных: история клиента разбита на две карточки. Нужна дедупликация — объединить записи в одну."},
+{t:"A customer asks for a basic phone; the salesperson offers a premium model. This is?",
+o:["Lead scoring","Down-selling","Referral marketing","Cross-selling","Up-selling","Churn prediction"],
+a:[4],e:"Up-selling — предложить более дорогую версию того же товара. Cross-selling — предложить дополнительный товар (чехол, наушники), down-selling — более дешёвый вариант."},
+{t:"A factory keeps almost no extra components and needs precisely timed deliveries. Its approach?",
+o:["Dual sourcing","Bulk procurement","Just-in-time","Forward buying","Vendor diversification","Safety stocking"],
+a:[2],e:"Just-in-time (JIT): детали приходят ровно к моменту использования, запасов почти нет. Минус — зависимость от точности поставок."},
+{t:"A rented server bill increases when holiday traffic rises. Which pricing model?",
+o:["Volume rebates","Capital purchase","Annual depreciation","Fixed licensing","Physical leasing","Usage-based pricing"],
+a:[5],e:"Облачная модель pay-as-you-go: платишь за фактическое использование ресурсов. Больше трафика — больше счёт. Fixed licensing и capital purchase от нагрузки не зависят."},
+{t:"A sales rep transfers a qualified lead with notes and next steps to a colleague. This is?",
+o:["Lead scoring","Prospecting","Contact deduplication","Demand planning","Churn prediction","Handoff"],
+a:[5],e:"Handoff — передача лида или клиента другому сотруднику вместе с контекстом (заметки, следующие шаги) в CRM, чтобы ничего не потерялось."},
+{t:"Several supply chain partners overreact to rumors of shortages. Best corrective measure?",
+o:["Price increases","Longer order cycles","Higher safety stock","More promotions","Information sharing","Supplier secrecy"],
+a:[4],e:"Паника из-за слухов усиливает bullwhip effect. Лечится обменом реальной информацией о спросе и запасах между участниками цепочки. Секретность и лишние запасы только усиливают искажение."},
+{t:"A store and online support team need the same complaint history. What connects them?",
+o:["Product pricing","Channel integration","Lead qualification","Campaign automation","Warehouse integration","Inventory planning"],
+a:[1],e:"Интеграция каналов (omnichannel CRM): магазин, сайт и поддержка видят одну историю клиента, и клиенту не нужно повторять жалобу."},
+{t:"A manager needs to know who edited an order record and when. Which feature helps?",
+o:["Demand forecast","Audit trail","Customer survey","Mass emailing","Supplier segmentation","Price skimming"],
+a:[1],e:"Audit trail (журнал изменений) фиксирует, кто, что и когда изменил в записи. Это важно для контроля и расследования ошибок."},
+{t:"Importers compare fuel costs, carriers and routes. Which system?",
+o:["Transport planning","Purchase approval","Lead management","Inventory valuation","Campaign tracking","Service scripting"],
+a:[0],e:"Transport planning (TMS) — планирование перевозок: выбор перевозчика, маршрута и учёт затрат на топливо."}
+];
+// Variant 4
+const Q4=[
+{t:"Invoice says 120 units; only 100 arrived. Which record confirms the quantity received?",
+o:["Supplier invoice","Sales forecast","Purchase requisition","Goods receipt","Customer contract","Price catalog"],
+a:[3],e:"Goods receipt (приходная накладная) фиксирует, сколько реально пришло на склад. При three-way match сверяют заказ, goods receipt и счёт: здесь счёт завышен на 20 единиц."},
+{t:"Distributor orders jump, but customers buy about the same amount. Which data should show final demand?",
+o:["Factory capacity","Point-of-sale data","Shipping routes","Supplier invoices","Safety stock","Distributor orders"],
+a:[1],e:"Реальный конечный спрос виден в данных кассы (POS). Заказы дистрибьютора искажены bullwhip effect, поэтому планировать по ним опасно."},
+{t:"Customers repeat their complaint on every call. What is missing?",
+o:["Unified history","Sales targets","Call routing","Self-service portal","Lead scoring","Customer segmentation"],
+a:[0],e:"Нет единой истории обращений в CRM: каждый оператор начинает с нуля. Unified history даёт видеть все прошлые контакты клиента."},
+{t:"Boxes pass a gate without individual barcode scans. Which tool identifies them?",
+o:["GPS receivers","3D printers","RFID readers","Barcode labels","QR codes","Cloud storage"],
+a:[2],e:"RFID-метки считываются радиосигналом без прямой видимости, сразу у многих коробок. Штрихкоды и QR нужно сканировать по одному."},
+{t:"One branch calls six pieces a box; another calls twelve a box. ERP needs?",
+o:["New suppliers","Higher margins","Local spreadsheets","Separate catalogs","Manual corrections","Common units"],
+a:[5],e:"Нужны единые master data — общие единицы измерения. Иначе одна и та же «коробка» означает разное количество, и данные в ERP не сходятся."},
+{t:"Demand is steady, but trucks arrive late. Which buffer protects sales?",
+o:["Safety stock","Consignment","Cycle stock","Promotional stock","Sales forecasts","Returns reserve"],
+a:[0],e:"Safety stock защищает от неопределённости, в том числе от задержек поставок. Cycle stock — обычный запас между заказами, он не страхует от опозданий."},
+{t:"Of 400 sales leads, 80 become qualified. Which measure tracks this proportion?",
+o:["Profit margin","Retention rate","Order backlog","Conversion rate","Inventory turnover","Churn rate"],
+a:[3],e:"Conversion rate = 80 / 400 = 20%: доля лидов, перешедших на следующий этап воронки продаж."},
+{t:"Departments dispute who approves purchases. What should ERP define?",
+o:["Vendor pricing","Sales territories","Approval roles","Warehouse layout","Customer loyalty","Product forecasts"],
+a:[2],e:"В ERP задают роли и права согласования (approval workflow): кто и на какую сумму может одобрить закупку. Это убирает споры и повышает контроль."},
+{t:"A warehouse considers delivery drones. What should guide the investment?",
+o:["Vendor popularity","Technical novelty","Competitor publicity","Employee curiosity","Service and cost","Social media"],
+a:[4],e:"Технологию оценивают по бизнес-эффекту: улучшит ли она сервис и окупится ли. Новизна и хайп — не причина инвестировать."},
+{t:"Producing only after orders arrive makes which constraint crucial?",
+o:["Shelf location","Delivery lead time","Advertising reach","Tax liability","Customer tenure","Payroll schedule"],
+a:[1],e:"Make-to-order: производство начинается после заказа, поэтому клиент ждёт. Ключевое ограничение — срок выполнения и доставки (lead time)."}
+];
+const VARS={1:Q1,2:Q2,3:Q3,4:Q4};
 const VNOTE={};
 const L="ABCDEF";
 const num=i=>Q[i].no??i+1; // sheet number (no) for variants with gaps
