@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Линейная алгебра в ML</title>
+<style>
+:root{
+  --bg:#F5F7FA;--panel:#FFFFFF;--ink:#17212F;--soft:#566273;--line:#D8DEE6;--grid:#E7EBF0;--axis:#8590A0;
+  --v:#1F66B5;--w:#C75A12;--r:#8B2FA0;--g:#0E8074;--bad:#C62F3B;--hl:#FFF0B8;--tint:#EDF1F6;--halo:#FFFFFF;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --head:Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#12171E;--panel:#1A212B;--ink:#E8EDF3;--soft:#A2AEBD;--line:#323C49;--grid:#28313C;--axis:#6E7A8A;
+  --v:#6AA9F0;--w:#F09A55;--r:#CF84E6;--g:#4CC4B5;--bad:#F0717B;--hl:#5A4A12;--tint:#232C38;--halo:#1A212B;
+}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-text-size-adjust:100%}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);max-width:1240px;margin:0 auto}
+nav.toc{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:28px 12px 28px 20px;border-right:1px solid var(--line)}
+nav.toc strong{display:block;font:700 17px/1.3 var(--head);margin-bottom:14px}
+nav.toc a{display:block;padding:5px 9px;border-radius:5px;color:var(--soft);text-decoration:none;font-size:14px;line-height:1.35}
+nav.toc a:hover{color:var(--ink);background:var(--tint)}
+nav.toc a.on{color:var(--ink);background:var(--tint);font-weight:600}
+main{padding:36px 40px 80px;min-width:0}
+header.hero{max-width:820px;margin-bottom:28px}
+h1{font:700 44px/1.1 var(--head);margin:0 0 12px;letter-spacing:-.01em}
+h2{font:700 29px/1.2 var(--head);margin:0 0 6px}
+h3{font:700 19px/1.3 var(--head);margin:30px 0 8px}
+p{margin:0 0 12px;max-width:74ch}
+.src{color:var(--soft);font-size:13.5px;margin-bottom:10px}
+.why{font-size:17.5px;max-width:70ch}
+section{padding:42px 0;border-top:1px solid var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14.5px;color:var(--soft);margin-top:14px}
+.legend b{font-style:italic}
+.road{list-style:none;padding:0;margin:22px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;counter-reset:s}
+.road li{counter-increment:s}
+.road a{display:block;height:100%;padding:9px 11px;background:var(--panel);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:var(--ink);font-size:14px;line-height:1.35}
+.road a::before{content:counter(s) ". ";font-weight:700}
+.road a span{display:block;color:var(--soft);font-size:12.5px;margin-top:3px}
+.road a:hover{border-color:var(--axis)}
+
+/* фигура: график + управление */
+.fig{display:grid;grid-template-columns:minmax(0,470px) minmax(0,1fr);gap:22px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin:18px 0}
+.fig.wide{grid-template-columns:minmax(0,1fr)}
+.fig>*{min-width:0}
+svg.plot{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none}
+.ctl{display:flex;flex-direction:column;gap:12px;font-size:15px}
+.hint{color:var(--soft);font-size:13.5px;margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;font-size:14px;line-height:1.25;padding:6px 11px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;cursor:pointer}
+button:hover{border-color:var(--axis)}
+button.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+:focus-visible{outline:2px solid var(--v);outline-offset:2px}
+.sl{display:grid;grid-template-columns:62px minmax(0,1fr) 54px;gap:8px;align-items:center}
+.sl label{font-style:italic;font-weight:600}
+.sl output{text-align:right;font-family:var(--mono);font-size:14px}
+input[type=range]{width:100%;margin:0;accent-color:var(--v)}
+select{font:inherit;font-size:14px;padding:3px 4px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:5px}
+.read{background:var(--tint);border-radius:6px;padding:10px 12px;font-size:14.5px;line-height:1.65;overflow-wrap:anywhere}
+.read .big{font-size:17px;font-weight:600}
+.num{font-family:var(--mono);font-size:13.5px}
+.ok{color:var(--g);font-weight:600}.no{color:var(--bad);font-weight:600}
+.cv{color:var(--v);font-weight:700;font-style:italic}.cw{color:var(--w);font-weight:700;font-style:italic}
+.cr{color:var(--r);font-weight:700;font-style:italic}.cg{color:var(--g);font-weight:700;font-style:italic}
+.m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-style:italic}
+
+/* цепочка причин */
+.chain{list-style:none;margin:14px 0;padding:0;max-width:78ch}
+.chain li{position:relative;padding:0 0 11px 22px}
+.chain li::before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--axis)}
+.chain li::after{content:"";position:absolute;left:7px;top:19px;bottom:-7px;width:2px;background:var(--line)}
+.chain li:last-child::after{display:none}
+pre{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--axis);border-radius:5px;padding:11px 13px;overflow-x:auto;font:13.5px/1.55 var(--mono);margin:12px 0;max-width:780px}
+code{font-family:var(--mono);font-size:.9em;background:var(--tint);padding:1px 4px;border-radius:3px}
+pre code{background:none;padding:0;font-size:inherit}
+pre .c{color:var(--soft)}
+.note{border-left:3px solid var(--w);padding:7px 12px;margin:12px 0;max-width:76ch;background:var(--panel);font-size:14.5px;border-radius:0 5px 5px 0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 13px;margin:12px 0;max-width:780px}
+summary{cursor:pointer;font-weight:600}
+details>div{margin-top:8px}
+table.t{border-collapse:collapse;font-size:14.5px;margin:10px 0;background:var(--panel);width:100%;max-width:780px}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+table.t th{background:var(--tint)}
+table.t code{white-space:nowrap}
+.tw{overflow-x:auto}
+
+/* матрицы */
+.eq{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;font-size:17px}
+.mat{position:relative;display:inline-grid;gap:2px;padding:3px 7px;vertical-align:middle}
+.mat::before,.mat::after{content:"";position:absolute;top:0;bottom:0;width:6px;border:2px solid var(--axis)}
+.mat::before{left:0;border-right:0}.mat::after{right:0;border-left:0}
+.mat i{font:14.5px/1 var(--mono);font-style:normal;min-width:34px;height:30px;padding:0 3px;display:flex;align-items:center;justify-content:center;border-radius:3px;transition:background .15s}
+.mat i.hl{background:var(--hl);font-weight:700}
+.mat i.a{background:color-mix(in srgb,var(--v) 22%,transparent)}
+.mat i.b{background:color-mix(in srgb,var(--w) 24%,transparent)}
+.mat i.c{background:color-mix(in srgb,var(--r) 22%,transparent);font-weight:700}
+.mat i.ghost{opacity:.55;outline:1px dashed var(--axis);outline-offset:-1px}
+.mat i[data-k]{cursor:pointer}
+.shape{display:block;text-align:center;font:12.5px var(--mono);color:var(--soft);margin-top:3px}
+.mbox{display:inline-block;text-align:center}
+.tp{position:relative;margin:6px 0;transition:width .5s,height .5s}
+.tp b{position:absolute;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);font:600 15px var(--mono);transition:left .5s,top .5s;border-radius:3px}
+.bars{display:grid;gap:8px;font-size:14px}
+.bar>span:first-child{white-space:nowrap}
+.bar{display:grid;grid-template-columns:76px minmax(0,1fr) 44px;gap:8px;align-items:center}
+.track{position:relative;height:24px;background:var(--tint);border-radius:3px;overflow:hidden}
+.track span{position:absolute;top:0;bottom:0;background:var(--r);transition:left .12s,width .12s}
+.track u{position:absolute;top:0;bottom:0;width:2px;background:var(--axis)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:980px){
+  .layout{display:block}
+  nav.toc{position:sticky;top:0;z-index:5;height:auto;display:flex;gap:2px;overflow-x:auto;padding:7px 10px;border-right:0;border-bottom:1px solid var(--line);background:var(--bg);white-space:nowrap}
+  nav.toc strong{display:none}
+  nav.toc a{font-size:13.5px;flex:none}
+  html{scroll-padding-top:56px}
+  main{padding:22px 16px 60px}
+  .fig{grid-template-columns:minmax(0,1fr);padding:12px}
+  h1{font-size:34px}h2{font-size:25px}
+  section{padding:30px 0}
+}
+@media (max-width:420px){.mat i{min-width:29px;font-size:13px}.eq{font-size:15px;gap:8px}}
+/* SVG */
+.gl{stroke:var(--grid);stroke-width:1}
+.ax{stroke:var(--axis);stroke-width:1.4}
+.tk{fill:var(--soft);font:12.5px var(--sans);text-anchor:middle}
+.lb{font:italic 700 16px "Cambria Math","Times New Roman",serif;text-anchor:middle;paint-order:stroke;stroke:var(--halo);stroke-width:3.5px;stroke-linejoin:round}
+.hd{cursor:grab;touch-action:none;outline:none}
+.hd:active{cursor:grabbing}
+.hd .ring{fill:transparent;stroke-width:1.6;stroke-dasharray:3 2.4}
+.hd:focus-visible .ring{stroke-width:3;stroke-dasharray:none}
+svg.rot{cursor:move;touch-action:pan-y}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Содержание"><strong>Линейная алгебра в ML</strong></nav>
+<main>
+<header class="hero">
+<h1>Линейная алгебра в ML</h1>
+<p class="why">Данные становятся векторами и матрицами, а модель выполняет над ними операции. Здесь каждая тема лекции показана графиком, который можно двигать.</p>
+<div class="legend">
+  <span><b class="cv">v</b> первый вектор</span><span><b class="cw">w</b> второй вектор</span><span><b class="cr">результат</b> операции</span><span>Кружки на концах стрелок можно тянуть</span>
+</div>
+<ol class="road" id="road"></ol>
+</header>
+
+<!-- 1 -->
+<section id="s1" data-t="Данные → матрица">
+<h2>Данные становятся матрицей</h2>
+<div class="src">Слайды 3, 8, 9</div>
+<p class="why">Компьютер не считает «людей» и «дома». Сначала каждый объект записывают числами, потом объекты складывают в одну таблицу.</p>
+<div class="fig">
+  <div>
+    <div class="eq" style="justify-content:center;padding:16px 0"><span class="m">X</span> = <span id="m1"></span></div>
+    <div style="text-align:center;font-size:14px;color:var(--soft)">строки — объекты, столбцы — признаки</div>
+  </div>
+  <div class="ctl">
+    <p class="hint">Нажми запрос и посмотри, какие ячейки он выбирает.</p>
+    <div class="btns" id="b1"></div>
+    <div class="read" id="r1"></div>
+  </div>
+</div>
+<ul class="chain">
+  <li>Человек с ростом 170, весом 70 и возрастом 25 → вектор <code>[170, 70, 25]</code> ∈ ℝ³.</li>
+  <li>Несколько людей → векторы становятся строками одной матрицы.</li>
+  <li>Форма читается как <span class="m">(n, p)</span>: <span class="m">n</span> объектов и <span class="m">p</span> признаков.</li>
+</ul>
+<pre><code>X = np.array([[2,5,1],[3,4,2],[5,8,3],[7,6,4]])
+X.shape   # (4, 3)
+X[0, :]   # [2 5 1] первый объект
+X[:, 0]   # [2 3 5 7] первый признак
+X[1, 2]   # 2 одно значение</code></pre>
+</section>
+
+<!-- 2 -->
+<section id="s2" data-t="Что такое вектор">
+<h2>Что такое вектор</h2>
+<div class="src">Слайды 6, 7</div>
+<p class="why">Один и тот же вектор имеет два вида: список чисел для кода и стрелка для интуиции. Понятия учат на 2D-стрелках, а затем алгебра переносит их на любую размерность.</p>
+<div class="fig">
+  <div id="p2"></div>
+  <div class="ctl">
+    <p class="hint">Тяни кружок на конце синей стрелки. Серые стрелки смещены, но это тот же вектор.</p>
+    <div class="read" id="r2"></div>
+    <p style="margin:0"><b>Tail</b> — начало вектора, <b>head</b> — конец со стрелкой. Если начало в точке (0, 0), это стандартное положение.</p>
+    <div class="note" style="margin:0">На слайде 6 эти термины перепутаны местами.</div>
+  </div>
+</div>
+<h3>Размерность и ориентация</h3>
+<div class="eq" id="m2"></div>
+<details><summary>Определи размерность и ориентацию каждого</summary><div><span class="m">x</span>: 4D столбец, то есть <span class="m">x</span> ∈ ℝ⁴. <span class="m">y</span>: 2D столбец. <span class="m">z</span>: 4D строка.</div></details>
+</section>
+
+<!-- 3 -->
+<section id="s3" data-t="Сложение и вычитание">
+<h2>Сложение и вычитание</h2>
+<div class="src">Слайды 10, 12–15</div>
+<p class="why">Сумма показывает итог двух смещений подряд. Разность показывает, как попасть из конца одного вектора в конец другого, поэтому на ней строится расстояние между точками.</p>
+<div class="fig">
+  <div id="p3"></div>
+  <div class="ctl">
+    <div class="btns" id="b3m"></div>
+    <div class="btns" id="b3p"></div>
+    <div class="read" id="r3"></div>
+    <p class="hint" id="h3"></p>
+  </div>
+</div>
+<ul class="chain">
+  <li>Числа складываются поэлементно: <code>[4,5,6] + [10,20,30] = [14,25,36]</code>.</li>
+  <li>Поэтому размерности обязаны совпадать: ℝ³ + ℝ⁵ не определено.</li>
+  <li>Геометрически оба метода дают одну точку: треугольник ставит <span class="cw">w</span> в конец <span class="cv">v</span>, а параллелограмм берёт диагональ.</li>
+</ul>
+</section>
+
+<!-- 4 -->
+<section id="s4" data-t="Умножение на скаляр">
+<h2>Умножение на скаляр</h2>
+<div class="src">Слайд 16</div>
+<p class="why">Скаляр меняет масштаб признаков, не меняя их соотношение. Например, перевод всех цен из тенге в доллары сохраняет прямую, на которой лежит вектор.</p>
+<div class="fig">
+  <div id="p4"></div>
+  <div class="ctl">
+    <div class="sl"><label for="s4a">σ</label><input id="s4a" type="range" min="-2" max="2.5" step="0.01" value="1"><output id="o4"></output></div>
+    <div class="btns" id="b4"></div>
+    <div class="read" id="r4"></div>
+  </div>
+</div>
+<div class="eq"><span class="m">λ</span> = 4, <span class="m">w</span> = <span id="m4a"></span> → <span class="m">λw</span> = <span id="m4b"></span></div>
+</section>
+
+<!-- 5 -->
+<section id="s5" data-t="Broadcasting">
+<h2>Broadcasting</h2>
+<div class="src">Слайды 11, 17–19</div>
+<p class="why">Операция применяется ко всей таблице без цикла и без лишней копии данных в памяти. В строгой линейной алгебре такого сложения нет: это механизм NumPy.</p>
+<div class="fig wide">
+  <div class="btns" id="b5"></div>
+  <div class="eq" id="v5" style="min-height:138px;justify-content:center"></div>
+  <div class="btns" id="b5s" style="justify-content:center"></div>
+  <div class="read" id="r5" style="margin-top:12px"></div>
+</div>
+<h3>Проверка форм</h3>
+<div class="fig">
+  <div class="ctl">
+    <div>A: ( <select id="sa0" aria-label="A, строки"></select> , <select id="sa1" aria-label="A, столбцы"></select> ) &nbsp; B: ( <select id="sb0" aria-label="B, строки"></select> , <select id="sb1" aria-label="B, столбцы"></select> )</div>
+    <div class="btns" id="b5c"></div>
+  </div>
+  <div class="read" id="r5c"></div>
+</div>
+<ul class="chain">
+  <li>NumPy сравнивает размеры по каждой оси.</li>
+  <li>Если размеры равны, ось остаётся. Если один из них равен 1, эта ось растягивается.</li>
+  <li>Если размеры разные и единицы нет, например 3 и 5, будет ошибка.</li>
+</ul>
+<div class="note"><b>Ловушка.</b> <code>np.array([1,2,3])</code> имеет форму <code>(3,)</code> и ведёт себя как строка, поэтому <code>(3,) + (3,1)</code> даёт матрицу <code>(3,3)</code>, а не вектор. Форму лучше задавать явно через <code>reshape</code>.</div>
+<pre><code>a = np.array([[10,20,30]]).T    # (3,1) столбец
+b = np.array([[1,2]])           # (1,2) строка
+a + b                           # [[11,12],[21,22],[31,32]]</code></pre>
+<p>На слайде 18 заявлены три причины, но приведены две: скорость без циклов и экономия памяти.</p>
+</section>
+
+<!-- 6 -->
+<section id="s6" data-t="Матрица расстояний">
+<h2>Матрица расстояний</h2>
+<div class="src">Слайды 20, 21</div>
+<p class="why">KNN и кластеризации нужно расстояние от каждой точки до каждой. Broadcasting считает все пары одной строкой кода.</p>
+<div class="fig">
+  <div id="p6"></div>
+  <div class="ctl">
+    <p class="hint">Нажми ячейку в матрице <span class="m">D</span> или перетащи точки. Жирным отмечен ближайший <span class="cw">B</span> для каждого <span class="cv">A</span>.</p>
+    <div class="eq" id="m6"></div>
+    <div class="read" id="r6"></div>
+  </div>
+</div>
+<div class="tw"><table class="t"><tr><th>Шаг</th><th>A</th><th>B</th><th>Что происходит</th></tr>
+<tr><td>Исходно</td><td><code>(3, 2)</code></td><td><code>(2, 2)</code></td><td>3 и 2 точки, у каждой x и y</td></tr>
+<tr><td>Вставляем ось</td><td><code>(3, 1, 2)</code></td><td><code>(1, 2, 2)</code></td><td>Единицы стоят в разных местах</td></tr>
+<tr><td>A − B</td><td colspan="2"><code>(3, 2, 2)</code></td><td>Каждая пара получает свою ячейку с dx и dy</td></tr>
+<tr><td>√(dx² + dy²)</td><td colspan="2"><code>(3, 2)</code></td><td>Значение <code>[i, j]</code> равно расстоянию от A<sub>i</sub> до B<sub>j</sub></td></tr></table></div>
+<pre><code>diff = A[:, None, :] - B[None, :, :]        # (3, 2, 2)
+D = np.sqrt((diff ** 2).sum(axis=2))        # (3, 2)</code></pre>
+</section>
+
+<!-- 7 -->
+<section id="s7" data-t="Длина и единичный вектор">
+<h2>Длина и единичный вектор</h2>
+<div class="src">Слайд 22</div>
+<p class="why">Иногда важно только направление. Единичный вектор убирает влияние длины: например, длинный и короткий тексты сравниваются по содержанию, а не по размеру.</p>
+<div class="fig">
+  <div id="p7"></div>
+  <div class="ctl">
+    <p class="hint">Тяни конец вектора. Оранжевый вектор всегда остаётся на единичной окружности.</p>
+    <div class="read" id="r7"></div>
+  </div>
+</div>
+<ul class="chain">
+  <li>Катеты равны координатам → по теореме Пифагора <span class="m">‖v‖ = √(Σvᵢ²)</span>.</li>
+  <li>Делим вектор на его длину → длина становится равна 1, а направление сохраняется.</li>
+</ul>
+</section>
+
+<!-- 8 -->
+<section id="s8" data-t="Транспонирование">
+<h2>Транспонирование</h2>
+<div class="src">Слайд 23</div>
+<p class="why">Операция меняет ориентацию, чтобы формы подошли для умножения. Она встречается в <span class="m">xᵀw</span>, <span class="m">XᵀX</span> и формулах наименьших квадратов.</p>
+<div class="fig">
+  <div><div class="tp" id="t8" style="margin-inline:auto"></div></div>
+  <div class="ctl">
+    <button id="b8" style="align-self:flex-start">Транспонировать</button>
+    <div class="read" id="r8"></div>
+    <p class="hint">Строка с цветом становится столбцом с тем же цветом. Значения не меняются, меняется только их положение.</p>
+  </div>
+</div>
+</section>
+
+<!-- 9 -->
+<section id="s9" data-t="Скалярное произведение">
+<h2>Скалярное произведение</h2>
+<div class="src">Слайды 4, 24–26</div>
+<p class="why">Одно число показывает, насколько совпадают направления двух векторов. На этом основаны рекомендации и поиск похожих объектов.</p>
+<div class="fig">
+  <div id="p9"></div>
+  <div class="ctl">
+    <div class="btns" id="b9"></div>
+    <div class="read" id="r9"></div>
+    <svg id="c9" class="plot" viewBox="0 0 400 112" role="img" aria-label="График косинуса угла между векторами"></svg>
+  </div>
+</div>
+<ul class="chain">
+  <li>Длины всегда неотрицательны → знак произведения задаёт только <span class="m">cos θ</span>.</li>
+  <li>θ &lt; 90° даёт плюс, θ = 90° даёт ноль, θ &gt; 90° даёт минус.</li>
+  <li>Если разделить на обе длины, останется <span class="m">cos θ</span>. Это косинусное сходство от −1 до 1.</li>
+</ul>
+<h3>Пример и свойства</h3>
+<div class="eq"><span id="m9a"></span> · <span id="m9b"></span> = 1×4 + 2×5 + 3×6 = 4 + 10 + 18 = <b>32</b></div>
+<div class="tw"><table class="t" style="margin-top:14px"><tr><th>Свойство</th><th>Формула</th><th>Проверка: a=[1,2], b=[3,0], c=[−1,4]</th></tr>
+<tr><td>Дистрибутивность</td><td class="m">aᵀ(b+c) = aᵀb + aᵀc</td><td>[1,2]·[2,4] = 10 и 3 + 7 = 10</td></tr>
+<tr><td>Коммутативность</td><td class="m">aᵀb = bᵀa</td><td>1·3 + 2·0 = 3·1 + 0·2 = 3</td></tr></table></div>
+</section>
+
+<!-- 10 -->
+<section id="s10" data-t="Виды умножения">
+<h2>Три других умножения</h2>
+<div class="src">Слайды 27–29</div>
+<p class="why">Символы похожи, но результат разный. Путаница между <code>*</code> и <code>@</code> — частая ошибка, потому что код может выполниться без сообщения об ошибке и выдать неверные числа.</p>
+<div class="fig wide">
+  <div class="btns" id="b10"></div>
+  <div class="eq" id="v10" style="min-height:130px;justify-content:center;margin:12px 0"></div>
+  <div class="read" id="r10"></div>
+</div>
+<div class="eq" style="margin:18px 0 6px"><b style="font-size:15px">Одни и те же матрицы:</b></div>
+<div class="eq" id="m10"></div>
+<div class="note">Слева на слайде 28 показано внешнее произведение, а картинка справа показывает матричное умножение. Правило для неё: <code>(2×3) @ (3×2) → (2×2)</code>.</div>
+</section>
+
+<!-- 11 -->
+<section id="s11" data-t="Модель ŷ = Xw + b">
+<h2>Главная формула: ŷ = Xw + b</h2>
+<div class="src">Слайды 29–31</div>
+<p class="why">Эта строка и есть линейная модель: одни и те же веса применяются сразу ко всем объектам. Та же операция лежит в логистической регрессии и слоях нейросетей.</p>
+<div class="fig">
+  <div>
+    <div class="eq" id="m11" style="justify-content:center"></div>
+    <div class="bars" id="v11" style="margin-top:16px"></div>
+  </div>
+  <div class="ctl">
+    <div class="sl"><label for="w1">w₁</label><input id="w1" type="range" min="0" max="10" step="1" value="5"><output id="ow1"></output></div>
+    <div class="sl"><label for="w2">w₂</label><input id="w2" type="range" min="0" max="20" step="1" value="10"><output id="ow2"></output></div>
+    <div class="sl"><label for="wb">b</label><input id="wb" type="range" min="-20" max="20" step="1" value="0"><output id="owb"></output></div>
+    <div class="read" id="r11"></div>
+  </div>
+</div>
+<ul class="chain">
+  <li><span class="m">X</span> размером <span class="m">n×p</span> умножается на <span class="m">w</span> размером <span class="m">p×1</span> → получается <span class="m">n×1</span>, по одному числу на объект.</li>
+  <li>Для одной строки: <span class="m">ŷᵢ = xᵢᵀw + b</span>. Это скалярное произведение строки и весов.</li>
+  <li><span class="m">b</span> — одно число, broadcasting прибавляет его ко всем строкам и сдвигает все предсказания одинаково.</li>
+</ul>
+<pre><code>X = np.array([[2,1],[4,2],[6,3]])
+w = np.array([5,10])
+X @ w + 0     # [20 40 60]</code></pre>
+</section>
+
+<!-- 12 -->
+<section id="s12" data-t="Линейная комбинация">
+<h2>Линейная комбинация</h2>
+<div class="src">Слайд 32</div>
+<p class="why">Умножаем векторы на веса и складываем в один. Предсказание модели, span и базис строятся на этой операции.</p>
+<div class="fig">
+  <div id="p12"></div>
+  <div class="ctl">
+    <div class="sl"><label for="c1">α₁</label><input id="c1" type="range" min="-2" max="2" step="0.1" value="1"><output id="oc1"></output></div>
+    <div class="sl"><label for="c2">α₂</label><input id="c2" type="range" min="-2" max="2" step="0.1" value="1"><output id="oc2"></output></div>
+    <div class="read" id="r12"></div>
+    <p class="hint">Меняй веса: фиолетовая стрелка может дойти до любой точки плоскости, если векторы не лежат на одной прямой.</p>
+  </div>
+</div>
+<div class="eq"><span class="m">w</span> = 1·<span id="m12a"></span> + 2·<span id="m12b"></span> − 3·<span id="m12c"></span> = <span id="m12d"></span></div>
+</section>
+
+<!-- 13 -->
+<section id="s13" data-t="Независимость и ранг">
+<h2>Линейная независимость и ранг</h2>
+<div class="src">Слайды 33, 34, 37</div>
+<p class="why">Независимость показывает, несёт ли признак новую информацию. Если один столбец можно получить из других, он лишний и создаёт мультиколлинеарность.</p>
+<div class="fig">
+  <div id="p13"></div>
+  <div class="ctl">
+    <div class="btns" id="b13"></div>
+    <div class="read" id="r13"></div>
+    <p class="hint">Закрашенная область показывает всё, куда можно дойти комбинациями этих двух векторов.</p>
+  </div>
+</div>
+<ul class="chain">
+  <li><b>Определение:</b> набор зависим, если <span class="m">α₁v₁ + … + αₙvₙ = 0</span> при хотя бы одном <span class="m">α ≠ 0</span>.</li>
+  <li><b>Следствие:</b> если в наборе есть нулевой вектор, его можно умножить на 1, а остальные на 0. Такой набор всегда зависим.</li>
+  <li><b>Ранг:</b> число независимых направлений в матрице.</li>
+</ul>
+<h3>Набор T из слайда 33: зависимость не видна на глаз</h3>
+<div class="eq" id="m13"></div>
+<p style="margin-top:8px">Сумма первых трёх векторов равна удвоенному четвёртому, поэтому набор зависим. Ни один вектор при этом не кратен другому, так что проверки только на кратность недостаточно.</p>
+<h3>То же в признаках датасета</h3>
+<div class="fig">
+  <div id="p13b"></div>
+  <div class="ctl">
+    <div class="btns" id="b13b"></div>
+    <div class="read" id="r13b"></div>
+  </div>
+</div>
+</section>
+
+<!-- 14 -->
+<section id="s14" data-t="Span и подпространство">
+<h2>Span и подпространство</h2>
+<div class="src">Слайды 35, 36</div>
+<p class="why">Span показывает, какие данные вообще можно собрать из заданных векторов. Векторы могут быть в ℝ³, но занимать только плоскость или прямую.</p>
+<div class="fig">
+  <div id="p14"></div>
+  <div class="ctl">
+    <div class="btns" id="b14"></div>
+    <div class="sl"><label for="a14">α₁</label><input id="a14" type="range" min="-1" max="1" step="0.05" value="0.6"><output id="oa14"></output></div>
+    <div class="sl"><label for="c14">α₂</label><input id="c14" type="range" min="-1" max="1" step="0.05" value="0.5"><output id="oc14"></output></div>
+    <div class="sl"><label for="y14">Поворот</label><input id="y14" type="range" min="0" max="360" step="1" value="35"><output id="oy14"></output></div>
+    <div class="read" id="r14"></div>
+    <p class="hint">Сцену можно вращать мышью или движением пальца по горизонтали.</p>
+  </div>
+</div>
+<ul class="chain">
+  <li><b>Подпространство</b> содержит начало координат и не выходит за свои пределы при сложении и умножении на скаляр.</li>
+  <li>Плоскость span проходит через начало координат, потому что при всех <span class="m">α = 0</span> получаем нулевой вектор.</li>
+  <li>Размерность span равна максимальному числу независимых векторов набора, а не их общему количеству.</li>
+</ul>
+<div class="note">На слайде 36 сказано «наименьшее число векторов, образующих независимый набор». Точнее говорить о наибольшем независимом наборе или о наименьшем наборе, порождающем тот же span.</div>
+</section>
+
+<!-- 15 -->
+<section id="s15" data-t="Базис">
+<h2>Базис</h2>
+<div class="src">Слайды 38–41</div>
+<p class="why">Базис — это система координат. Удачный базис делает запись данных короче, а точки при этом не меняются. PCA как раз ищет такой базис.</p>
+<div class="fig">
+  <div id="p15"></div>
+  <div class="ctl">
+    <div class="btns" id="b15"></div>
+    <div class="read" id="r15"></div>
+    <p class="hint">Сетка показывает координаты выбранного базиса. Точки <b>p</b> и <b>q</b> остаются на месте. Точку <b>x</b> можно тянуть.</p>
+  </div>
+</div>
+<p>Базис <span class="m">T</span> компактнее для этих точек, хотя и не ортогонален: его векторы не перпендикулярны и не единичной длины.</p>
+<h3>Почему базис обязан быть независимым</h3>
+<div class="fig">
+  <div id="p15b"></div>
+  <div class="ctl">
+    <p style="margin:0">Набор <span class="m">U</span> = {(0,1), (0,2), (1,0)} зависим, потому что (0,2) = 2·(0,1).</p>
+    <div class="sl"><label for="u15">α₂</label><input id="u15" type="range" min="-2" max="2" step="0.25" value="0"><output id="ou15"></output></div>
+    <div class="read" id="r15b"></div>
+    <p class="hint">Меняются веса и маршрут, но конец всё равно в точке p. Значит, у точки нет единственных координат, и U не базис.</p>
+  </div>
+</div>
+<h3>Предел базиса: только свой span</h3>
+<div class="fig">
+  <div id="p15c"></div>
+  <div class="ctl">
+    <div class="sl"><label for="l15">α</label><input id="l15" type="range" min="-1" max="2" step="0.05" value="1"><output id="ol15"></output></div>
+    <div class="read" id="r15c"></div>
+    <p class="hint">Двигай α или точку r. Пока r вне прямой, разрыв не обнуляется.</p>
+  </div>
+</div>
+</section>
+
+<!-- 16 -->
+<section id="s16" data-t="Путь к PCA">
+<h2>Как это ведёт к PCA</h2>
+<div class="src">Слайды 4, 39, 42</div>
+<p class="why">PCA ищет новый базис, первая ось которого идёт вдоль наибольшего разброса данных. Если остальные оси почти не несут разброса, их можно отбросить и сжать данные.</p>
+<div class="fig">
+  <div id="p16"></div>
+  <div class="ctl">
+    <div class="sl"><label for="a16">Угол</label><input id="a16" type="range" min="0" max="179" step="1" value="120"><output id="o16"></output></div>
+    <button id="b16" style="align-self:flex-start">Найти лучшую ось</button>
+    <div class="read" id="r16"></div>
+    <p class="hint">Точки проецируются на ось с помощью скалярного произведения. Чем больше разброс проекций, тем меньше данных теряется при сжатии.</p>
+  </div>
+</div>
+<h3>Где это в алгоритмах</h3>
+<div class="tw"><table class="t"><tr><th>Задача</th><th>Вопрос</th><th>Операция</th><th>Раздел</th></tr>
+<tr><td>Линейная регрессия</td><td>Какая цена?</td><td><code>Xw + b</code></td><td><a href="#s11">Модель</a></td></tr>
+<tr><td>Рекомендации и поиск</td><td>Что похоже?</td><td>Скалярное произведение и косинус</td><td><a href="#s9">Скалярное произведение</a></td></tr>
+<tr><td>KNN и кластеризация</td><td>Кто ближе?</td><td>Разность и норма</td><td><a href="#s6">Расстояния</a></td></tr>
+<tr><td>Нейросети</td><td>Что на выходе слоя?</td><td>Матрица × вектор, много раз</td><td><a href="#s10">Умножение</a></td></tr>
+<tr><td>PCA</td><td>Какие оси важны?</td><td>Новый базис и проекция</td><td><a href="#s15">Базис</a></td></tr></table></div>
+</section>
+</main>
+</div>
+
+<script>
+"use strict";
+const $=(s,e=document)=>e.querySelector(s), $$=(s,e=document)=>[...e.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+const f=(n,d=2)=>{let r=Math.round(n*10**d)/10**d; if(Object.is(r,-0)||r===0) r=0; return String(r).replace('-','−')};
+const vs=a=>'('+a.map(x=>f(x)).join(', ')+')';
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const col=c=>`var(--${c})`;
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- Матрица в HTML ---------- */
+function mat(M,o={}){
+  const c=M[0].length; let s=`<span class="mat" style="grid-template-columns:repeat(${c},auto)">`;
+  M.forEach((r,i)=>r.forEach((x,j)=>{const k=o.cls?o.cls(i,j):''; const d=o.key?` data-k="${i},${j}" tabindex="0"`:'';
+    s+=`<i class="${k}"${d}>${typeof x==='number'?f(x):x}</i>`}));
+  s+='</span>'; return o.shape?`<span class="mbox">${s}<span class="shape">${o.shape}</span></span>`:s;
+}
+const col1=a=>a.map(x=>[x]);
+
+/* ---------- Координатная плоскость ---------- */
+let uid=0;
+class Plot{
+  constructor(host,o={}){
+    this.x=o.x||[-6,6];this.y=o.y||this.x;this.W=440;this.m=24;
+    this.u=(this.W-2*this.m)/(this.x[1]-this.x[0]);
+    this.H=(this.y[1]-this.y[0])*this.u+2*this.m;
+    const id='cp'+(++uid),lab=o.label||(this.x[1]-this.x[0]>13?2:1);
+    const s=document.createElementNS(NS,'svg');
+    s.setAttribute('viewBox',`0 0 ${this.W} ${this.H}`);s.setAttribute('class','plot');s.setAttribute('role','img');
+    s.setAttribute('aria-label',o.aria||'Координатная плоскость с векторами');
+    let g='';
+    for(let i=Math.ceil(this.x[0]);i<=this.x[1];i++)g+=`<line class="gl" x1="${this.sx(i)}" x2="${this.sx(i)}" y1="${this.sy(this.y[0])}" y2="${this.sy(this.y[1])}"/>`;
+    for(let i=Math.ceil(this.y[0]);i<=this.y[1];i++)g+=`<line class="gl" y1="${this.sy(i)}" y2="${this.sy(i)}" x1="${this.sx(this.x[0])}" x2="${this.sx(this.x[1])}"/>`;
+    const ox=clamp(0,this.x[0],this.x[1]),oy=clamp(0,this.y[0],this.y[1]);
+    g+=`<line class="ax" x1="${this.sx(this.x[0])}" x2="${this.sx(this.x[1])}" y1="${this.sy(oy)}" y2="${this.sy(oy)}"/>`;
+    g+=`<line class="ax" y1="${this.sy(this.y[0])}" y2="${this.sy(this.y[1])}" x1="${this.sx(ox)}" x2="${this.sx(ox)}"/>`;
+    for(let i=Math.ceil(this.x[0]);i<=this.x[1];i++)if(i&&i%lab===0)g+=`<text class="tk" x="${this.sx(i)}" y="${this.sy(oy)+15}">${f(i)}</text>`;
+    for(let i=Math.ceil(this.y[0]);i<=this.y[1];i++)if(i&&i%lab===0)g+=`<text class="tk" style="text-anchor:end" x="${this.sx(ox)-6}" y="${this.sy(i)+4}">${f(i)}</text>`;
+    s.innerHTML=`<defs><clipPath id="${id}"><rect x="${this.sx(this.x[0])}" y="${this.sy(this.y[1])}" width="${(this.x[1]-this.x[0])*this.u}" height="${(this.y[1]-this.y[0])*this.u}"/></clipPath></defs><g class="b">${g}</g><g class="d" clip-path="url(#${id})"></g><g class="l"></g><g class="h"></g>`;
+    host.appendChild(s);this.s=s;this.d=$('.d',s);this.l=$('.l',s);this.h=$('.h',s);this.handles=[];
+  }
+  sx(x){return this.m+(x-this.x[0])*this.u}
+  sy(y){return this.m+(this.y[1]-y)*this.u}
+  clear(){this.d.innerHTML='';this.l.innerHTML='';this.boxes=[]}
+  add(t,par=this.d){const e=document.createElementNS(NS,'g');e.innerHTML=t;par.appendChild(e);return e}
+  line(a,b,c='axis',o={}){this.add(`<line x1="${this.sx(a[0])}" y1="${this.sy(a[1])}" x2="${this.sx(b[0])}" y2="${this.sy(b[1])}" stroke="${col(c)}" stroke-width="${o.w||1.6}" ${o.dash?`stroke-dasharray="${o.dash}"`:''} opacity="${o.op||1}"/>`)}
+  poly(P,c,op=.12){this.add(`<polygon points="${P.map(p=>this.sx(p[0])+','+this.sy(p[1])).join(' ')}" fill="${col(c)}" opacity="${op}"/>`)}
+  dot(p,c,r=5,o={}){this.add(`<circle cx="${this.sx(p[0])}" cy="${this.sy(p[1])}" r="${r}" fill="${o.hollow?col('halo'):col(c)}" stroke="${col(c)}" stroke-width="${o.hollow?2:0}" opacity="${o.op||1}"/>`)}
+  arrow(a,b,c,o={}){
+    const x1=this.sx(a[0]),y1=this.sy(a[1]),x2=this.sx(b[0]),y2=this.sy(b[1]),L=Math.hypot(x2-x1,y2-y1),w=o.w||3,op=o.op||1;
+    if(L<3){this.dot(b,c,4,{op});}
+    else{const ux=(x2-x1)/L,uy=(y2-y1)/L,hl=Math.min(12,L*.55),hw=hl*.46,bx=x2-ux*hl,by=y2-uy*hl;
+      this.add(`<g opacity="${op}"><line x1="${x1}" y1="${y1}" x2="${bx+ux}" y2="${by+uy}" stroke="${col(c)}" stroke-width="${w}" ${o.dash?`stroke-dasharray="${o.dash}"`:''}/><polygon fill="${col(c)}" points="${x2},${y2} ${bx-uy*hw},${by+ux*hw} ${bx+uy*hw},${by-ux*hw}"/></g>`);}
+    if(o.label){const t=o.t??.55,s=o.side||1;let nx=L?-(y2-y1)/L:0,ny=L?(x2-x1)/L:-1;const dist=(o.off||15)+Math.max(0,o.label.length-1)*Math.abs(nx)*3.5;
+      this.text(x1+(x2-x1)*t+nx*dist*s,y1+(y2-y1)*t+ny*dist*s+5,o.label,c);}
+  }
+  text(px,py,t,c='ink',o={}){px=clamp(px,this.m+14,this.W-this.m-14);py=clamp(py,this.m+14,this.H-this.m-4);
+    const bw=String(t).length*9+6,bh=18,hit=(x,y)=>(this.boxes||[]).some(b=>Math.abs(b[0]-x)<(b[2]+bw)/2&&Math.abs(b[1]-y)<bh);
+    if(hit(px,py)){for(const[dx,dy]of[[0,18],[0,-18],[bw,0],[-bw,0],[bw,18],[-bw,18],[bw,-18],[-bw,-18],[0,36],[0,-36]]){const X=clamp(px+dx,this.m+14,this.W-this.m-14),Y=clamp(py+dy,this.m+14,this.H-this.m-4);if(!hit(X,Y)){px=X;py=Y;break}}}
+    (this.boxes=this.boxes||[]).push([px,py,bw]);
+    this.add(`<text class="lb" x="${px}" y="${py}" fill="${col(c)}" ${o.size?`style="font-size:${o.size}px"`:''}>${t}</text>`,this.l)}
+  textAt(p,t,c,dx=0,dy=-10,o){this.text(this.sx(p[0])+dx,this.sy(p[1])+dy,t,c,o)}
+  arc(from,to,r,c){ /* дуга угла от вектора from до to, из начала координат */
+    const a=Math.atan2(from[1],from[0]);let b=Math.atan2(to[1],to[0]);let d=b-a;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+    const n=24;let P=[];for(let i=0;i<=n;i++){const t=a+d*i/n;P.push((this.sx(0)+r*Math.cos(t)).toFixed(1)+','+(this.sy(0)-r*Math.sin(t)).toFixed(1))}
+    this.add(`<polyline points="${P.join(' ')}" fill="none" stroke="${col(c)}" stroke-width="1.6"/>`)
+    const m=a+d/2;return [this.sx(0)+(r+13)*Math.cos(m),this.sy(0)-(r+13)*Math.sin(m)+5];
+  }
+  handle(get,set,c,o={}){
+    const g=document.createElementNS(NS,'g');g.setAttribute('class','hd');g.setAttribute('tabindex','0');g.setAttribute('role','slider');g.setAttribute('aria-label',o.name||'Точка');
+    g.innerHTML=`<circle r="21" fill="transparent"/><circle class="ring" r="10" stroke="${col(c)}"/>`;
+    this.h.appendChild(g);const H={g,get,snap:o.snap||1};this.handles.push(H);
+    const lim=o.lim||[this.x,this.y];
+    const put=(x,y)=>{x=clamp(Math.round(x/H.snap)*H.snap,lim[0][0],lim[0][1]);y=clamp(Math.round(y/H.snap)*H.snap,lim[1][0],lim[1][1]);
+      if(o.ok&&!o.ok(x,y))return;set(x,y);};
+    const mv=e=>{const m=this.s.getScreenCTM().inverse(),X=m.a*e.clientX+m.c*e.clientY+m.e,Y=m.b*e.clientX+m.d*e.clientY+m.f;put(this.x[0]+(X-this.m)/this.u,this.y[1]-(Y-this.m)/this.u)};
+    g.addEventListener('pointerdown',e=>{e.preventDefault();g.setPointerCapture(e.pointerId);g.addEventListener('pointermove',mv);g.focus({preventScroll:true})});
+    const up=()=>g.removeEventListener('pointermove',mv);g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);
+    g.addEventListener('keydown',e=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,1],ArrowDown:[0,-1]}[e.key];if(!d)return;e.preventDefault();const p=get();put(p[0]+d[0]*H.snap,p[1]+d[1]*H.snap)});
+    return H;
+  }
+  sync(){this.handles.forEach(H=>{const p=H.get();H.g.setAttribute('transform',`translate(${this.sx(p[0])} ${this.sy(p[1])})`);H.g.setAttribute('aria-valuetext',vs(p))})}
+}
+const buttons=(host,items,fn,active=0)=>{host.innerHTML='';items.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.type='button';if(i===active)b.classList.add('on');
+  b.onclick=()=>{$$('button',host).forEach(x=>x.classList.remove('on'));b.classList.add('on');fn(i)};host.appendChild(b)})};
+const slider=(id,oid,fn,fmt=x=>f(x))=>{const s=$('#'+id),o=$('#'+oid);const u=()=>{o.textContent=fmt(+s.value);fn(+s.value)};s.addEventListener('input',u);o.textContent=fmt(+s.value);return s};
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(k,a)=>[k*a[0],k*a[1]],dot=(a,b)=>a[0]*b[0]+a[1]*b[1],norm=a=>Math.hypot(a[0],a[1]);
+
+/* 1 Матрица и индексы */
+(()=>{const X=[[2,5,1],[3,4,2],[5,8,3],[7,6,4]];
+  const Q=[['X.shape',()=>'',()=>'<span class="big">(4, 3)</span><br>4 строки-объекта и 3 столбца-признака.'],
+   ['X[0, :]',(i,j)=>i===0?'hl':'',()=>'<span class="big">[2, 5, 1]</span><br>Первая строка: все признаки одного объекта.'],
+   ['X[:, 0]',(i,j)=>j===0?'hl':'',()=>'<span class="big">[2, 3, 5, 7]</span><br>Первый столбец: один признак у всех объектов.'],
+   ['X[1, 2]',(i,j)=>i===1&&j===2?'hl':'',()=>'<span class="big">2</span><br>Строка 1, столбец 2. Индексация начинается с нуля.']];
+  const u=i=>{$('#m1').innerHTML=mat(X,{cls:Q[i][1],shape:'(4, 3)'});$('#r1').innerHTML=Q[i][2]()};
+  buttons($('#b1'),Q.map(q=>q[0]),u);u(0);
+})();
+
+/* 2 Вектор */
+(()=>{const p=new Plot($('#p2'),{x:[-6,6]});let v=[2,3];
+  const D=()=>{p.clear();
+    [[-3,-1],[1,-3]].forEach(a=>{const b=add(a,v);p.arrow(a,b,'axis',{w:2.4,op:.75})});
+    p.arrow([0,0],v,'v',{label:'v',side:-1,w:3.4});p.dot([0,0],'v',3.5);p.sync();
+    const n=norm(v);let ang=Math.atan2(v[1],v[0])*180/Math.PI;
+    $('#r2').innerHTML=`Список чисел: <span class="num">v = [${f(v[0])}, ${f(v[1])}]</span><br>Длина: <span class="num">‖v‖ = ${f(n)}</span><br>Направление от оси x: <span class="num">${n?f(ang,1)+'°':'нет, вектор нулевой'}</span>`};
+  p.handle(()=>v,(x,y)=>{v=[x,y];D()},'v',{name:'Конец вектора v',lim:[[-5,5],[-5,5]]});D();
+  $('#m2').innerHTML=`<span class="m">x</span> = ${mat(col1([1,4,5,6]),{shape:'(4, 1)'})} <span class="m">y</span> = ${mat(col1(['.3','−7']),{shape:'(2, 1)'})} <span class="m">z</span> = ${mat([[1,4,5,6]],{shape:'(1, 4)'})}`;
+})();
+
+/* 3 Сложение */
+(()=>{const p=new Plot($('#p3'),{x:[-9,9],label:2});let v=[1,4],w=[2,-3],mode=1;
+  const P=[['Слайд 13, пример 1',[1,4],[2,-3],1],['Слайд 13, пример 2',[-4,-2],[1,5],0],['Слайд 12',[1,2],[4,-6],2]];
+  const M=['Треугольник','Параллелограмм','Вычитание'];
+  const H=['Сначала пройди v, затем w из его конца. Сумма соединяет начало и конечную точку.','Обе стрелки выходят из начала, а сумма идёт по диагонали параллелограмма.','Обе стрелки выходят из начала. Разность v − w идёт от конца w к концу v.'];
+  const D=()=>{p.clear();const s=add(v,w),d=sub(v,w);
+    if(mode===0){p.arrow([0,0],v,'v',{label:'v',side:1});p.arrow(v,s,'w',{label:'w',side:1});p.arrow([0,0],s,'r',{label:'v + w',side:-1,w:3.6});}
+    if(mode===1){p.poly([[0,0],v,s,w],'r',.09);p.line(v,s,'axis',{dash:'5 4'});p.line(w,s,'axis',{dash:'5 4'});p.arrow([0,0],v,'v',{label:'v',side:1});p.arrow([0,0],w,'w',{label:'w',side:1});p.arrow([0,0],s,'r',{label:'v + w',side:-1,w:3.6});}
+    if(mode===2){p.arrow([0,0],v,'v',{label:'v',side:1});p.arrow([0,0],w,'w',{label:'w',side:1});p.line([0,0],d,'axis',{dash:'4 4',op:.8});p.arrow(w,v,'r',{label:'v − w',side:-1,w:3.6});p.dot(d,'r',3.5,{op:.7});}
+    p.sync();$('#h3').textContent=H[mode];
+    const R=mode===2?`<span class="cv">v</span> − <span class="cw">w</span> = (${f(v[0])} − ${f(w[0])}, ${f(v[1])} − ${f(w[1])}) = <span class="cr">${vs(d)}</span><br><span class="hint">Такой же вектор из начала координат показан пунктиром.</span>`:`<span class="cv">v</span> + <span class="cw">w</span> = (${f(v[0])} + ${f(w[0])}, ${f(v[1])} + ${f(w[1])}) = <span class="cr">${vs(s)}</span>`;
+    $('#r3').innerHTML=R};
+  const inb=(a,b)=>[add(a,b),sub(a,b)].every(q=>Math.abs(q[0])<=9&&Math.abs(q[1])<=9);
+  p.handle(()=>v,(x,y)=>{v=[x,y];D()},'v',{name:'Конец вектора v',lim:[[-8,8],[-8,8]],ok:(x,y)=>inb([x,y],w)});
+  p.handle(()=>mode===0?add(v,w):w,(x,y)=>{w=mode===0?sub([x,y],v):[x,y];D()},'w',{name:'Конец вектора w',lim:[[-9,9],[-9,9]],ok:(x,y)=>{const n=mode===0?sub([x,y],v):[x,y];return inb(v,n)&&Math.abs(n[0])<=8&&Math.abs(n[1])<=8}});
+  const mb=$('#b3m');buttons(mb,M,i=>{mode=i;D()},1);
+  buttons($('#b3p'),P.map(x=>x[0]),i=>{v=P[i][1].slice();w=P[i][2].slice();mode=P[i][3];$$('button',mb).forEach((b,j)=>b.classList.toggle('on',j===mode));D()});
+  D();
+})();
+
+/* 4 Скаляр */
+(()=>{const p=new Plot($('#p4'),{x:[-5,5]});const v=[2,1.5];let k=1;
+  const D=()=>{p.clear();p.line(mul(-5,v),mul(5,v),'axis',{dash:'3 5'});
+    p.arrow([0,0],mul(k,v),'r',{w:6,op:.75,label:'σv',side:-1,off:17,t:.8});p.arrow([0,0],v,'v',{w:2.4,label:'v',side:1,t:.5});
+    const r=mul(k,v);let t=k>1?'Вектор растянут.':k===1?'Вектор не изменился.':k>0?'Вектор сжат.':k===0?'Получился нулевой вектор.':'Направление развёрнуто, прямая та же.';
+    $('#r4').innerHTML=`<span class="num">${f(k)} × [${f(v[0])}, ${f(v[1])}] = [${f(r[0])}, ${f(r[1])}]</span><br>Длина: <span class="num">${f(norm(v))} → ${f(norm(r))}</span><br>${t}`};
+  const s=slider('s4a','o4',x=>{k=x;D();$$('#b4 button').forEach(b=>b.classList.remove('on'))});
+  const V=[1,2,.33,0,-.67];buttons($('#b4'),V.map(x=>'σ = '+f(x)),i=>{k=V[i];s.value=k;$('#o4').textContent=f(k);D()});D();
+  $('#m4a').innerHTML=mat(col1([9,4,1]));$('#m4b').innerHTML=mat(col1([36,16,4]));
+})();
+
+/* 5 Broadcasting */
+(()=>{const E=[{n:'Столбец + строка, слайд 17',A:[[10],[20],[30]],B:[[1,2]]},{n:'Строка + столбец, слайд 11',A:[[4,5,6]],B:[[10],[20],[30]]},{n:'Вектор + скаляр, слайд 17',A:[[1,2,3]],B:[[5]]}];
+  let e=0,st=0;const Sh=m=>`(${m.length}, ${m[0].length})`;
+  const stretch=(M,r,c)=>Array.from({length:r},(_,i)=>Array.from({length:c},(_,j)=>M[M.length===1?0:i][M[0].length===1?0:j]));
+  const S=['1. Исходные формы','2. Растянуть A','3. Растянуть B','4. Сложить'];
+  const D=()=>{const {A,B}=E[e],r=Math.max(A.length,B.length),c=Math.max(A[0].length,B[0].length);
+    const ax=st>=1?stretch(A,r,c):A,bx=st>=2?stretch(B,r,c):B;
+    const g=(O)=>(i,j)=>(i>=O.length||j>=O[0].length)?'ghost':'';
+    let h=`${mat(ax,{cls:(i,j)=>g(A)(i,j)+' a',shape:st>=1?`${Sh(A)} → ${Sh(ax)}`:Sh(A)})} + ${mat(bx,{cls:(i,j)=>g(B)(i,j)+' b',shape:st>=2?`${Sh(B)} → ${Sh(bx)}`:Sh(B)})}`;
+    if(st===3){const R=stretch(A,r,c).map((a,i)=>a.map((x,j)=>x+stretch(B,r,c)[i][j]));h+=` = ${mat(R,{cls:()=>'c',shape:Sh(R)})}`}
+    $('#v5').innerHTML=h;
+    $('#r5').innerHTML=['Единица в форме показывает ось, которую можно растянуть.',`A растягивается до ${r}×${c}. Пунктир показывает повторы, в памяти их не создают.`,`B тоже приведён к ${r}×${c}. Теперь формы совпадают.`,'Числа складываются поэлементно, как в обычном сложении.'][st];};
+  const sb=$('#b5s');const renderS=()=>buttons(sb,S,i=>{st=i;D()},st);
+  buttons($('#b5'),E.map(x=>x.n),i=>{e=i;st=0;renderS();D()});renderS();D();
+  const O=[1,2,3,5],sel=['sa0','sa1','sb0','sb1'].map(i=>$('#'+i));sel.forEach(s=>{s.innerHTML=O.map(x=>`<option>${x}</option>`).join('');s.onchange=C});
+  const P=[[3,1,1,3,'(3,1) + (1,3)'],[1,3,3,1,'(1,3) + (3,1)'],[1,3,1,3,'(1,3) + (1,3)'],[3,1,3,1,'(3,1) + (3,1)'],[3,1,5,1,'(3,1) + (5,1)'],[1,3,1,5,'(1,3) + (1,5)']];
+  function C(){const[a,b,c,d]=sel.map(s=>+s.value);const ax=(x,y,n)=>x===y?`Ось ${n}: ${x} и ${y} равны, остаётся ${x}.`:(x===1||y===1)?`Ось ${n}: ${x} и ${y}, единица растягивается до ${Math.max(x,y)}.`:`Ось ${n}: ${x} и ${y} разные, единицы нет.`;
+    const ok=(a===c||a===1||c===1)&&(b===d||b===1||d===1);
+    $('#r5c').innerHTML=`<span class="big ${ok?'ok':'no'}">${ok?`Работает: результат (${Math.max(a,c)}, ${Math.max(b,d)})`:'Ошибка: формы несовместимы'}</span><br>${ax(a,c,0)}<br>${ax(b,d,1)}`}
+  buttons($('#b5c'),P.map(p=>p[4]),i=>{sel[0].value=P[i][0];sel[1].value=P[i][1];sel[2].value=P[i][2];sel[3].value=P[i][3];C()});
+  sel[0].value=3;sel[1].value=1;sel[2].value=1;sel[3].value=3;C();
+})();
+
+/* 6 Расстояния */
+(()=>{const p=new Plot($('#p6'),{x:[0,8]});let A=[[1,1],[2,5],[6,2]],B=[[4,4],[7,6]],sel=[0,0];
+  const D=()=>{p.clear();const Dm=A.map(a=>B.map(b=>norm(sub(a,b))));
+    A.forEach(a=>B.forEach(b=>p.line(a,b,'axis',{w:1,op:.3})));
+    const a=A[sel[0]],b=B[sel[1]],c=[b[0],a[1]];
+    p.line(a,c,'g',{dash:'4 3',w:1.8});p.line(c,b,'g',{dash:'4 3',w:1.8});p.line(a,b,'r',{w:3.2});
+    A.forEach((q,i)=>{p.dot(q,'v',6);p.textAt(q,'A'+'₀₁₂'[i],'v',0,-13)});B.forEach((q,i)=>{p.dot(q,'w',6);p.textAt(q,'B'+'₀₁'[i],'w',0,-13)});p.sync();
+    const near=Dm.map(r=>r.indexOf(Math.min(...r)));
+    $('#m6').innerHTML=`<span class="m">D</span> = `+mat(Dm.map((r,i)=>r.map((x,j)=>j===near[i]?`<b>${f(x)}</b>`:f(x))),{key:1,cls:(i,j)=>i===sel[0]&&j===sel[1]?'hl':'',shape:'(3, 2): строки A, столбцы B'});
+    const dx=a[0]-b[0],dy=a[1]-b[1];
+    $('#r6').innerHTML=`Пара <span class="cv">A${'₀₁₂'[sel[0]]}</span>, <span class="cw">B${'₀₁'[sel[1]]}</span><br><span class="num">dx = ${f(dx)}, dy = ${f(dy)}</span><br><span class="num">√(${f(dx*dx)} + ${f(dy*dy)}) = ${f(norm([dx,dy]))}</span>`;
+    $$('#m6 [data-k]').forEach(c=>{const pick=()=>{sel=c.dataset.k.split(',').map(Number);D();$(`#m6 [data-k="${sel[0]},${sel[1]}"]`).focus({preventScroll:true})};c.onclick=pick;c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}}})};
+  A.forEach((q,i)=>p.handle(()=>A[i],(x,y)=>{A[i]=[x,y];sel=[i,sel[1]];D()},'v',{name:'Точка A'+i}));
+  B.forEach((q,i)=>p.handle(()=>B[i],(x,y)=>{B[i]=[x,y];sel=[sel[0],i];D()},'w',{name:'Точка B'+i}));D();
+})();
+
+/* 7 Норма */
+(()=>{const p=new Plot($('#p7'),{x:[-6,6]});let v=[3,4];
+  const D=()=>{p.clear();const n=norm(v);
+    p.add(`<circle cx="${p.sx(0)}" cy="${p.sy(0)}" r="${p.u}" fill="none" stroke="${col('axis')}" stroke-width="1.5"/>`);
+    p.line([0,0],[v[0],0],'g',{dash:'4 3',w:1.8});p.line([v[0],0],v,'g',{dash:'4 3',w:1.8});
+    if(Math.abs(v[0])>0)p.textAt([v[0]/2,0],f(Math.abs(v[0])),'g',0,v[1]>=0?18:-9,{size:14});
+    if(Math.abs(v[1])>0)p.textAt([v[0],v[1]/2],f(Math.abs(v[1])),'g',v[0]>=0?14:-14,4,{size:14});
+    p.arrow([0,0],v,'v',{label:'v',side:v[0]*v[1]>=0?-1:1,t:.65});if(n)p.arrow([0,0],mul(1/n,v),'w',{w:4.2});p.sync();
+    $('#r7').innerHTML=n?`<span class="big">‖v‖ = √(${f(v[0])}² + ${f(v[1])}²) = ${f(n)}</span><br><span class="cw">v̂</span> = v / ‖v‖ = <span class="num">[${f(v[0]/n)}, ${f(v[1]/n)}]</span><br>Проверка: <span class="num">‖v̂‖ = ${f(norm(mul(1/n,v)))}</span>`:'У нулевого вектора нет направления, поэтому на его длину делить нельзя.'};
+  p.handle(()=>v,(x,y)=>{v=[x,y];D()},'v',{name:'Конец вектора v',lim:[[-5,5],[-5,5]]});D();
+})();
+
+/* 8 Транспонирование */
+(()=>{const X=[[2,5,1],[3,4,2],[5,8,3],[7,6,4]],T=$('#t8'),cs=['v','w','r','g'];let on=false,cells=[];
+  X.forEach((r,i)=>r.forEach((x,j)=>{const b=document.createElement('b');b.textContent=x;b.style.background=`color-mix(in srgb,${col(cs[i])} 20%,var(--panel))`;T.appendChild(b);cells.push([b,i,j])}));
+  const u=()=>{const R=on?3:4,C=on?4:3,S=46;T.style.width=C*S+'px';T.style.height=R*S+'px';cells.forEach(([b,i,j])=>{b.style.left=(on?i:j)*S+'px';b.style.top=(on?j:i)*S+'px'});
+    $('#r8').innerHTML=on?'<span class="big">Aᵀ имеет форму (3, 4)</span><br>Столбцы стали строками.':'<span class="big">A имеет форму (4, 3)</span><br>Вопрос слайда: какая форма будет у <code>A.T</code>?'};
+  $('#b8').onclick=()=>{on=!on;$('#b8').textContent=on?'Вернуть обратно':'Транспонировать';u()};u();
+})();
+
+/* 9 Скалярное произведение */
+(()=>{const p=new Plot($('#p9'),{x:[-5,5]});let a=[2,3],b=[4,1];const c9=$('#c9');
+  const P=[['Острый',[1,3],[4,1]],['Тупой',[-2,3],[4,0]],['Прямой',[0,3],[4,0]],['Совпадают',[2,0],[4,0]],['Противоположны',[-2,0],[4,0]]];
+  const drawC=(th,hasAngle)=>{const X=t=>40+t/180*345,Y=c=>54-c*40;let d='';for(let t=0;t<=180;t+=3)d+=(t?'L':'M')+X(t).toFixed(1)+' '+Y(Math.cos(t*Math.PI/180)).toFixed(1);
+    const c=Math.cos(th*Math.PI/180);
+    c9.innerHTML=`<line class="gl" x1="40" x2="385" y1="${Y(1)}" y2="${Y(1)}"/><line class="gl" x1="40" x2="385" y1="${Y(-1)}" y2="${Y(-1)}"/><line class="ax" x1="40" x2="385" y1="54" y2="54"/><line class="gl" x1="${X(90)}" x2="${X(90)}" y1="10" y2="96"/><text class="tk" style="text-anchor:end" x="34" y="${Y(1)+4}">1</text><text class="tk" style="text-anchor:end" x="34" y="58">0</text><text class="tk" style="text-anchor:end" x="34" y="${Y(-1)+4}">−1</text><text class="tk" x="${X(0)+6}" y="110">0°</text><text class="tk" x="${X(90)}" y="110">90°</text><text class="tk" x="${X(180)-8}" y="110">180°</text><path d="${d}" fill="none" stroke="${col('r')}" stroke-width="2.2"/>${hasAngle?`<circle cx="${X(th)}" cy="${Y(c)}" r="5.5" fill="${col('r')}" stroke="${col('panel')}" stroke-width="1.5"/>`:''}`};
+  const D=()=>{p.clear();const d=dot(a,b),na=norm(a),nb=norm(b),has=na>0&&nb>0;
+    const cs=has?clamp(d/(na*nb),-1,1):0,th=Math.acos(cs)*180/Math.PI;
+    if(nb){const q=mul(d/(nb*nb),b);p.line(mul(-5,b),mul(5,b),'axis',{dash:'2 5',op:.6});if(na)p.line(a,q,'g',{dash:'4 3',w:1.8});p.arrow([0,0],q,'g',{w:6.5,op:.45})}
+    p.arrow([0,0],b,'w',{label:'b',side:-1,w:3.4,t:.75});p.arrow([0,0],a,'v',{label:'a',side:1,w:3,t:.72});
+    if(has&&th>.5&&th<179.5){const L=p.arc(a,b,30,'r');p.text(L[0],L[1],f(th,0)+'°','r',{size:14})}
+    p.sync();
+    const st=!has?'Один вектор нулевой, угол не определён.':Math.abs(cs-1)<1e-9?'Направления совпадают: максимум.':Math.abs(cs+1)<1e-9?'Направления противоположны: минимум.':Math.abs(d)<1e-9?'Векторы ортогональны: произведение равно нулю.':d>0?'Угол острый: произведение положительное.':'Угол тупой: произведение отрицательное.';
+    $('#r9').innerHTML=`<span class="big">aᵀb = ${f(a[0])}·${f(b[0])} + ${f(a[1])}·${f(b[1])} = ${f(d)}</span><br>${has?`<span class="num">‖a‖‖b‖cos θ = ${f(na)}·${f(nb)}·${f(cs,3)} = ${f(na*nb*cs)}</span><br>Косинусное сходство: <b>${f(cs,3)}</b><br>`:''}${st}<br><span class="hint">Зелёная полоса показывает проекцию a на b.</span>`;drawC(th,has)};
+  p.handle(()=>a,(x,y)=>{a=[x,y];D();$$('#b9 button').forEach(q=>q.classList.remove('on'))},'v',{name:'Конец вектора a',lim:[[-4.5,4.5],[-4.5,4.5]],snap:.5});
+  p.handle(()=>b,(x,y)=>{b=[x,y];D();$$('#b9 button').forEach(q=>q.classList.remove('on'))},'w',{name:'Конец вектора b',lim:[[-4.5,4.5],[-4.5,4.5]],snap:.5});
+  buttons($('#b9'),P.map(x=>x[0]),i=>{a=P[i][1].slice();b=P[i][2].slice();D()});D();
+  $('#m9a').innerHTML=mat(col1([1,2,3]),{cls:()=>'a'});$('#m9b').innerHTML=mat([[4,5,6]],{cls:()=>'b'});
+})();
+
+/* 10 Умножения */
+(()=>{const A=[[1,2],[3,4],[5,6]],w=[10,20],Y=[50,110,170];let row=0;const host=$('#b10');
+  const had=()=>{const a=[5,4,8,2],b=[1,0,.5,-1];$('#v10').innerHTML=`${mat(col1(a),{cls:()=>'a',shape:'(4, 1)'})} ⊙ ${mat(col1(b),{cls:()=>'b',shape:'(4, 1)'})} = ${mat(col1(a.map((x,i)=>x*b[i])),{cls:()=>'c',shape:'(4, 1)'})}`;$('#r10').innerHTML='<b>Адамарово <code>a * b</code>.</b> Числа умножаются попарно: 5·1, 4·0, 8·0.5, 2·(−1). Форма не меняется. Применяется для масок и поэлементных операций в нейросетях.'};
+  const out=()=>{const a=[1,2,3],b=[4,5];const M=a.map(x=>b.map(y=>x*y));$('#v10').innerHTML=`${mat(col1(a),{cls:(i)=>i===row?'a':'',shape:'(3, 1)'})} ${mat([b],{cls:()=>'b',shape:'(1, 2)'})} = ${mat(M,{cls:(i)=>i===row?'c':'',shape:'(3, 2)'})}`;
+    $('#r10').innerHTML=`<b>Внешнее <code>np.outer(a, b)</code>.</b> Строка ${row+1} равна ${a[row]} × [4, 5] = [${M[row].join(', ')}]. Каждая строка — это <span class="m">b</span>, масштабированный элементом <span class="m">a</span>. <button id="nx10" type="button">Следующая строка</button>`;$('#nx10').onclick=()=>{row=(row+1)%3;out()}};
+  const mm=()=>{$('#v10').innerHTML=`${mat(A,{cls:(i)=>i===row?'a':'',shape:'(3, 2)'})} @ ${mat(col1(w),{cls:()=>'b',shape:'(2, 1)'})} = ${mat(col1(Y),{cls:(i)=>i===row?'c':'',shape:'(3, 1)'})}`;
+    $('#r10').innerHTML=`<b>Матричное <code>A @ w</code>.</b> Строка ${row+1}: ${A[row][0]}·10 + ${A[row][1]}·20 = ${Y[row]}. Каждая строка даёт одно скалярное произведение. Внутренние размеры должны совпасть: (3 × <b>2</b>) @ (<b>2</b> × 1) → (3 × 1). <button id="nx10" type="button">Следующая строка</button>`;$('#nx10').onclick=()=>{row=(row+1)%3;mm()}};
+  const F=[had,out,mm];buttons(host,['Адамарово *','Внешнее outer','Матричное @'],i=>{row=0;F[i]()});had();
+  const a=[[1,2],[3,4]],b=[[5,6],[7,8]];
+  $('#m10').innerHTML=`<span><code>A * B</code> = ${mat([[5,12],[21,32]])}</span><span><code>A @ B</code> = ${mat([[19,22],[43,50]])}</span>`.replace(/^/,`<span>A = ${mat(a,{cls:()=>'a'})}</span><span>B = ${mat(b,{cls:()=>'b'})}</span>`);
+})();
+
+/* 11 Модель */
+(()=>{const X=[[2,1],[4,2],[6,3]],N=['Студент 1','Студент 2','Студент 3'];let w1=5,w2=10,b=0;
+  const D=()=>{const y=X.map(r=>r[0]*w1+r[1]*w2+b),min=-20,max=140,P=v=>(v-min)/(max-min)*100,z=P(0);
+    $('#m11').innerHTML=`${mat(X,{shape:'часы, практика'})} @ ${mat(col1([w1,w2]),{cls:()=>'b',shape:'w'})} + ${f(b)} = ${mat(col1(y),{cls:()=>'c',shape:'ŷ'})}`;
+    $('#v11').innerHTML=y.map((v,i)=>`<div class="bar"><span>${N[i]}</span><div class="track"><u style="left:${z}%"></u><span style="left:${Math.min(P(v),z)}%;width:${Math.abs(P(v)-z)}%"></span></div><b>${f(v)}</b></div>`).join('');
+    $('#r11').innerHTML=X.map((r,i)=>`<span class="num">ŷ${'₁₂₃'[i]} = ${r[0]}·${w1} + ${r[1]}·${w2}${b?(b>0?' + ':' − ')+Math.abs(b):''} = ${f(y[i])}</span>`).join('<br>')+`<br><span class="hint">Строки здесь пропорциональны, поэтому при b = 0 предсказания тоже идут как 1 : 2 : 3. В разделе о ранге ты увидишь причину.</span>`};
+  slider('w1','ow1',x=>{w1=x;D()});slider('w2','ow2',x=>{w2=x;D()});slider('wb','owb',x=>{b=x;D()});D();
+})();
+
+/* 12 Линейная комбинация */
+(()=>{const p=new Plot($('#p12'),{x:[-6,6]});const v1=[2,1],v2=[-1,2];let a=1,c=1;
+  const D=()=>{p.clear();const A=mul(a,v1),B=mul(c,v2),R=add(A,B);
+    p.arrow([0,0],v1,'v',{w:1.8,op:.5});p.arrow([0,0],v2,'w',{w:1.8,op:.5});
+    p.arrow([0,0],A,'v',{label:'α₁v₁',side:1});p.arrow(A,R,'w',{label:'α₂v₂',side:1});p.arrow([0,0],R,'r',{w:3.6,label:'w',side:-1});
+    $('#r12').innerHTML=`<span class="num">${f(a)}·[2, 1] + ${f(c)}·[−1, 2]</span><br><span class="big cr">w = ${vs(R)}</span>`};
+  slider('c1','oc1',x=>{a=x;D()});slider('c2','oc2',x=>{c=x;D()});D();
+  $('#m12a').innerHTML=mat(col1([4,5,1]));$('#m12b').innerHTML=mat(col1([-4,0,-4]));$('#m12c').innerHTML=mat(col1([1,3,2]));$('#m12d').innerHTML=mat(col1([-7,-4,-13]),{cls:()=>'c'});
+})();
+
+/* 13 Независимость */
+(()=>{const p=new Plot($('#p13'),{x:[-8,8],label:2});let v=[1,3],u=[2,7];const P=[['V: независимый',[1,3],[2,7]],['S: зависимый',[1,3],[2,6]],['С нулевым вектором',[0,0],[1,3]]];
+  const D=()=>{p.clear();const det=v[0]*u[1]-v[1]*u[0],zero=!norm(v)&&!norm(u);
+    if(det){p.poly([[-8,-8],[8,-8],[8,8],[-8,8]],'g',.12)}
+    else if(!zero){const d=norm(v)?v:u,k=30/norm(d);p.line(mul(-k,d),mul(k,d),'g',{w:9,op:.2})}
+    p.arrow([0,0],u,'w',{label:'v₂',side:1,w:3,t:.7});p.arrow([0,0],v,'v',{label:'v₁',side:-1,w:3,t:.8});p.sync();
+    let msg;
+    if(det)msg=`<span class="big ok">Независимы</span><br>Нет такого λ, чтобы v₁ = λv₂.<br>Определитель: <span class="num">${f(v[0])}·${f(u[1])} − ${f(v[1])}·${f(u[0])} = ${f(det)} ≠ 0</span><br>Ранг 2, span равен всей плоскости ℝ².`;
+    else{let e;if(!norm(v))e=`1·v₁ + 0·v₂ = 0`;else if(!norm(u))e=`0·v₁ + 1·v₂ = 0`;else{const k=(v[0]?u[0]/v[0]:u[1]/v[1]);e=`${f(k)}·v₁ − 1·v₂ = 0`}
+      msg=`<span class="big no">Зависимы</span><br>Нетривиальный ноль: <span class="num">${e}</span><br>Ранг ${zero?0:1}, span равен ${zero?'одной точке':'прямой'}.`}
+    $('#r13').innerHTML=msg};
+  const L={lim:[[-8,8],[-8,8]]};
+  p.handle(()=>v,(x,y)=>{v=[x,y];D();$$('#b13 button').forEach(q=>q.classList.remove('on'))},'v',{...L,name:'Конец v₁'});
+  p.handle(()=>u,(x,y)=>{u=[x,y];D();$$('#b13 button').forEach(q=>q.classList.remove('on'))},'w',{...L,name:'Конец v₂'});
+  buttons($('#b13'),P.map(x=>x[0]),i=>{v=P[i][1].slice();u=P[i][2].slice();D()});D();
+  const T=[[8,-4,14,6],[4,6,0,3],[14,2,4,7]],s=[26,4,18,16];
+  $('#m13').innerHTML=T.map(c=>mat(col1(c))).join(' + ')+' = '+mat(col1(s),{cls:()=>'c'})+' = 2 × '+mat(col1([13,2,9,8]),{cls:()=>'b'});
+
+  const q=new Plot($('#p13b'),{x:[0,9],y:[0,6],aria:'Точки двух признаков'});const x1=[2,4,6,8],C=[[1,2,3,4],[1,3,2,5]];let m=0;
+  const Q=()=>{q.clear();const x2=C[m];if(m===0)q.line([0,0],[9,4.5],'bad',{dash:'5 4',w:1.8});
+    x1.forEach((x,i)=>q.dot([x,x2[i]],'r',6.5));q.textAt([8.6,.2],'x₁','ink',0,-8,{size:15});q.textAt([.25,5.7],'x₂','ink',8,5,{size:15});
+    $('#r13b').innerHTML=m===0?'<span class="big no">Ранг 1</span><br><span class="num">x₁ = [2,4,6,8], x₂ = [1,2,3,4]</span><br>Точки лежат на одной прямой, x₁ = 2x₂. Второй столбец не добавляет информации.':'<span class="big ok">Ранг 2</span><br><span class="num">x₁ = [2,4,6,8], x₂ = [1,3,2,5]</span><br>Точки вышли с прямой. Второй признак несёт новое направление.'};
+  buttons($('#b13b'),['x₁ = 2x₂','Новая информация'],i=>{m=i;Q()});Q();
+})();
+
+/* 14 Span в 3D */
+(()=>{const W=440,H=400,S=36,host=$('#p14');const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox',`0 0 ${W} ${H}`);s.setAttribute('class','plot rot');s.setAttribute('role','img');s.setAttribute('aria-label','Трёхмерный график векторов и их span');host.appendChild(s);
+  const C=[{n:'Плоскость',v:[1,0,2],u:[-1,1,2]},{n:'Прямая',v:[1,1,1],u:[2,2,2]}];let c=0,yaw=35,pit=22,a=.6,b=.5;
+  const pr=p=>{const t=yaw*Math.PI/180,e=pit*Math.PI/180,x=p[0]*Math.cos(t)-p[1]*Math.sin(t),y=p[0]*Math.sin(t)+p[1]*Math.cos(t);return[W/2+S*x,H/2-S*(p[2]*Math.cos(e)-y*Math.sin(e))]};
+  const L=(p,q,c,w=1.5,x='')=>{const A=pr(p),B=pr(q);return`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="${col(c)}" stroke-width="${w}" ${x}/>`};
+  const Ar=(p,q,c,w=3)=>{const A=pr(p),B=pr(q),d=Math.hypot(B[0]-A[0],B[1]-A[1]);if(d<3)return`<circle cx="${B[0]}" cy="${B[1]}" r="4" fill="${col(c)}"/>`;const ux=(B[0]-A[0])/d,uy=(B[1]-A[1])/d,hl=Math.min(12,d*.55),hw=hl*.46,bx=B[0]-ux*hl,by=B[1]-uy*hl;return`<line x1="${A[0]}" y1="${A[1]}" x2="${bx}" y2="${by}" stroke="${col(c)}" stroke-width="${w}"/><polygon fill="${col(c)}" points="${B[0]},${B[1]} ${bx-uy*hw},${by+ux*hw} ${bx+uy*hw},${by-ux*hw}"/>`};
+  const Tx=(p,t,c,dy=-7)=>{const A=pr(p);return`<text class="lb" fill="${col(c)}" x="${clamp(A[0],14,W-14)}" y="${clamp(A[1]+dy,16,H-6)}">${t}</text>`};
+  const v3=(k,v,m,u)=>[0,1,2].map(i=>k*v[i]+m*u[i]);
+  const D=()=>{const{v,u}=C[c];let g='';const Z=5;
+    if(c===0){const q=[[-1.3,-1.3],[1.3,-1.3],[1.3,1.3],[-1.3,1.3]].map(([x,y])=>pr(v3(x,v,y,u)));
+      g+=`<polygon points="${q.map(p=>p.join(',')).join(' ')}" fill="${col('g')}" opacity=".18" stroke="${col('g')}" stroke-width="1.4"/>`;
+      for(let t=-1.3;t<=1.31;t+=.65){g+=L(v3(t,v,-1.3,u),v3(t,v,1.3,u),'g',.8,'opacity=".45"');g+=L(v3(-1.3,v,t,u),v3(1.3,v,t,u),'g',.8,'opacity=".45"')}}
+    else g+=L([-3.6,-3.6,-3.6],[3.6,3.6,3.6],'g',8,'opacity=".25" stroke-linecap="round"');
+    [[Z,0,0,'x'],[0,Z,0,'y'],[0,0,Z,'z']].forEach(ax=>{g+=L([-ax[0],-ax[1],-ax[2]],ax,'axis',1.3);g+=Ar([ax[0]*.97,ax[1]*.97,ax[2]*.97],ax,'axis',1.3);g+=Tx(ax,ax[3],'soft')});
+    const R=v3(a,v,b,u);
+    if(c===0){g+=L(v3(a,v,0,u),R,'axis',1.2,'stroke-dasharray="4 3"');g+=L(v3(0,v,b,u),R,'axis',1.2,'stroke-dasharray="4 3"')}
+    g+=Ar([0,0,0],u,'w',3.2);g+=Ar([0,0,0],v,'v',3.2);g+=Ar([0,0,0],R,'r',3);
+    g+=Tx(v,'v₁','v');g+=Tx(u,c===1?'v₂':'v₂','w',c===1?-9:-7);if(Math.hypot(...R)>.5)g+=Tx(R,'w','r',16);
+    g+=`<circle cx="${pr([0,0,0])[0]}" cy="${pr([0,0,0])[1]}" r="3.5" fill="${col('ink')}"/>`;
+    s.innerHTML=g;
+    $('#r14').innerHTML=`<span class="num">v₁ = (${v.join(', ')}), v₂ = (${u.join(', ')})</span><br><span class="num cr" style="font-style:normal">w = ${f(a)}·v₁ + ${f(b)}·v₂ = ${vs(R)}</span><br>${c===0?'Векторы в ℝ³ независимы, поэтому их span — двумерная <b>плоскость</b> через начало координат. Точка <i>w</i> с неё не сходит.':'v₂ = 2v₁, поэтому один вектор лишний. Span — одномерная <b>прямая</b>, и <i>w</i> двигается только по ней.'}`};
+  buttons($('#b14'),C.map(x=>x.n),i=>{c=i;yaw=i?135:35;yS.value=yaw;$('#oy14').textContent=yaw+'°';D()});
+  slider('a14','oa14',x=>{a=x;D()});slider('c14','oc14',x=>{b=x;D()});const yS=slider('y14','oy14',x=>{yaw=x;D()},x=>x+'°');
+  let d=null;s.addEventListener('pointerdown',e=>{d=[e.clientX,e.clientY,yaw,pit,e.pointerType];s.setPointerCapture(e.pointerId)});
+  s.addEventListener('pointermove',e=>{if(!d)return;yaw=((d[2]+(e.clientX-d[0])*.6)%360+360)%360;if(d[4]==='mouse')pit=clamp(d[3]+(e.clientY-d[1])*.4,-5,70);yS.value=yaw;$('#oy14').textContent=Math.round(yaw)+'°';D()});
+  const end=()=>d=null;s.addEventListener('pointerup',end);s.addEventListener('pointercancel',end);D();
+})();
+
+/* 15 Базис */
+(()=>{const p=new Plot($('#p15'),{x:[-8,8],label:2});const pp=[3,1],q=[-6,2];let x=[3,5],mode=0,tt=0,raf=0;
+  const S0=[[1,0],[0,1]],T0=[[3,1],[-3,1]];const lerp=(a,b,t)=>a+(b-a)*t;
+  const coord=P=>mode===0?P:[(P[0]+3*P[1])/6,(3*P[1]-P[0])/6];
+  const D=()=>{p.clear();const e1=[lerp(1,3,tt),lerp(0,1,tt)],e2=[lerp(0,-3,tt),1];
+    for(let i=-14;i<=14;i++){const A=add(mul(i,e1),mul(-30,e2)),B=add(mul(i,e1),mul(30,e2));p.line(A,B,'r',{w:.9,op:.32});const C=add(mul(i,e2),mul(-30,e1)),E=add(mul(i,e2),mul(30,e1));p.line(C,E,'r',{w:.9,op:.32})}
+    p.arrow([0,0],e1,'v',{w:3.6,label:mode?'t₁':'s₁',side:-1,off:15});p.arrow([0,0],e2,'w',{w:3.6,label:mode?'t₂':'s₂',side:-1,off:15});
+    p.dot(pp,'ink',6);p.textAt(pp,'p','ink',12,-5);p.dot(q,'ink',6);p.textAt(q,'q','ink',0,-11);p.dot(x,'g',5);p.textAt(x,'x','g',14,-7);p.sync();
+    const n=mode?'T':'S',cp=coord(pp),cq=coord(q),cx=coord(x),a=mode?'t':'s';
+    $('#r15').innerHTML=`<span class="big">Координаты в базисе ${n}</span><br><span class="num">p = ${vs(cp)} = ${f(cp[0])}${a}₁ + ${f(cp[1])}${a}₂</span><br><span class="num">q = ${vs(cq)} = ${f(cq[0])}${a}₁ + ${f(cq[1])}${a}₂</span><br><span class="num cg" style="font-style:normal">x = ${vs(cx)}</span>`};
+  p.handle(()=>x,(a,b)=>{x=[a,b];D()},'g',{name:'Точка x',lim:[[-7,7],[-7,7]]});
+  buttons($('#b15'),['Базис S: (1,0), (0,1)','Базис T: (3,1), (−3,1)'],i=>{mode=i;cancelAnimationFrame(raf);const from=tt,to=i;if(reduce){tt=to;D();return}const t0=performance.now();const st=n=>{const k=Math.min(1,(n-t0)/650),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;tt=from+(to-from)*e;D();if(k<1)raf=requestAnimationFrame(st)};raf=requestAnimationFrame(st)});D();
+
+  const r=new Plot($('#p15b'),{x:[-3,6],y:[-4,6]});const u=[[0,1],[0,2],[1,0]];let c=0;
+  const Db=()=>{r.clear();const a1=1-2*c,A=mul(a1,u[0]),B=add(A,mul(c,u[1])),P=add(B,mul(3,u[2]));
+    if(Math.abs(a1)>.01)r.arrow([0,0],A,'v',{label:'α₁u₁',side:1});if(Math.abs(c)>.01)r.arrow(A,B,'w',{label:'α₂u₂',side:-1,w:4.5,off:18});r.arrow(B,P,'g',{label:'3u₃',side:1});
+    r.dot([3,1],'r',6);r.textAt([3,1],'p','r',14,-6);
+    $('#r15b').innerHTML=`<span class="num">p = ${f(a1)}·(0,1) + ${f(c)}·(0,2) + 3·(1,0) = (3, 1)</span><br>Координаты: <b class="num">(${f(a1)}, ${f(c)}, 3)</b>`};
+  slider('u15','ou15',y=>{c=y;Db()});Db();
+
+  const l=new Plot($('#p15c'),{x:[-3,6],y:[-3,6]});const b=[1,3];let al=1,rp=[3,2];
+  const Dc=()=>{l.clear();l.line(mul(-3,b),mul(3,b),'g',{w:7,op:.22});const P=mul(al,b),g=norm(sub(P,rp)),t=dot(rp,b)/dot(b,b),m=norm(sub(mul(t,b),rp));
+    l.line(P,rp,'bad',{dash:'4 3',w:1.8});l.arrow([0,0],b,'v',{w:2.2,op:.7});l.arrow([0,0],P,'r',{w:3.4,label:'αv',side:-1});l.dot(rp,'ink',6);l.textAt(rp,'r','ink',14,-6);l.sync();
+    $('#r15c').innerHTML=`<span class="num">α·(1, 3) = ${vs(P)}</span><br>Разрыв до r: <b class="num">${f(g)}</b><br>Минимум при любом α: <b class="num">${f(m)}</b><br>${m<1e-9?'<span class="ok">r лежит на прямой, значит базис может его описать.</span>':'<span class="no">r вне span, координаты в этом базисе не существует.</span>'}`};
+  l.handle(()=>rp,(x,y)=>{rp=[x,y];Dc()},'axis',{name:'Точка r',snap:.5,lim:[[-2.5,5.5],[-2.5,5.5]]});slider('l15','ol15',x=>{al=x;Dc()});Dc();
+})();
+
+/* 16 PCA */
+(()=>{const p=new Plot($('#p16'),{x:[-6,6]});let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;const gs=()=>{let s=0;for(let i=0;i<6;i++)s+=rnd();return(s-3)*1.41};
+  const t0=35*Math.PI/180;let pts=Array.from({length:38},()=>{const a=gs()*2,b=gs()*.5;return[a*Math.cos(t0)-b*Math.sin(t0),a*Math.sin(t0)+b*Math.cos(t0)]});
+  const mx=pts.reduce((s,q)=>s+q[0],0)/pts.length,my=pts.reduce((s,q)=>s+q[1],0)/pts.length;pts=pts.map(q=>[q[0]-mx,q[1]-my]);
+  const n=pts.length-1,sxx=pts.reduce((s,q)=>s+q[0]*q[0],0)/n,syy=pts.reduce((s,q)=>s+q[1]*q[1],0)/n,sxy=pts.reduce((s,q)=>s+q[0]*q[1],0)/n;
+  let best=.5*Math.atan2(2*sxy,sxx-syy)*180/Math.PI;best=(best+360)%180;let a=120,raf=0;
+  const D=()=>{p.clear();const t=a*Math.PI/180,d=[Math.cos(t),Math.sin(t)];const V=d[0]*d[0]*sxx+2*d[0]*d[1]*sxy+d[1]*d[1]*syy,T=sxx+syy;
+    p.line(mul(-9,d),mul(9,d),'w',{w:1.8});
+    pts.forEach(q=>{const k=dot(q,d),P=mul(k,d);p.line(q,P,'axis',{w:.8,op:.55});p.dot(P,'w',2.7)});
+    pts.forEach(q=>p.dot(q,'v',3.6));
+    $('#r16').innerHTML=`Разброс вдоль оси: <b class="num">${f(V)}</b> из <span class="num">${f(T)}</span><br><span class="big">${f(V/T*100,0)}% разброса</span><br>${Math.abs(a-best)<1||Math.abs(a-best)>179?'<span class="ok">Это ось PC1: разброс максимален.</span>':'Поверни ось вдоль облака, чтобы разброс вырос.'}`};
+  const s=slider('a16','o16',x=>{a=x;cancelAnimationFrame(raf);D()},x=>Math.round(x)+'°');
+  $('#b16').onclick=()=>{const from=a;let to=best;if(reduce){a=Math.round(to);s.value=a;$('#o16').textContent=a+'°';D();return}const st=performance.now();const go=n=>{const k=Math.min(1,(n-st)/700),e=k*(2-k);a=from+(to-from)*e;s.value=a;$('#o16').textContent=Math.round(a)+'°';D();if(k<1)raf=requestAnimationFrame(go)};raf=requestAnimationFrame(go)};D();
+})();
+
+/* Навигация и подсветка кода */
+(()=>{const nav=$('nav.toc'),road=$('#road');const R={s1:'Объект → вектор → матрица',s6:'Все пары без циклов',s9:'Похожесть',s11:'Предсказания для всех объектов',s13:'Лишние признаки',s15:'Система координат',s16:'Сжатие данных'};
+  const secs=$$('main section');secs.forEach((s,i)=>{const a=document.createElement('a');a.href='#'+s.id;a.textContent=`${i+1}. ${s.dataset.t}`;nav.appendChild(a);
+    if(R[s.id]){const l=document.createElement('li');l.innerHTML=`<a href="#${s.id}">${s.dataset.t}<span>${R[s.id]}</span></a>`;l.style.counterSet=`s ${i+1}`;road.appendChild(l)}});
+  $$('li',road).forEach(l=>l.style.counterIncrement='none');
+  const io=new IntersectionObserver(E=>E.forEach(e=>{if(e.isIntersecting){$$('a',nav).forEach(a=>{const on=a.getAttribute('href')==='#'+e.target.id;a.classList.toggle('on',on);if(on&&getComputedStyle(nav).position==='sticky'&&nav.scrollWidth>nav.clientWidth&&innerWidth<=980)nav.scrollTo({left:a.offsetLeft-20,behavior:'auto'})})}}),{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>io.observe(s));
+  $$('pre code').forEach(c=>{c.innerHTML=c.innerHTML.replace(/(#.*)$/gm,'<span class="c">$1</span>')});
+})();
+</script>
+</body>
+</html>
