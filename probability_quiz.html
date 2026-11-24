@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probability Quiz — подготовка</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#667085;--line:#e3e6eb;--acc:#2f5bd3;--ok:#1f8a4c;--okbg:#e6f4ec;--bad:#c23b3b;--badbg:#fbeaea}
+@media (prefers-color-scheme:dark){:root{--bg:#14161b;--card:#1d2027;--ink:#e8eaee;--mute:#9aa3b2;--line:#2d313a;--acc:#7c9cff;--ok:#5cc88a;--okbg:#1c3327;--bad:#ff7b7b;--badbg:#3a2022}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:860px;margin:auto;padding:12px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h1{font-size:18px;margin:0 auto 0 0}
+button,select{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer}
+button.on,button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+main{max-width:860px;margin:auto;padding:16px}
+.summary{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.summary table{border-collapse:collapse;width:100%}
+.summary td{padding:5px 0;border-bottom:1px solid var(--line)}
+.summary td{font-variant-numeric:tabular-nums}.summary td:last-child{text-align:right;font-weight:600}
+.summary tr:last-child td{border:none}
+.summary a{color:var(--acc);text-decoration:none}
+.topic-h{margin:28px 0 10px;font-size:17px;color:var(--acc)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.qn{color:var(--mute);font-size:13px}
+.qt{margin:4px 0 10px;white-space:pre-wrap}
+code,.code{font-family:ui-monospace,Consolas,monospace;font-size:14px}
+.qt code{background:var(--bg);padding:1px 5px;border-radius:4px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.ans{margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--okbg);border-left:3px solid var(--ok)}
+.ans b{color:var(--ok)}
+.exp{color:var(--mute);font-size:14px;margin-top:4px}
+.hideans .ans,.hideans .exp{display:none}
+.hideans .opt.ok{background:var(--card);border-color:var(--line)}
+input[type=text]{font:inherit;font-family:ui-monospace,Consolas,monospace;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:4px 0 14px}
+.progress div{height:100%;background:var(--acc);transition:width .2s}
+.row{display:flex;gap:8px;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
+.verdict{font-weight:600;margin-top:10px}
+.verdict.ok{color:var(--ok)}.verdict.bad{color:var(--bad)}
+.setup label{display:block;margin:8px 0}
+.big{font-size:36px;font-weight:700}
+.summary td.r{text-align:right}.summary td.mute{color:var(--mute);font-weight:400;font-size:13px}.tag.past{color:#b26b00;border-color:#e0b060;margin-left:6px}
+.tag{display:inline-block;font-size:12px;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <h1>Probability Quiz</h1>
+  <button id="mList" class="on">Все вопросы</button>
+  <button id="mQuiz">Режим куиза</button>
+</div></header>
+<main id="app"></main>
+
+<script>const T = {
+  basic:"Основы и правила вероятности",
+  joint:"Совместная, маргинальная, условная; несовместные и независимые события",
+  rules:"Правило умножения, полная вероятность, Байес",
+  rv:"Случайные величины: PMF, PDF, CDF",
+  dist:"Распределения, z-score, преобразования, ЦПТ",
+  py:"Python: scipy.stats и pandas (практика)",
+  adj:"Смежное (было в прошлогоднем квизе): ML и векторы"
+};
+// p:1 — вопрос из прошлогоднего квиза. o: варианты (a = индекс) | без o: вписать (a = допустимые ответы)
+const Q = [
+// ---------- BASIC ----------
+{t:"basic",p:1,q:"Probability is simply:",o:["The number of possible outcomes","How likely something is to happen","The sum of all probabilities","The complement of an event"],a:1,e:"Первое определение в лекции."},
+{t:"basic",p:1,q:"Sample space is:",o:["Subset","Event","Total outcomes","Function"],a:2,e:"Множество всех возможных исходов (universal set)."},
+{t:"basic",q:"An event is:",o:["A subset of the sample space","The set of all outcomes","A random variable","A probability distribution"],a:0,e:"Событие — подмножество выборочного пространства."},
+{t:"basic",q:"A random experiment is an experiment in which:",o:["The outcome is always the same","The outcome is not known with certainty","There are exactly two outcomes","Probability equals 1"],a:1,e:"Исход заранее неизвестен."},
+{t:"basic",q:"The sample space of a college application is S = {admitted, not admitted}. How many outcomes does it have?",o:["1","2","3","4"],a:1,e:"Два исхода."},
+{t:"basic",q:"For any event A, the range of possible probability is:",o:["−1 ≤ P(A) ≤ 1","0 < P(A) < 1","0 ≤ P(A) ≤ 1","P(A) ≥ 0 only"],a:2,e:"Rule I: от 0 (невозможно) до 1 (наверняка)."},
+{t:"basic",q:"The probability of an impossible event (e.g., drawing a yellow ball from a bag with no yellow balls) is:",o:["0","0.5","1","Undefined"],a:0,e:"Rule I."},
+{t:"basic",q:"P(S), the probability of the whole sample space, equals:",o:["0","0.5","1","It depends on the experiment"],a:2,e:"Rule II: сумма вероятностей всех исходов = 1."},
+{t:"basic",q:"The complement rule states:",o:["P(Aᶜ) = P(A)","P(Aᶜ) = 1 − P(A)","P(Aᶜ) = 1 + P(A)","P(Aᶜ) = P(A) / 2"],a:1,e:"Rule III."},
+{t:"basic",q:"A bag has 10 green, 7 red and 3 blue balls. P(Red) = ?",o:["0.15","0.35","0.5","0.7"],a:1,e:"7 / 20 = 0.35."},
+{t:"basic",q:"A bag has 10 green, 7 red and 3 blue balls. P(not Red) = ?",o:["0.35","0.5","0.65","0.85"],a:2,e:"1 − 0.35 = 0.65."},
+{t:"basic",q:"The general probability formula is P(A) = ?",o:["Total outcomes / outcomes of A","Number of outcomes of A / total number of outcomes","Outcomes of A × total outcomes","1 − total outcomes"],a:1,e:"n / N."},
+
+// ---------- JOINT / CONDITIONAL ----------
+{t:"joint",p:1,q:"P(A ∩ B) is __ probability",o:["joint","Marginal","Conditional","dependent"],a:0,e:"∩ = оба вместе → joint."},
+{t:"joint",p:1,q:"Joint probability means:",o:["Single event","Two events together","Independent events","Random event"],a:1,e:"Вероятность, что оба события произойдут одновременно."},
+{t:"joint",q:"Marginal probability is:",o:["The probability of two events together","The probability of an event irrespective of the outcome of another variable","The probability of A given B","Always equal to 1"],a:1,e:"Берётся из строки или столбца «Total» таблицы."},
+{t:"joint",q:"Netflix survey (probability table):\n\n              Male   Female  Total\nBreaking Bad  0.20   0.05    0.25\nMoney Heist   0.15   0.24    0.40\nOther         0.10   0.25    0.35\nTotal         0.46   0.54    1\n\nP(Male) = ?",o:["0.20","0.46","0.54","0.25"],a:1,e:"Маргинальная вероятность — итог столбца Male."},
+{t:"joint",q:"Same Netflix table. P(Breaking Bad ∩ Male) = ?",o:["0.20","0.25","0.46","0.43"],a:0,e:"Совместная вероятность — клетка на пересечении."},
+{t:"joint",q:"The union of two events is computed as:",o:["P(A∪B) = P(A) × P(B)","P(A∪B) = P(A) + P(B) − P(A∩B)","P(A∪B) = P(A) + P(B) + P(A∩B)","P(A∪B) = P(A∩B) / P(B)"],a:1,e:"Пересечение вычитаем, иначе оно посчитается дважды."},
+{t:"joint",q:"Netflix: P(Breaking Bad) = 0.25, P(Female) = 0.54, P(BB ∩ Female) = 0.05. P(Breaking Bad ∪ Female) = ?",o:["0.79","0.74","0.84","0.05"],a:1,e:"0.25 + 0.54 − 0.05 = 0.74."},
+{t:"joint",p:1,q:"Conditional probability formula:",o:["P(A)/P(B)","P(A∩B)/P(B)","P(B)/P(A)","None"],a:1,e:"P(A|B) = P(A∩B) / P(B)."},
+{t:"joint",q:"Netflix: P(BB ∩ Male) = 0.2, P(Male) = 0.46. P(Breaking Bad | Male) ≈ ?",o:["0.20","0.43","0.46","0.092"],a:1,e:"0.2 / 0.46 ≈ 0.43."},
+{t:"joint",q:"Netflix: P(Money Heist ∩ Female) = 0.24, P(Female) = 0.54. P(Money Heist | Female) ≈ ?",o:["0.24","0.40","0.44","0.13"],a:2,e:"0.24 / 0.54 ≈ 0.44."},
+{t:"joint",q:"Disjoint events are also called:",o:["Independent events","Mutually exclusive events","Dependent events","Exhaustive events"],a:1,e:"Mutually exclusive."},
+{t:"joint",p:1,q:"Disjoint events can occur together.",o:["True","False"],a:1,e:"Для них P(A∩B) = 0."},
+{t:"joint",q:"For disjoint events A and B, P(A∩B) = ?",o:["0","1","P(A)·P(B)","P(A)+P(B)"],a:0,e:"Не могут произойти одновременно."},
+{t:"joint",q:"For disjoint events, P(A ∪ B) = ?",o:["P(A) + P(B) − P(A∩B)","P(A) + P(B)","P(A) × P(B)","1"],a:1,e:"Пересечение = 0, вычитать нечего."},
+{t:"joint",q:"Getting a head and a tail on a single coin toss is an example of:",o:["Independent events","Disjoint events","Non-disjoint events","Joint events"],a:1,e:"Одновременно невозможно."},
+{t:"joint",q:"Getting an A in Statistics and an A in History at the same time is an example of:",o:["Disjoint events","Non-disjoint events","Impossible events","Complement events"],a:1,e:"Могут произойти вместе → P(A∩B) ≠ 0."},
+{t:"joint",p:1,q:"Independent events satisfy:",o:["P(A|B)=P(A)","P(A|B)=0","P(A|B)=1","None"],a:0,e:"B не влияет на A."},
+{t:"joint",p:1,q:"Coin flips are independent.",o:["True","False"],a:0,e:"Прошлый бросок не влияет на следующий."},
+{t:"joint",p:1,q:"Drawing with replacement is dependent.",o:["True","False"],a:1,e:"Предмет возвращают → состав не меняется → независимы."},
+{t:"joint",p:1,q:"Drawing without replacement is dependent.",o:["True","False"],a:0,e:"Состав меняется → вторая вероятность зависит от первой."},
+{t:"joint",q:"“Having black hair” and “working at Google” are:",o:["Dependent events","Independent events","Disjoint events","Complement events"],a:1,e:"Пример из лекции."},
+{t:"joint",q:"“Parking illegally” and “getting a parking ticket” are:",o:["Independent events","Dependent events","Disjoint events","Impossible events"],a:1,e:"Одно повышает вероятность другого."},
+
+// ---------- RULES ----------
+{t:"rules",p:1,q:"P(A∩B) = P(A) × __ (independent)",o:["P(B)","P(A|B)","P(B|A)","None"],a:0,e:"Specific multiplication rule."},
+{t:"rules",p:1,q:"P(A∩B) = P(A) × __",o:["P(B|A)","P(A|B)","P(B)","P(A ∪ B)"],a:0,e:"General multiplication rule — работает и для зависимых."},
+{t:"rules",q:"The specific multiplication rule P(A∩B) = P(A) × P(B) is used for:",o:["Dependent events","Independent events","Disjoint events","Any events"],a:1,e:"Только для независимых."},
+{t:"rules",q:"The general multiplication rule P(A∩B) = P(A) × P(B|A) can be used for:",o:["Only independent events","Only dependent events","Either independent or dependent events","Only disjoint events"],a:2,e:"Общий случай."},
+{t:"rules",q:"Probability of getting “head” in two consecutive coin flips:",o:["0.5","0.25","0.75","1"],a:1,e:"0.5 × 0.5."},
+{t:"rules",q:"10 pants (3 blue), 16 shirts (4 red). P(blue pants and red shirt) = ?",o:["0.55","0.075","0.3","0.25"],a:1,e:"0.3 × 0.25 = 0.075 (независимы)."},
+{t:"rules",q:"A class has 23 girls and 25 boys. Two students are selected. P(both boys) ≈ ?",o:["0.271","0.265","0.25","0.52"],a:1,e:"(25/48) × (24/47) ≈ 0.265. Без возвращения."},
+{t:"rules",q:"A bag has 6 red, 5 blue, 4 yellow balls. Two are drawn without replacement. P(red, then blue) ≈ ?",o:["0.133","0.143","0.4","0.357"],a:1,e:"(6/15) × (5/14) ≈ 0.143."},
+{t:"rules",q:"A bag has 4 red, 3 pink, 6 green balls, drawn without replacement. P(red, then pink) = ?",o:["1/13","1/26","12/169","1/4"],a:0,e:"(4/13) × (3/12) = 1/13."},
+{t:"rules",q:"A bag has 4 red, 3 pink, 6 green balls, drawn without replacement. P(pink, then pink) = ?",o:["9/169","1/13","1/26","1/6"],a:2,e:"(3/13) × (2/12) = 1/26."},
+{t:"rules",p:1,q:"Law of total probability considers all cases.",o:["True","False"],a:0,e:"Суммирует по всем сценариям."},
+{t:"rules",p:1,q:"Law of total probability considers:",o:["One case","Random case","All cases","None"],a:2,e:"All cases."},
+{t:"rules",q:"Law of total probability formula:",o:["P(B) = Σ P(Aᵢ) × P(B|Aᵢ)","P(B) = Σ P(Aᵢ) + P(B)","P(B) = P(A|B) × P(A)","P(B) = 1 − P(A)"],a:0,e:"Взвешенная сумма по всем условиям."},
+{t:"rules",q:"In the law of total probability, the events A₁…Aₙ must be:",o:["Independent and equal","Mutually exclusive and exhaustive","Dependent and overlapping","Continuous"],a:1,e:"Не пересекаются и вместе покрывают все исходы."},
+{t:"rules",q:"60% of phones are Type A (defect 5%), 40% are Type B (defect 3%). P(defective) = ?",o:["0.08","0.042","0.04","0.03"],a:1,e:"0.6×0.05 + 0.4×0.03 = 0.03 + 0.012 = 0.042."},
+{t:"rules",p:1,q:"Bayes theorem relates conditional probabilities.",o:["True","False"],a:0,e:"Связывает P(A|B) и обратную P(B|A)."},
+{t:"rules",q:"Bayes theorem:",o:["P(A|B) = P(B|A) × P(A) / P(B)","P(A|B) = P(A) × P(B)","P(A|B) = P(A∩B) × P(B)","P(A|B) = P(B) / P(A)"],a:0,e:"Знаменатель P(B) часто считают по формуле полной вероятности."},
+{t:"rules",q:"P(lying)=0.75, P(not lying)=0.25, P(win|lying)=0.43, P(win|not lying)=0.57. P(win) = ?",o:["0.5","0.465","0.43","1.0"],a:1,e:"0.75×0.43 + 0.25×0.57 = 0.3225 + 0.1425 = 0.465."},
+{t:"rules",q:"Same game. P(lying | win) ≈ ? (P(win) = 0.465)",o:["0.43","0.691","0.75","0.309"],a:1,e:"0.3225 / 0.465 ≈ 0.691."},
+{t:"rules",q:"Which ML algorithm is a direct implementation of Bayes theorem (used for spam filtering, text classification)?",o:["KNN","Linear Regression","Naive Bayes","K-Means"],a:2,e:"Naive Bayes classifier."},
+{t:"rules",q:"Which is NOT listed in the lecture as an application of Bayes theorem in data science?",o:["Hypothesis testing","Classification","Model optimization","Sorting data"],a:3,e:"Применения: hypothesis test, classification, model (Bayesian) optimization."},
+
+// ---------- RANDOM VARIABLES ----------
+{t:"rv",q:"A random variable is:",o:["Any variable in Python","A rule that assigns a numerical value to each outcome in a sample space","A random sample of data","Always continuous"],a:1,e:"Real-valued function над sample space; обозначается X, Y."},
+{t:"rv",q:"The two types of random variables are:",o:["Joint and marginal","Discrete and continuous","Dependent and independent","Normal and binomial"],a:1,e:"Discrete и continuous."},
+{t:"rv",q:"The number of heads in 3 coin tosses is a:",o:["Continuous random variable","Discrete random variable","Constant","Joint probability"],a:1,e:"Конечное число значений 0, 1, 2, 3."},
+{t:"rv",q:"The height of students in a class is a:",o:["Discrete random variable","Continuous random variable","Bernoulli trial","Sample space"],a:1,e:"Любое значение из интервала."},
+{t:"rv",q:"3 fair coins are tossed, X = number of heads. P(X = 2) = ?",o:["1/8","2/8","3/8","4/8"],a:2,e:"thh, hth, hht → 3 из 8."},
+{t:"rv",q:"For a continuous random variable, probability is measured:",o:["At exact points","Over intervals","Only at the mean","Only for integers"],a:1,e:"P(X = 32 мин ровно) смысла не имеет; считают P(31 < X < 33)."},
+{t:"rv",q:"PMF (Probability Mass Function) describes the distribution of a:",o:["Continuous random variable","Discrete random variable","Both","Neither"],a:1,e:"PMF — discrete, PDF — continuous."},
+{t:"rv",q:"PDF (Probability Density Function) is defined for:",o:["Discrete random variables","Continuous random variables","Only binomial data","Categorical data"],a:1,e:"Continuous."},
+{t:"rv",q:"CDF (Cumulative Distribution Function) can be used for:",o:["Only discrete variables","Only continuous variables","Both discrete and continuous variables","Neither"],a:2,e:"F(x) = P(X ≤ x) для любых."},
+{t:"rv",q:"CDF is defined as F(x) = ?",o:["P(X = x)","P(X ≥ x)","P(X ≤ x)","P(X > x)"],a:2,e:"Less than or equal to."},
+{t:"rv",q:"The sum of all PMF values (or the total area under a PDF) equals:",o:["0","0.5","1","Depends on data"],a:2,e:"Всегда 1."},
+{t:"rv",q:"Which is a property of the CDF?",o:["It is non-decreasing","It can be negative","It always decreases","It is always equal to 0.5"],a:0,e:"Растёт или остаётся постоянной; F(−∞) = 0, F(+∞) = 1."},
+{t:"rv",q:"CDF is non-decreasing.",o:["True","False"],a:0,e:"x₁ ≤ x₂ ⇒ F(x₁) ≤ F(x₂)."},
+{t:"rv",q:"Lecture example of a PMF distribution:",o:["Normal","Binomial","Exponential","Uniform"],a:1,e:"Binomial — дискретное."},
+{t:"rv",q:"Lecture example of a PDF distribution:",o:["Binomial","Geometric","Normal","Bernoulli"],a:2,e:"Normal — непрерывное."},
+{t:"rv",q:"Exam scores: 60→5 students, 70→10, 80→15, 90→7, 100→3. CDF(80) = P(X ≤ 80) = ?",o:["0.375","0.75","0.25","0.825"],a:1,e:"(5+10+15) / 40 = 0.75."},
+{t:"rv",q:"Why are CDF and PDF useful?",o:["They sort data","They allow us to calculate the probability of intervals easily","They remove outliers","They replace missing values"],a:1,e:"Ответ из лекции."},
+
+// ---------- DISTRIBUTIONS ----------
+{t:"dist",q:"A random experiment with two possible outcomes (success or failure) is called a:",o:["Poisson trial","Bernoulli trial","Gaussian trial","Uniform trial"],a:1,e:"Bernoulli trial."},
+{t:"dist",q:"Binomial distribution gives the probability of:",o:["Time between events","Getting x successes out of n trials","The first success on trial k","Any value in an interval"],a:1,e:"x успехов из n."},
+{t:"dist",q:"Binomial formula P(X = x) = ?",o:["nCx · pˣ · (1−p)ⁿ⁻ˣ","(1−p)ᵏ⁻¹ · p","λe^(−λx)","1 / (b − a)"],a:0,e:"Остальные — геометрическое, экспоненциальное и равномерное."},
+{t:"dist",q:"A coin is tossed 5 times. P(exactly 2 heads) = ?",o:["5/32","5/16","10/16","1/4"],a:1,e:"5C2 · 0.5⁵ = 10/32 = 5/16."},
+{t:"dist",q:"A coin is tossed 5 times. P(at least 4 heads) = ?",o:["5/32","1/32","3/16","1/2"],a:2,e:"P(4) + P(5) = 5/32 + 1/32 = 6/32 = 3/16."},
+{t:"dist",q:"Mean (expected value) of a binomial distribution:",o:["n · p","n · p · (1−p)","p / n","√(n·p)"],a:0,e:"E[X] = np; дисперсия np(1−p)."},
+{t:"dist",q:"A factory produces 200 chips with defect rate 8%. Which distribution?",o:["Normal","Binomial","Exponential","Uniform"],a:1,e:"n испытаний, у каждого 2 исхода (брак / не брак)."},
+{t:"dist",q:"200 chips, defect rate 8%. Expected number of defects = ?",o:["8","16","14.72","3.84"],a:1,e:"200 × 0.08 = 16; std = √(200·0.08·0.92) ≈ 3.84."},
+{t:"dist",q:"Geometric distribution counts:",o:["The number of successes in n trials","The number of trials until the first success","The time between events","Values in an interval"],a:1,e:"До первого успеха."},
+{t:"dist",q:"Geometric PMF:",o:["(1−p)ᵏ⁻¹ · p","pᵏ","nCk pᵏ (1−p)ⁿ⁻ᵏ","λe^(−λk)"],a:0,e:"k−1 неудач, затем успех."},
+{t:"dist",q:"A person throws a die until he gets 5 (p ≈ 0.17). P(first 5 on the 2nd throw) ≈ ?",o:["0.17","0.14","0.03","0.83"],a:1,e:"0.83 × 0.17 ≈ 0.14."},
+{t:"dist",q:"Uniform distribution is also known as:",o:["Bell curve","Rectangular distribution","Gaussian","Exponential"],a:1,e:"Постоянная вероятность на интервале; используется для генерации случайных чисел."},
+{t:"dist",q:"Which distribution is traditionally used for modelling time to failure of electronic components?",o:["Binomial","Exponential","Geometric","Uniform"],a:1,e:"Exponential — время между событиями."},
+{t:"dist",q:"Exponential PDF:",o:["λe^(−λx)","nCx pˣ(1−p)ⁿ⁻ˣ","(1−p)ᵏ⁻¹p","1/(σ√2π)"],a:0,e:"λ — средняя частота событий."},
+{t:"dist",q:"Mean of the exponential distribution:",o:["λ","1/λ","λ²","1/λ²"],a:1,e:"μ = 1/λ, σ² = 1/λ²."},
+{t:"dist",q:"Normal distribution is also called:",o:["Rectangular distribution","Gaussian / bell curve distribution","Poisson distribution","Geometric distribution"],a:1,e:"Gaussian, bell curve."},
+{t:"dist",q:"The normal distribution is defined by which parameters?",o:["n and p","λ","μ (mean) and σ (standard deviation)","a and b"],a:2,e:"Среднее и стандартное отклонение."},
+{t:"dist",q:"z-score formula:",o:["z = (x − μ) / σ","z = (x − σ) / μ","z = x · σ − μ","z = μ / σ"],a:0,e:"На сколько σ значение отстоит от среднего."},
+{t:"dist",q:"Marks ~ Normal(μ = 65, σ = 9). z-score for x = 54 ≈ ?",o:["1.22","−1.22","−11","0.82"],a:1,e:"(54 − 65) / 9 ≈ −1.22."},
+{t:"dist",q:"Marks ~ Normal(65, 9). P(X ≥ 80) is computed as:",o:["P(Z ≤ 1.67)","1 − P(Z ≤ 1.67)","P(Z ≤ −1.67) − 1","P(Z = 1.67)"],a:1,e:"«Не меньше» = 1 − cdf. Ответ ≈ 0.0475."},
+{t:"dist",q:"Marks ~ Normal(65, 9). P(70 ≤ X ≤ 86) is computed as:",o:["P(Z ≤ 2.33) + P(Z ≤ 0.55)","P(Z ≤ 2.33) − P(Z ≤ 0.55)","P(Z ≤ 0.55) − P(Z ≤ 2.33)","1 − P(Z ≤ 2.33)"],a:1,e:"cdf(верх) − cdf(низ) ≈ 0.281."},
+{t:"dist",q:"After z-score transformation, data has:",o:["Mean 1, std 0","Mean 0, std 1","Mean = median","No outliers"],a:1,e:"Standard normal scale."},
+{t:"dist",q:"Z-score transformation changes the shape of a skewed distribution into a normal one.",o:["True","False"],a:1,e:"Форма не меняется — меняются только среднее (0) и std (1)."},
+{t:"dist",q:"Which transformation is useful when data has positive skewness (skewed to the right)?",o:["Logarithmic transformation","Z-score","Adding a constant","Sorting"],a:0,e:"Также square root; Box-Cox — универсальный."},
+{t:"dist",q:"Skewness close to 0 indicates:",o:["A symmetric distribution","A right-skewed distribution","Many missing values","A binomial distribution"],a:0,e:">0 — хвост справа, <0 — хвост слева."},
+{t:"dist",q:"Central Limit Theorem states that the distribution of sample means:",o:["Is always uniform","Approximates a normal distribution as the sample size gets larger, regardless of the population's distribution","Equals the population distribution","Is always skewed"],a:1,e:"Ключевая формулировка ЦПТ."},
+{t:"dist",q:"Standard error of the mean (by CLT) equals:",o:["σ × n","σ / √n","σ²","μ / n"],a:1,e:"Population std / √(sample size)."},
+{t:"dist",q:"By the CLT, the average of sample means equals:",o:["The population mean","Zero","The sample size","The median"],a:0,e:"Среднее выборочных средних = среднее генеральной совокупности."},
+
+// ---------- PYTHON ----------
+{t:"py",p:1,q:"Probability of getting exactly 5 heads out of 20 coin tosses:\nstats.binom.___(5, 20, 0.5)",a:["pmf"],e:"pmf — ровно k."},
+{t:"py",p:1,q:"Probability of getting at most 5 heads out of 20 coin tosses:\nstats.binom.___(5, 20, 0.5)",a:["cdf"],e:"cdf — P(X ≤ k)."},
+{t:"py",q:"Probability of getting at least 14 defective chips (n=200, p=0.08):\n1 - stats.binom.___(13, 200, 0.08)",a:["cdf"],e:"P(X ≥ 14) = 1 − P(X ≤ 13)."},
+{t:"py",q:"Which code gives P(X ≥ 14) for Binomial(200, 0.08)?",o:["stats.binom.cdf(14, 200, 0.08)","1 - stats.binom.cdf(13, 200, 0.08)","1 - stats.binom.cdf(14, 200, 0.08)","stats.binom.pmf(14, 200, 0.08)"],a:1,e:"Граница k−1 = 13. Можно ещё stats.binom.sf(13, 200, 0.08)."},
+{t:"py",p:1,q:"Mean and variance when tossing a coin 20 times:\navg, variance = stats.binom.___(20, 0.5)",a:["stats"],e:"binom.stats(n, p) → (mean, var)."},
+{t:"py",q:"Expected value of Binomial(200, 0.08) with scipy:\nstats.binom.___(200, 0.08)",a:["mean"],e:"binom.mean(n, p) = n·p; binom.std(n, p) — std."},
+{t:"py",p:1,q:"Probability of a value less than or equal to a given z-score:\np = stats.norm.___(z)",a:["cdf"],e:"P(Z ≤ z)."},
+{t:"py",p:1,q:"Calculate cumulative probability:\np_value = stats.norm.___(z_stat)",a:["cdf"],e:"Cumulative = cdf."},
+{t:"py",p:1,q:"Probability between two values (one word):\nstats.norm.___(z2) - stats.norm.___(z1)",a:["cdf"],e:"cdf(z2) − cdf(z1)."},
+{t:"py",q:"Probability that salary is greater than 30000 (z computed):\np = 1 - stats.norm.___(z)",a:["cdf"],e:"P(X > x) = 1 − cdf."},
+{t:"py",q:"Compute normal CDF without converting to z:\nstats.norm.cdf(x, loc=mean, ___=std)",a:["scale"],e:"loc — среднее, scale — std."},
+{t:"py",q:"Convert to z-score:\nz = (x - df['salary'].mean()) / df['salary'].___()",a:["std"],e:"z = (x − μ) / σ."},
+{t:"py",q:"Probability that the first 5 on a die appears on the 2nd throw:\nstats.___.pmf(2, 1/6)",a:["geom"],e:"Геометрическое распределение в scipy — geom."},
+{t:"py",p:1,q:"Fill in the blank to calculate skewness:\ndf['height'].___()",a:["skew"],e:"Также stats.skew(df['height'])."},
+{t:"py",q:"Skewness with scipy:\nstats.___(df['salary'])",a:["skew"],e:"scipy.stats.skew."},
+{t:"py",p:1,q:"Draw a histogram using pandas:\ndf['height'].___()",a:["hist","plot.hist"],e:"Гистограмма — первый шаг, чтобы определить распределение."},
+{t:"py",q:"Which is the first step to identify the distribution of a numeric column (practical)?",o:["Plot a histogram and calculate skewness","Train a model","Drop the column","Sort the column"],a:0,e:"Сначала смотрят форму на гистограмме и проверяют skew."},
+{t:"py",p:1,q:"In the credit_card.csv practical, the total number of customers is found with:\nS = df.___[0]",a:["shape"],e:"shape[0] — число строк."},
+{t:"py",p:1,q:"Filter customers with no credit card:\nno_cc = df[df['CreditCard'] ___ 'no']",a:["=="],e:"== — сравнение."},
+{t:"py",q:"Probability that a car is sedan:\np = ___(df[df['carbody'] == 'sedan']) / len(df)",a:["len"],e:"Количество подходящих / общее количество."},
+{t:"py",q:"Probability that a car is sedan AND works with gas:\nlen(df[(df['carbody']=='sedan') ___ (df['fueltype']=='gas')]) / len(df)",a:["&"],e:"Совместная вероятность → &."},
+{t:"py",q:"P(sedan | gas):\ngas = df[df['fueltype'] == 'gas']\np = len(gas[gas['carbody'] == 'sedan']) / len(___)",a:["gas"],e:"При условии → делим на размер условной группы, а не всего df."},
+{t:"py",q:"Fill missing values using linear interpolation:\ndf['carheight'] = df['carheight'].___(method='linear')",a:["interpolate"],e:"Практика Ass8 Q1.3."},
+{t:"py",q:"Fill missing values with the mode:\ndf['enginesize'] = df['enginesize'].fillna(df['enginesize'].mode()[___])",a:["0"],e:"mode() возвращает Series — берём первый элемент."},
+{t:"py",q:"Count missing values per column:\ndf.isnull().___()",a:["sum"],e:"Со скобками!"},
+{t:"py",q:"Proportion of each category (empirical probabilities):\ndf['carbody'].value_counts(___=True)",a:["normalize"],e:"normalize=True делит на общее количество."},
+
+// ---------- ADJ ----------
+{t:"adj",p:1,q:"In ML, what is a training set?",o:["Testing data","Data used to evaluate","Data used to learn","Random data"],a:2,e:"На train модель учится."},
+{t:"adj",p:1,q:"Which ML system compares data points directly?",o:["Model-based","Instance-based","Deep learning","Regression"],a:1,e:"Instance-based (например, KNN)."},
+{t:"adj",p:1,q:"Batch learning updates continuously.",o:["True","False"],a:1,e:"Непрерывно обновляется online learning."},
+{t:"adj",p:1,q:"Which is an unsupervised task?",o:["Classification","Regression","Clustering","Prediction"],a:2,e:"Без меток."},
+{t:"adj",p:1,q:"Which task detects fraud?",o:["Clustering","Anomaly detection","Regression","Classification"],a:1,e:"Аномалия = редкое отклонение."},
+{t:"adj",p:1,q:"What is accuracy?",o:["Loss function","Error rate","Correct predictions ratio","Training size"],a:2,e:"Доля верных."},
+{t:"adj",p:1,q:"Vector dimensionality refers to:",o:["Number of elements","Length","Shape","Direction"],a:0,e:"Сколько чисел в векторе."},
+{t:"adj",p:1,q:"Which operation requires same orientation?",o:["Broadcasting","Addition","Subtraction","Both B and C","All above"],a:3,e:"Сложение и вычитание."},
+{t:"adj",p:1,q:"What is broadcasting?",o:["Data storage","Looping","Sorting","Expanding arrays automatically"],a:3,e:"NumPy растягивает массивы."},
+{t:"adj",p:1,q:"Broadcasting removes loops.",o:["True","False"],a:0,e:"Векторизация вместо цикла."},
+{t:"adj",p:1,q:"Which defines angle between vectors?",o:["Sum","Division","Mean","Dot product"],a:3,e:"cos θ = a·b / (‖a‖‖b‖)."}
+];
+
+Q.forEach((q,i)=>q.id=i);
+
+const app=document.getElementById('app');
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmt=s=>esc(s).replace(/\n/g,'<br>').replace(/((?:[\w.\[\]'"()=,\- ]*)___(?:[\w.\[\]'"()=,\- ]*))/g,m=>m);
+const pastTag=q=>q.p?' <span class="tag past">прошлый год</span>':'';
+const qtext=q=>q.o?`<div class="qt">${esc(q.q)}</div>`:`<div class="qt code">${esc(q.q)}</div>`;
+const norm=s=>s.trim().replace(/\s+/g,'').replace(/^\./,'').replace(/"/g,"'").toLowerCase();
+const correctText=q=>q.o?q.o[q.a]:q.a[0];
+const byTopic=()=>{const c={};Object.keys(T).forEach(k=>c[k]=Q.filter(q=>q.t===k));return c;};
+
+// ---------- LIST MODE ----------
+function renderList(){
+  const g=byTopic();
+  const past=Q.filter(q=>q.p).length;
+  let h=`<div class="summary"><b>Всего вопросов: ${Q.length}</b> · из прошлогоднего квиза: ${past} · новых по лекции и практике: ${Q.length-past}
+  <table><tr><td class="mute">Тема</td><td class="mute r">прошлый год</td><td class="mute r">новые</td><td class="mute r">всего</td></tr>${Object.keys(T).map(k=>{const p=g[k].filter(q=>q.p).length;return `<tr><td><a href="#t-${k}">${T[k]}</a></td><td class="r">${p}</td><td class="r">${g[k].length-p}</td><td class="r">${g[k].length}</td></tr>`}).join('')}</table>
+  <div class="row"><label><input type="checkbox" id="hideA"> Скрыть ответы</label></div></div><div id="list">`;
+  let n=0;
+  for(const k of Object.keys(T)){
+    h+=`<h2 class="topic-h" id="t-${k}">${T[k]} · ${g[k].length}</h2>`;
+    for(const q of g[k]){
+      n++;
+      h+=`<div class="q"><div class="qn">#${n}${pastTag(q)}</div>${qtext(q)}`;
+      if(q.o) h+=q.o.map((o,i)=>`<div class="opt ${i===q.a?'ok':''}">${String.fromCharCode(65+i)}. ${esc(o)}</div>`).join('');
+      else h+=`<div class="ans">Ответ: <b class="code">${esc(q.a[0])}</b></div>`;
+      h+=`<div class="exp">${esc(q.e)}</div></div>`;
+    }
+  }
+  app.innerHTML=h+'</div>';
+  document.getElementById('hideA').onchange=e=>document.getElementById('list').classList.toggle('hideans',e.target.checked);
+}
+
+// ---------- QUIZ MODE ----------
+let S=null;
+function renderSetup(){
+  const g=byTopic();
+  app.innerHTML=`<div class="summary setup"><b>Выбери темы</b>
+  ${Object.keys(T).map(k=>`<label><input type="checkbox" class="tp" value="${k}" checked> ${T[k]} <span class="tag">${g[k].length}</span></label>`).join('')}
+  <label><input type="checkbox" id="onlyPast"> Только прошлогодние вопросы</label>
+  <label><input type="checkbox" id="shuf" checked> Перемешать вопросы</label>
+  <label>Сколько вопросов: <select id="cnt"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="all" selected>Все</option></select></label>
+  <div class="row"><span></span><button class="primary" id="start">Начать</button></div></div>`;
+  document.getElementById('start').onclick=()=>{
+    const tp=[...document.querySelectorAll('.tp:checked')].map(x=>x.value);
+    let list=Q.filter(q=>tp.includes(q.t)&&(!document.getElementById('onlyPast').checked||q.p));
+    if(!list.length) return;
+    if(document.getElementById('shuf').checked) list=list.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);
+    const c=document.getElementById('cnt').value; if(c!=='all') list=list.slice(0,+c);
+    S={list,i:0,ans:{}}; renderQ();
+  };
+}
+function renderQ(){
+  const q=S.list[S.i], st=S.ans[S.i], n=S.list.length;
+  let h=`<div class="progress"><div style="width:${(S.i)/n*100}%"></div></div>
+  <div class="q"><div class="qn">Вопрос ${S.i+1} из ${n} · <span class="tag">${T[q.t]}</span>${pastTag(q)}</div>${qtext(q)}`;
+  if(q.o){
+    h+=q.o.map((o,i)=>{let c='';if(st){if(i===q.a)c='ok';else if(i===st.v)c='bad';}
+      return `<button class="opt ${c}" data-i="${i}" ${st?'disabled':''}>${String.fromCharCode(65+i)}. ${esc(o)}</button>`}).join('');
+  }else{
+    h+=`<input type="text" id="inp" placeholder="Впиши ответ и нажми Enter" ${st?'disabled':''} value="${st?esc(st.v):''}">`;
+    if(!st) h+=`<div class="row"><span></span><button id="chk">Проверить</button></div>`;
+  }
+  if(st){
+    h+=`<div class="verdict ${st.ok?'ok':'bad'}">${st.ok?'Верно':'Неверно'}</div>`;
+    if(!st.ok&&!q.o) h+=`<div class="ans">Правильно: <b class="code">${esc(q.a[0])}</b></div>`;
+    h+=`<div class="exp">${esc(q.e)}</div>`;
+  }
+  h+=`</div><div class="row"><button id="prev" ${S.i===0?'disabled':''}>← Назад</button>
+  <button class="primary" id="next" ${st?'':'disabled'}>${S.i===n-1?'Результат':'Дальше →'}</button></div>`;
+  app.innerHTML=h;
+  const setA=(v,ok)=>{S.ans[S.i]={v,ok};renderQ();};
+  document.querySelectorAll('button.opt').forEach(b=>b.onclick=()=>{const v=+b.dataset.i;setA(v,v===q.a);});
+  const inp=document.getElementById('inp');
+  if(inp&&!st){inp.focus();const go=()=>{if(!inp.value.trim())return;setA(inp.value,q.a.some(a=>norm(a)===norm(inp.value)));};
+    inp.onkeydown=e=>{if(e.key==='Enter')go();};document.getElementById('chk').onclick=go;}
+  document.getElementById('prev').onclick=()=>{S.i--;renderQ();};
+  document.getElementById('next').onclick=()=>{if(S.i===n-1)renderResult();else{S.i++;renderQ();}};
+}
+function renderResult(){
+  const n=S.list.length, ok=Object.values(S.ans).filter(a=>a.ok).length;
+  const per={};S.list.forEach((q,i)=>{per[q.t]=per[q.t]||[0,0];per[q.t][1]++;if(S.ans[i]&&S.ans[i].ok)per[q.t][0]++;});
+  const wrong=S.list.map((q,i)=>[q,S.ans[i]]).filter(([q,a])=>!a||!a.ok);
+  app.innerHTML=`<div class="summary"><div class="big">${ok} / ${n}</div><div>${Math.round(ok/n*100)}% верных</div>
+  <table>${Object.keys(per).map(k=>`<tr><td>${T[k]}</td><td>${per[k][0]} / ${per[k][1]}</td></tr>`).join('')}</table>
+  <div class="row"><button id="again">Заново</button>${wrong.length?'<button class="primary" id="redo">Повторить ошибки</button>':''}</div></div>
+  ${wrong.length?'<h2 class="topic-h">Ошибки</h2>':''}
+  ${wrong.map(([q,a])=>`<div class="q">${qtext(q)}${a?`<div class="verdict bad">Твой ответ: ${esc(q.o?q.o[a.v]:a.v)}</div>`:''}<div class="ans">Правильно: <b>${esc(correctText(q))}</b></div><div class="exp">${esc(q.e)}</div></div>`).join('')}`;
+  document.getElementById('again').onclick=renderSetup;
+  const r=document.getElementById('redo'); if(r) r.onclick=()=>{S={list:wrong.map(w=>w[0]),i:0,ans:{}};renderQ();};
+}
+
+const bL=document.getElementById('mList'), bQ=document.getElementById('mQuiz');
+bL.onclick=()=>{bL.classList.add('on');bQ.classList.remove('on');renderList();scrollTo(0,0);};
+bQ.onclick=()=>{bQ.classList.add('on');bL.classList.remove('on');renderSetup();scrollTo(0,0);};
+renderList();
+</script>
+</body>
+</html>

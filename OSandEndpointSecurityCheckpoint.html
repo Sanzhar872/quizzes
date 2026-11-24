@@ -1,0 +1,375 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Endpoint Security Exam Prep</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky mode bar over a single centered column of question cards; a quiet tool, color only carries right/wrong state. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --fg:#17202a; --muted:#5b6773; --line:#d9dee4;
+  --accent:#0b6e75; --accent-soft:#dff0f1; --accent-fg:#ffffff;
+  --ok:#17803d; --ok-soft:#e1f4e7; --bad:#b42318; --bad-soft:#fde8e6; --code:#101820; --code-fg:#cfe8d5;
+  --display:'Archivo',system-ui,sans-serif; --body:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --surface:#18222b; --fg:#e6ecf1; --muted:#98a6b3; --line:#2b3945;
+  --accent:#4cc3cb; --accent-soft:#17323a; --accent-fg:#06262a;
+  --ok:#5fd18a; --ok-soft:#173a26; --bad:#ff8f84; --bad-soft:#41201d; --code:#0a0f13; --code-fg:#b9e3c3; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --surface:#18222b; --fg:#e6ecf1; --muted:#98a6b3; --line:#2b3945;
+  --accent:#4cc3cb; --accent-soft:#17323a; --accent-fg:#06262a;
+  --ok:#5fd18a; --ok-soft:#173a26; --bad:#ff8f84; --bad-soft:#41201d; --code:#0a0f13; --code-fg:#b9e3c3; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.55 var(--body)}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:20px 64px}
+header.top{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:8px 16px;margin-bottom:16px}
+h1{font:800 clamp(1.5rem,4vw,2rem)/1.1 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);font-size:.9rem;margin:4px 0 0}
+.stats{font:500 .8rem var(--mono);color:var(--muted);text-align:right}
+nav.modes{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:16px}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tab{padding:8px 14px;border:1px solid var(--line);background:var(--surface);border-radius:6px;font-weight:600;font-size:.92rem}
+.tab[aria-pressed=true]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn{padding:9px 16px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-fg);font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:16px}
+.bar .grow{flex:1}
+.bar select,.bar input[type=search]{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);min-width:0}
+.bar input[type=search]{flex:1;min-width:140px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px;min-width:0}
+.qh{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:10px}
+.qn{font:700 .8rem var(--mono);color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:4px}
+.hint{font:500 .75rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.qt{font-weight:600;margin:0 0 12px;text-wrap:pretty}
+pre.term{background:var(--code);color:var(--code-fg);font:400 .85rem/1.5 var(--mono);padding:12px 14px;border-radius:6px;overflow-x:auto;margin:0 0 12px}
+ul.opts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:transparent}
+.opt .mark{flex:none;width:18px;height:18px;margin-top:3px;border:2px solid var(--muted);border-radius:50%}
+.multi .opt .mark{border-radius:4px}
+.opt[aria-checked=true]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-checked=true] .mark{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 3px var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .mark{background:var(--ok);border-color:var(--ok);box-shadow:inset 0 0 0 3px var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .mark{background:var(--bad);border-color:var(--bad);box-shadow:inset 0 0 0 3px var(--bad-soft)}
+.opt.missed{border-style:dashed;border-color:var(--ok)}
+.tag{margin-left:auto;font:600 .72rem var(--mono);white-space:nowrap}
+.right .tag,.missed .tag{color:var(--ok)}.wrong .tag{color:var(--bad)}
+.mt{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:clamp(48px,16vw,120px);align-items:stretch}
+.mcol{display:grid;gap:10px;align-content:space-around}
+.mi{position:relative;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:.88rem;line-height:1.35;min-width:0;overflow-wrap:anywhere}
+.mi::after{content:"";position:absolute;top:50%;width:11px;height:11px;margin-top:-6px;border:2px solid var(--muted);border-radius:50%;background:var(--surface)}
+.mcol:first-child .mi::after{right:-7px}.mcol:nth-child(2) .mi::after{left:-7px}
+.mi.linked,.mi.sel{border-color:var(--accent)}
+.mi.linked::after,.mi.sel::after{background:var(--accent);border-color:var(--accent)}
+.mi.sel{background:var(--accent-soft)}
+.mi.right{border-color:var(--ok);background:var(--ok-soft)}.mi.right::after{background:var(--ok);border-color:var(--ok)}
+.mi.wrong{border-color:var(--bad);background:var(--bad-soft)}.mi.wrong::after{background:var(--bad);border-color:var(--bad)}
+.mi:disabled{cursor:default;color:inherit}
+.mlines{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.ln{stroke:var(--accent);stroke-width:2.5;stroke-linecap:round}
+.ln.ok{stroke:var(--ok)}.ln.bad{stroke:var(--bad)}.ln.fix{stroke:var(--ok);stroke-dasharray:5 5;stroke-width:2}
+.mhint{font-size:.8rem;color:var(--muted);margin:10px 0 0}
+.theme{padding:6px 12px;border:1px solid var(--line);background:var(--surface);border-radius:6px;font:500 .8rem var(--body);margin-top:8px}
+.exp{margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--accent-soft);font-size:.92rem}
+.exp b{font:600 .72rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);display:block;margin-bottom:4px}
+.exp p{margin:0 0 4px}
+.verdict{margin-top:12px;font-weight:600}
+.verdict.ok{color:var(--ok)}.verdict.no{color:var(--bad)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.timer{font:600 1.1rem var(--mono);font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad)}
+.result{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px}
+.result .score{font:800 3rem/1 var(--display);font-variant-numeric:tabular-nums}
+.result .score.ok{color:var(--ok)}.result .score.no{color:var(--bad)}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:16px}
+.prog i{display:block;height:100%;background:var(--accent)}
+.empty{padding:32px 16px;text-align:center;color:var(--muted)}
+.dots{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
+.dot{width:26px;height:26px;border-radius:4px;border:1px solid var(--line);background:var(--surface);font:500 .7rem var(--mono);color:var(--muted)}
+.dot.cur{border-color:var(--accent);color:var(--accent);font-weight:700}
+.dot.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.dot.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.dot.ans{background:var(--accent-soft)}
+@media(prefers-reduced-motion:no-preference){.q{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(4px)}}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Endpoint Security: подготовка к экзамену</h1>
+      <p class="sub">31 вопрос · Модули 7–10 · Linux, Windows, защита конечных точек</p>
+    </div>
+    <div><div class="stats" id="stats"></div><button class="theme" id="theme" type="button"></button></div>
+  </header>
+  <nav class="modes" aria-label="Режим">
+    <button class="tab" data-mode="study">Конспект</button>
+    <button class="tab" data-mode="practice">Тренировка</button>
+    <button class="tab" data-mode="exam">Экзамен</button>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<script>
+const Q=[
+{t:'single',x:'What principle prevents the disclosure of information to unauthorized people, resources, and processes?',o:['confidentiality','integrity','accounting','availability','nonrepudiation'],a:[0],e:'The security principle of confidentiality refers to the prevention of the disclosure of information to unauthorized people, resources, and processes.',r:'10.1.3'},
+{t:'multi',x:'A user is proposing the purchase of a patch management solution for a company. The user wants to give reasons why the company should spend money on a solution. What benefits does a patch management provide? (Choose three.)',o:['Administrators can approve or deny patches.','Updates can be forced on systems immediately.','Patches can be chosen by the user.','Computers require a connection to the Internet to receive patches.','Updates cannot be circumvented by the user.','Patches can be written quickly.'],a:[0,1,4],e:'A centralized patch management system can speed up deployment of patches and automate the process. Other good reasons: administrators control the update process, reports are generated, updates are provided from a local server, users cannot circumvent the update process.',r:'9.1.5'},
+{t:'multi',x:'What are two advantages of the NTFS file system compared with FAT32? (Choose two.)',o:['NTFS allows faster access to external peripherals such as a USB drive.','NTFS supports larger files.','NTFS provides more security features.','NTFS allows faster formatting of drives.','NTFS is easier to configure.','NTFS allows the automatic detection of bad sectors.'],a:[1,2],e:'The file system has no control over the speed of access or formatting of drives, and the ease of configuration is not file system-dependent.',r:'7.2.3'},
+{t:'multi',x:'What are three access control security services? (Choose three.)',o:['access','availability','accounting','authentication','repudiation','authorization'],a:[2,3,5],e:'This question refers to AAA: authentication, authorization, and accounting.',r:'9.2.2'},
+{t:'multi',x:'What three tasks are accomplished by a comprehensive security policy? (Choose three.)',o:['is not legally binding','gives security staff the backing of management','vagueness','defines legal consequences of violations','useful for management','sets rules for expected behavior'],a:[1,3,5],e:'A security policy demonstrates the commitment to security by an organization, sets the rules for expected behavior, ensures consistency in system operations, software and hardware acquisition use and maintenance, defines the legal consequences of violations, and gives security staff the backing of management.',r:'10.3.5'},
+{t:'single',x:'In the Linux shell, which character is used between two commands to instruct the shell to combine and execute these two commands in sequence?',o:['$','#','%','|'],a:[3],e:'In the Linux shell, several commands can be combined to perform a complex task. This technique is known as piping. The piping process is indicated by inserting the character "|" between two consecutive commands.',r:'8.1.6'},
+{t:'single',x:'A PC user issues the netstat command without any options. What is displayed as the result of this command?',o:['a list of all established active TCP connections','a local routing table','a historical list of successful pings that have been sent','a network connection and usage report'],a:[0],e:'When used by itself (without any options), netstat will display all the active TCP connections that are available.',r:'7.4.1'},
+{t:'single',x:'Why would a network administrator choose Linux as an operating system in the Security Operations Center (SOC)?',o:['More network applications are created for this environment.','It is easier to use than other operating systems.','The administrator has more control over the operating system.','It is more secure than other server operating systems.'],a:[2],e:'Linux is open source. The command line interface is a very powerful environment. The user has more control over the operating system. Linux allows for better network communication control.',r:'8.1.2'},
+{t:'multi',x:'What are three states of data during which data is vulnerable? (Choose three.)',o:['data in-transit','data decrypted','data in-process','data encrypted','purged data','stored data'],a:[0,2,5],e:'A cybersecurity specialist must be aware of the three states of data to effectively protect data and information. Purged data was stored data. Encrypted and decrypted data can be in any of the three states.',r:'10.1.2'},
+{t:'multi',x:'Which two options are window managers for Linux? (Choose two.)',o:['PenTesting','KDE','File Explorer','Kali','Gnome'],a:[1,4],e:'The X Window System provides the basic framework for a GUI, but the GUI itself varies by distribution. Two window managers are Gnome and KDE.',r:'8.8.1'},
+{t:'single',x:'What term describes a set of software tools designed to increase the privileges of a user or to grant access to the user to portions of the operating system that should not normally be allowed?',o:['package manager','rootkit','penetration testing','compiler'],a:[1],e:'A rootkit is used by an attacker to secure a backdoor to a compromised computer, grant access to portions of the operating system normally not permitted, or increase the privileges of a user.',r:'8.7.5'},
+{t:'single',x:'What is the difference between an HIDS and a firewall?',o:['An HIDS blocks intrusions, whereas a firewall filters them.','An HIDS monitors operating systems on host computers and processes file system activity. Firewalls allow or deny traffic between the computer and other systems.','A firewall allows and denies traffic based on rules and an HIDS monitors network traffic.','A firewall performs packet filtering and therefore is limited in effectiveness, whereas an HIDS blocks intrusions.','An HIDS works like an IPS, whereas a firewall just monitors traffic.'],a:[1],e:'In order to monitor local activity an HIDS should be implemented. Network activity monitors are concerned with traffic and not operating system activity.',r:'9.1.6'},
+{t:'single',x:'Consider the result of the ls -l command in the Linux output below. What are the file permissions assigned to the sales user for the analyst.txt file?',term:'ls -l analyst.txt\n-rwxrw-r-- sales staff 1028 May 28 15:50 analyst.txt',o:['read, write, execute','read only','read, write','write only'],a:[0],e:'File permissions are shown in User, Group and Other order. The dash (-) means the item is a file (for a directory it would be "d"). The first set (rwx) is for the user, sales, who owns the file: read, write and execute. The second set (rw-) is for the group, staff: read and write. The third set (r--) is for any other user or group: read only.',r:'8.5.2'},
+{t:'match',x:'Match the Linux command to the function. (Not all options are used.)',items:['displays the name of the current working directory','lists the processes that are currently running','runs a command as another user','modifies file permissions'],o:['pwd','sudo','chmod','ps','No answer available'],a:[0,3,1,2],e:'pwd displays the current working directory. sudo runs a command as another user. chmod modifies file permissions. ps lists the processes that are currently running. Shutting down the system is not part of this question.',r:'8.2.2'},
+{t:'single',x:'Which statement describes the term iptables?',o:['It is a file used by a DHCP server to store current active IP addresses.','It is a DHCP application in Windows.','It is a rule-based firewall application in Linux.','It is a DNS daemon in Linux.'],a:[2],e:'Iptables is an application that allows Linux system administrators to configure network access rules.',r:'9.3.1'},
+{t:'single',x:'On a Windows host, which tool can be used to create and maintain block lists and allow lists?',o:['Group Policy Editor','Local Users and Groups','Task Manager','Computer Management'],a:[0],e:'In Windows, block listing and allow listing settings can be managed through the Group Policy Editor.',r:'9.4.2'},
+{t:'match',x:'Match the network-based anti-malware solution to the function. (Not all options are used.)',items:['permits only authorized and compliant systems to connect to the network','provides endpoint protection from viruses and malware','provides filtering of websites and block listing before they reach the endpoint','provides filtering of SPAM and potentially malicious emails before they reach the endpoint'],o:['Email security appliance','Web security appliance','Network admission control','Advanced malware protection','No answer available'],a:[2,3,1,0],e:'Email security appliance filters SPAM and malicious emails before they reach the endpoint. Web security appliance filters websites and block lists. Network admission control permits only authorized and compliant systems. Advanced malware protection provides endpoint protection from viruses and malware.',r:'9.2.4'},
+{t:'match',x:'Match typical Linux log files to the function.',items:['used by RedHat and CentOS computers and tracks authentication-related events','used by Debian and Ubuntu computers and stores all authentication-related events','stores information related to hardware devices and their drivers','contains generic computer activity logs, and is used to store informational and nonCritical system messages'],o:['/var/log/secure','/var/log/auth.log','/var/log/dmesg','/var/log/messages'],a:[0,1,2,3],e:'/var/log/secure: RedHat/CentOS authentication events. /var/log/auth.log: Debian/Ubuntu authentication events. /var/log/dmesg: hardware devices and their drivers. /var/log/messages: generic activity, informational and non-critical messages.',r:'8.4.3'},
+{t:'match',x:'Match the antimalware approach to the description.',items:['recognizes malware through analysis of suspicious actions','recognizes characteristics of known malware files','recognizes general features shared by types of malware'],o:['signature-based','heuristics-based','behavior-based'],a:[2,0,1],e:'Signature-based recognizes characteristics of known malware files. Heuristics-based recognizes general features shared by types of malware. Behavior-based recognizes malware through analysis of suspicious actions.',r:'9.2.3'},
+{t:'single',x:'A client device has initiated a secure HTTP request to a web browser. Which well-known port address number is associated with the destination address?',o:['80','404','443','110'],a:[2],e:'Port numbers are used in TCP and UDP communications to differentiate between the various services running on a device. The well-known port number used by HTTPS is port 443.',r:'8.3.2'},
+{t:'single',x:'Which statement describes the Cisco Threat Grid Glovebox?',o:['It is a host-based intrusion detection system (HIDS) solution to fight malware.','It is a firewall appliance.','It is a sandbox product for analyzing malware behaviors.','It is a network-based IDS/IPS.'],a:[2],e:'Cisco ThreatGrid Glovebox is a sandbox product for analyzing malware behaviors.',r:'9.4.3'},
+{t:'single',x:'Why is Kali Linux a popular choice in testing the network security of an organization?',o:['It is a network scanning tool that prioritizes security risks.','It can be used to test weaknesses by using only malicious software.','It is an open source Linux security distribution containing many penetration tools.','It can be used to intercept and log network traffic.'],a:[2],e:'Kali is an open source Linux security distribution that is commonly used by IT professionals to test the security of networks.',r:'8.1.4'},
+{t:'match',x:'Match the Windows system tool with the description. (Not all options are used.)',items:['a hierarchical database of all system and user information','a CLI environment used to run scripts and automate tasks','maintains system logs','selectively denies traffic on specified interfaces'],o:['Registry','Windows Firewall','PowerShell','Event Viewer','No answer available'],a:[0,2,3,1],e:'Registry: hierarchical database of all system and user information. Windows Firewall: selectively denies traffic on specified interfaces. PowerShell: CLI environment used to run scripts and automate tasks. Event Viewer: maintains system logs.',r:'7.5.1'},
+{t:'multi',x:'What three methods help to ensure system availability? (Choose three.)',o:['system backups','system resiliency','equipment maintenance','fire extinguishers','up-to-date operating systems','integrity checking'],a:[0,2,4],e:'Methods used to help ensure high availability include system redundancy, system backups, increased system resiliency, equipment maintenance, operating system and software updates and patches, and proactive plans for swift recovery from unforeseen disasters.',r:'10.1.6'},
+{t:'single',x:'What would be a reason for a computer user to use the Task Manager Performance tab?',o:['to check the CPU usage of the PC','to increase the performance of the CPU','to view the services that are currently running on the PC','to view the processes that are running and end a process if needed'],a:[0],e:'The Performance tab is commonly used to check computer performance. Two key areas shown are memory and CPU usage.',r:'7.3.6'},
+{t:'single',x:'What is the function of the kernel of an operating system?',o:['It provides a user interface that allows users to request a specific task.','It is an application that allows the initial configuration of a Cisco device.','The kernel provisions hardware resources to meet software requirements.','The kernel links the hardware drivers with the underlying electronics of a computer.'],a:[2],e:'Operating systems function with a shell, a kernel, and the hardware. The shell interfaces with the users, allowing them to request specific tasks from the device. The kernel provisions resources from the hardware to meet software requirements. The hardware functions by using drivers and other electronics.',r:'7.2.1'},
+{t:'single',x:'A security specialist is asked for advice on a security measure to prevent unauthorized hosts from accessing the home network of employees. Which measure would be most effective?',o:['Implement intrusion detection systems.','Implement a firewall.','Implement RAID.','Implement a VLAN.'],a:[1],e:'Protecting data confidentiality requires an understanding of the technologies used to protect data in all three states of data.',r:'10.3.2'},
+{t:'match',x:'Match the network-based anti-malware solution to the function. (Not all options are used.)',items:['permits only authorized and compliant systems to connect to the network','provides filtering of websites and block listing before they reach the endpoint','provides endpoint protection from viruses and malware','provides filtering of SPAM and potentially malicious emails before they reach the endpoint'],o:['Email security appliance','Web security appliance','Network admission control','Advanced malware protection','No answer available'],a:[2,1,3,0],e:'Network admission control permits only authorized and compliant systems. Web security appliance filters websites. Advanced malware protection protects endpoints from viruses and malware. Email security appliance filters SPAM and malicious email.',r:'9.2.4'},
+{t:'single',x:'A user creates a file with a .ps1 extension in Windows. What type of file is it?',o:['PowerShell cmdlet','PowerShell function','PowerShell script','PowerShell documentation'],a:[2],e:'PowerShell can execute: cmdlets (perform an action and return output or object to the next command), PowerShell scripts (files with a .ps1 extension that contain PowerShell commands that are executed), and PowerShell functions (pieces of code that can be referenced in a script).',r:'7.3.3'},
+{t:'match',x:'Match the Windows command to the description.',items:['creates a new directory','renames a file','lists files in a directory','changes the current directory'],o:['mkdir','ren','dir','cd'],a:[0,1,2,3],e:'dir lists files in a directory. mkdir creates a new directory. cd changes the current directory. ren renames a file.',r:'7.1.1'},
+{t:'single',x:'Which statement describes the policy-based intrusion detection approach?',o:['It compares the signatures of incoming traffic to a known intrusion database.','It compares the operations of a host against well-defined security rules.','It compares the antimalware definitions to a central repository for the latest updates.','It compares the behaviors of a host to an established baseline to identify potential intrusion.'],a:[1],e:'With the anomaly-based intrusion detection approach, a set of rules or policies are applied to a host. Violation of these policies is interpreted to be the result of a potential intrusion.',r:'9.3.3'}
+];
+Q.forEach((q,i)=>q.id=i+1);
+
+const perm=n=>{const a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const reshuffle=()=>Q.forEach(q=>{if(q.t==='match')q._io=perm(q.items.length);q._oo=perm(q.o.length)});
+const $=(s,p=document)=>p.querySelector(s);
+const el=(tag,cls,html)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(html!=null)n.innerHTML=html;return n};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const TYPEHINT={single:'Один ответ',multi:'Несколько ответов',match:'Сопоставление'};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let wrong=new Set(store.get('wrong',[])), done=store.get('done',{}), best=store.get('best',0);
+const save=()=>{store.set('wrong',[...wrong]);store.set('done',done);store.set('best',best)};
+
+function isCorrect(q,r){
+  if(!r)return false;
+  if(q.t==='match')return q.a.every((v,i)=>r[i]===v);
+  const a=[...q.a].sort().join(),b=[...r].sort().join();return a===b;
+}
+function answered(q,r){return r&&(q.t==='match'?r.every(v=>v>=0):r.length>0)}
+
+/* Question card. opts: {mode:'study'|'live'|'review', resp, onChange, revealed} */
+function card(q,opts){
+  const root=el('article','q');
+  let resp=opts.resp?(Array.isArray(opts.resp)?[...opts.resp]:opts.resp):(q.t==='match'?q.o.length?q.items.map(()=>-1):[]:[]);
+  if(opts.mode==='study')resp=[...q.a];
+  let revealed=opts.mode==='study'||opts.revealed;
+  let sel=null;
+  const locked=()=>revealed;
+  function draw(){
+    root.innerHTML='';
+    const h=el('div','qh');h.append(el('span','qn','№ '+q.id),el('span','hint',TYPEHINT[q.t]+' · тема '+q.r));root.append(h);
+    root.append(el('p','qt',esc(q.x)));
+    if(q.term)root.append(el('pre','term',esc(q.term)));
+    if(q.t==='match'){
+      const NS='http://www.w3.org/2000/svg';
+      const study=opts.mode==='study';
+      const io=study?q.items.map((_,i)=>i):(q._io||(q._io=perm(q.items.length)));
+      const oo=study?q.o.map((_,i)=>i):(q._oo||(q._oo=perm(q.o.length)));
+      const mt=el('div','mt'),cl=el('div','mcol'),cr=el('div','mcol');
+      const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','mlines');svg.setAttribute('aria-hidden','true');
+      const L={},R={};
+      io.forEach(i=>{
+        const b=el('button','mi',esc(q.items[i]));b.type='button';b.disabled=locked();
+        if(sel===i)b.classList.add('sel');
+        if(resp[i]>=0)b.classList.add('linked');
+        if(revealed)b.classList.add(resp[i]===q.a[i]?'right':'wrong');
+        b.onclick=()=>{sel=sel===i?null:i;draw()};
+        L[i]=b;cl.append(b);
+      });
+      oo.forEach(j=>{
+        const b=el('button','mi',esc(q.o[j]));b.type='button';b.disabled=locked();
+        if(resp.includes(j))b.classList.add('linked');
+        b.onclick=()=>{
+          if(sel!==null){const k=resp.indexOf(j);if(k>=0)resp[k]=-1;resp[sel]=j;sel=null;opts.onChange&&opts.onChange(resp);draw()}
+          else{const k=resp.indexOf(j);if(k>=0){resp[k]=-1;opts.onChange&&opts.onChange(resp);draw()}}
+        };
+        R[j]=b;cr.append(b);
+      });
+      mt.append(cl,cr,svg);root.append(mt);
+      root.append(el('p','mhint',revealed?'Зелёная линия — верно, красная — неверно, пунктир — правильное соединение.':'Нажмите элемент слева, затем элемент справа. Нажмите на соединённый элемент справа, чтобы убрать линию.'));
+      const lines=()=>{
+        const c=mt.getBoundingClientRect();if(!c.width)return;
+        svg.setAttribute('width',c.width);svg.setAttribute('height',c.height);svg.innerHTML='';
+        const add=(i,j,cls)=>{
+          const p=L[i].getBoundingClientRect(),r=R[j].getBoundingClientRect();
+          const ln=document.createElementNS(NS,'line');
+          ln.setAttribute('x1',p.right-c.left);ln.setAttribute('y1',p.top+p.height/2-c.top);
+          ln.setAttribute('x2',r.left-c.left);ln.setAttribute('y2',r.top+r.height/2-c.top);
+          ln.setAttribute('class','ln '+cls);svg.append(ln);
+        };
+        q.items.forEach((_,i)=>{
+          if(revealed){if(resp[i]>=0)add(i,resp[i],resp[i]===q.a[i]?'ok':'bad');if(resp[i]!==q.a[i])add(i,q.a[i],'fix')}
+          else if(resp[i]>=0)add(i,resp[i],'');
+        });
+      };
+      requestAnimationFrame(lines);
+      if(window.ResizeObserver)new ResizeObserver(lines).observe(mt);
+    }else{
+      const ul=el('ul','opts'+(q.t==='multi'?' multi':''));
+      const order=opts.mode==='study'?q.o.map((_,i)=>i):(q._oo||(q._oo=perm(q.o.length)));
+      order.forEach(i=>{const o=q.o[i];
+        const li=el('li');const b=el('button','opt');b.type='button';
+        b.setAttribute('role',q.t==='multi'?'checkbox':'radio');
+        const on=resp.includes(i);b.setAttribute('aria-checked',on);
+        b.innerHTML=`<span class="mark"></span><span>${esc(o)}</span>`;
+        if(revealed){
+          const isA=q.a.includes(i);
+          if(isA&&on){b.classList.add('right');b.append(el('span','tag','верно'))}
+          else if(isA){b.classList.add('missed');b.append(el('span','tag','нужно было'))}
+          else if(on){b.classList.add('wrong');b.append(el('span','tag','неверно'))}
+          b.setAttribute('aria-checked','false');
+        }
+        b.disabled=locked();
+        b.onclick=()=>{
+          if(q.t==='multi'){resp=on?resp.filter(v=>v!==i):[...resp,i]}else resp=[i];
+          opts.onChange&&opts.onChange(resp);draw();
+        };
+        li.append(b);ul.append(li);
+      });
+      root.append(ul);
+    }
+    if(revealed){
+      const ok=isCorrect(q,resp);
+      if(opts.mode!=='study')root.append(el('div','verdict '+(ok?'ok':'no'),ok?'Верно':(answered(q,resp)?'Неверно':'Нет ответа')));
+      const e=el('div','exp');e.innerHTML=`<b>Объяснение · тема ${q.r}</b><p>${esc(q.e)}</p>`;root.append(e);
+    }
+    if(opts.footer)opts.footer(root,{resp,reveal:()=>{revealed=true;draw()},revealed});
+  }
+  draw();
+  root.getResp=()=>resp;
+  return root;
+}
+
+const main=$('#main');let mode=store.get('mode','study'),timerId=null;
+function stats(){const d=Object.values(done).filter(Boolean).length;$('#stats').innerHTML=`решено верно: ${d}/${Q.length}<br>ошибок в списке: ${wrong.size}<br>лучший экзамен: ${best}%`}
+function setMode(m){mode=m;store.set('mode',m);clearInterval(timerId);document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-pressed',t.dataset.mode===m));main.innerHTML='';({study,practice,exam})[m]();stats();window.scrollTo(0,0)}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setMode(t.dataset.mode));
+
+/* Конспект */
+function study(){
+  const bar=el('div','bar');
+  bar.innerHTML='<input type="search" id="qs" placeholder="Поиск по вопросам и ответам" aria-label="Поиск"><select id="qt" aria-label="Тип"><option value="">Все типы</option><option value="single">Один ответ</option><option value="multi">Несколько ответов</option><option value="match">Сопоставление</option></select>';
+  const list=el('div');main.append(bar,list);
+  const run=()=>{
+    const s=$('#qs').value.toLowerCase(),t=$('#qt').value;list.innerHTML='';
+    const f=Q.filter(q=>(!t||q.t===t)&&(!s||(q.x+q.o.join(' ')+q.e+(q.items||[]).join(' ')).toLowerCase().includes(s)));
+    if(!f.length)list.append(el('div','empty','Ничего не найдено.'));
+    f.forEach(q=>list.append(card(q,{mode:'study'})));
+  };
+  $('#qs').oninput=run;$('#qt').onchange=run;run();
+}
+
+/* Тренировка */
+let pr={pool:'all',order:'seq',idx:0,list:[],res:{},rev:{}};
+function practice(){
+  const build=()=>{let l=Q.filter(q=>pr.pool==='all'||(pr.pool==='wrong'&&wrong.has(q.id))||(pr.pool==='new'&&!done[q.id]));
+    if(pr.order==='rnd')l=[...l].sort(()=>Math.random()-.5);pr.list=l;pr.idx=0;pr.res={};pr.rev={};reshuffle()};
+  if(!pr.list.length&&pr.pool==='all')build();
+  const bar=el('div','bar');
+  bar.innerHTML=`<select id="pp" aria-label="Набор"><option value="all">Все вопросы</option><option value="new">Ещё не решённые</option><option value="wrong">Только мои ошибки</option></select><select id="po" aria-label="Порядок"><option value="seq">По порядку</option><option value="rnd">Вперемешку</option></select>`;
+  main.append(bar);
+  const body=el('div');main.append(body);
+  $('#pp').value=pr.pool;$('#po').value=pr.order;
+  $('#pp').onchange=e=>{pr.pool=e.target.value;build();setMode('practice')};
+  $('#po').onchange=e=>{pr.order=e.target.value;build();setMode('practice')};
+  const show=()=>{
+    body.innerHTML='';
+    if(!pr.list.length){body.append(el('div','empty',pr.pool==='wrong'?'Список ошибок пуст.':'Нет вопросов в этом наборе.'));return}
+    const q=pr.list[pr.idx];
+    body.append(Object.assign(el('div','prog'),{innerHTML:`<i style="width:${(pr.idx+1)/pr.list.length*100}%"></i>`}));
+    const dots=el('div','dots');
+    pr.list.forEach((x,i)=>{const d=el('button','dot'+(i===pr.idx?' cur':'')+(pr.rev[x.id]?(isCorrect(x,pr.res[x.id])?' ok':' no'):''),x.id);d.onclick=()=>{pr.idx=i;show()};d.setAttribute('aria-label','Вопрос '+x.id);dots.append(d)});
+    body.append(dots);
+    body.append(card(q,{mode:'live',resp:pr.res[q.id],revealed:pr.rev[q.id],onChange:r=>{pr.res[q.id]=r;const c=$('.btn[data-check]');if(c)c.disabled=!answered(q,r)},
+      footer:(root,api)=>{
+        const a=el('div','actions');
+        const prev=el('button','btn ghost','Назад');prev.disabled=pr.idx===0;prev.onclick=()=>{pr.idx--;show()};
+        a.append(prev);
+        if(!pr.rev[q.id]){
+          const c=el('button','btn','Проверить');c.dataset.check=1;c.disabled=!answered(q,api.resp);
+          c.onclick=()=>{pr.rev[q.id]=true;const ok=isCorrect(q,api.resp);pr.res[q.id]=api.resp;
+            if(ok){done[q.id]=true;wrong.delete(q.id)}else{done[q.id]=false;wrong.add(q.id)}save();stats();show()};
+          a.append(c);
+        }
+        const next=el('button','btn'+(pr.rev[q.id]?'':' ghost'),pr.idx<pr.list.length-1?'Дальше':'В начало');
+        next.onclick=()=>{pr.idx=(pr.idx+1)%pr.list.length;show()};a.append(next);
+        root.append(a);
+      }}));
+  };
+  show();
+}
+
+/* Экзамен */
+const EXAM_SEC=45*60;
+let ex=null;
+function exam(){
+  if(!ex)return examIntro();
+  if(ex.finished)return examResult();
+  examRun();
+}
+function examIntro(){
+  const d=el('div','result');
+  d.innerHTML=`<h2 style="font:800 1.3rem var(--display);margin:0 0 8px">Пробный экзамен</h2><p style="margin:0 0 14px;color:var(--muted)">${Q.length} вопросов в случайном порядке, 45 минут. Правильные ответы и объяснения появятся после завершения. Проходной балл 70%.</p>`;
+  const b=el('button','btn','Начать экзамен');b.onclick=()=>{reshuffle();ex={list:[...Q].sort(()=>Math.random()-.5),res:{},end:Date.now()+EXAM_SEC*1000,finished:false};setMode('exam')};
+  d.append(b);main.append(d);
+}
+function examRun(){
+  const head=el('div','bar');
+  head.innerHTML='<span class="hint">Осталось</span><span class="timer" id="tm"></span><span class="grow"></span><span class="hint" id="cnt"></span>';
+  const fin=el('button','btn','Завершить');fin.onclick=finish;head.append(fin);
+  main.append(head);
+  const list=el('div');main.append(list);
+  ex.list.forEach((q,i)=>{const c=card(q,{mode:'live',resp:ex.res[q.id],onChange:r=>{ex.res[q.id]=r;count()}});c.querySelector('.qn').textContent=`${i+1} / ${Q.length}`;list.append(c)});
+  const count=()=>{$('#cnt').textContent=`отвечено ${ex.list.filter(q=>answered(q,ex.res[q.id])).length} из ${Q.length}`};count();
+  const tick=()=>{const s=Math.max(0,Math.round((ex.end-Date.now())/1000));const t=$('#tm');if(!t)return;t.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');t.classList.toggle('low',s<300);if(s<=0)finish()};
+  tick();timerId=setInterval(tick,1000);
+}
+function finish(){
+  clearInterval(timerId);
+  let ok=0;ex.list.forEach(q=>{const c=isCorrect(q,ex.res[q.id]);if(c){ok++;done[q.id]=true;wrong.delete(q.id)}else{done[q.id]=false;wrong.add(q.id)}});
+  ex.ok=ok;ex.pct=Math.round(ok/Q.length*100);best=Math.max(best,ex.pct);save();ex.finished=true;setMode('exam');
+}
+function examResult(){
+  const pass=ex.pct>=70;
+  const r=el('div','result');
+  r.innerHTML=`<div class="score ${pass?'ok':'no'}">${ex.pct}%</div><p style="margin:8px 0 14px"><b>${ex.ok} из ${Q.length}</b> верно. ${pass?'Экзамен сдан.':'Нужно 70%. Разберите ошибки ниже.'}</p>`;
+  const again=el('button','btn','Пройти заново');again.onclick=()=>{ex=null;setMode('exam')};
+  const only=el('button','btn ghost','Тренировать ошибки');only.style.marginLeft='8px';only.onclick=()=>{pr={pool:'wrong',order:'seq',idx:0,list:[],res:{},rev:{}};pr.list=Q.filter(q=>wrong.has(q.id));setMode('practice')};
+  r.append(again,only);main.append(r);
+  const f=el('div','bar');f.innerHTML='<select id="rf" aria-label="Фильтр"><option value="all">Все вопросы</option><option value="bad">Только ошибки</option></select>';main.append(f);
+  const list=el('div');main.append(list);
+  const run=()=>{list.innerHTML='';ex.list.filter(q=>$('#rf').value==='all'||!isCorrect(q,ex.res[q.id])).forEach(q=>list.append(card(q,{mode:'review',resp:ex.res[q.id],revealed:true})))};
+  $('#rf').onchange=run;run();
+}
+
+setMode(['study','practice','exam'].includes(mode)?mode:'study');
+</script>
+<script>
+(function(){
+  const root=document.documentElement,btn=document.getElementById('theme');
+  const sysDark=()=>window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
+  let saved=null;try{saved=localStorage.getItem('theme')}catch(e){}
+  let cur=saved||(sysDark()?'dark':'light');
+  const apply=()=>{root.setAttribute('data-theme',cur);btn.textContent=cur==='dark'?'Светлая тема':'Тёмная тема'};
+  btn.onclick=()=>{cur=cur==='dark'?'light':'dark';try{localStorage.setItem('theme',cur)}catch(e){}apply()};
+  apply();
+})();
+</script>
+</body></html>

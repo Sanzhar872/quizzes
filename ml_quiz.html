@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ML Quiz — подготовка</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#667085;--line:#e3e6eb;--acc:#2f5bd3;--ok:#1f8a4c;--okbg:#e6f4ec;--bad:#c23b3b;--badbg:#fbeaea}
+@media (prefers-color-scheme:dark){:root{--bg:#14161b;--card:#1d2027;--ink:#e8eaee;--mute:#9aa3b2;--line:#2d313a;--acc:#7c9cff;--ok:#5cc88a;--okbg:#1c3327;--bad:#ff7b7b;--badbg:#3a2022}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:860px;margin:auto;padding:12px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h1{font-size:18px;margin:0 auto 0 0}
+button,select{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer}
+button.on,button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+main{max-width:860px;margin:auto;padding:16px}
+.summary{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.summary table{border-collapse:collapse;width:100%}
+.summary td{padding:5px 0;border-bottom:1px solid var(--line)}
+.summary td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.summary tr:last-child td{border:none}
+.summary a{color:var(--acc);text-decoration:none}
+.topic-h{margin:28px 0 10px;font-size:17px;color:var(--acc)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.qn{color:var(--mute);font-size:13px}
+.qt{margin:4px 0 10px;white-space:pre-wrap}
+code,.code{font-family:ui-monospace,Consolas,monospace;font-size:14px}
+.qt code{background:var(--bg);padding:1px 5px;border-radius:4px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.ans{margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--okbg);border-left:3px solid var(--ok)}
+.ans b{color:var(--ok)}
+.exp{color:var(--mute);font-size:14px;margin-top:4px}
+.hideans .ans,.hideans .exp{display:none}
+.hideans .opt.ok{background:var(--card);border-color:var(--line)}
+input[type=text]{font:inherit;font-family:ui-monospace,Consolas,monospace;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:4px 0 14px}
+.progress div{height:100%;background:var(--acc);transition:width .2s}
+.row{display:flex;gap:8px;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
+.verdict{font-weight:600;margin-top:10px}
+.verdict.ok{color:var(--ok)}.verdict.bad{color:var(--bad)}
+.setup label{display:block;margin:8px 0}
+.big{font-size:36px;font-weight:700}
+.tag{display:inline-block;font-size:12px;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <h1>ML Quiz</h1>
+  <button id="mList" class="on">Все вопросы</button>
+  <button id="mQuiz">Режим куиза</button>
+</div></header>
+<main id="app"></main>
+
+<script>
+const T = {
+  ml:"Основы ML (Unit 1)",
+  sk:"Scikit-learn: код",
+  pd:"Pandas: данные и очистка",
+  vz:"Визуализация",
+  pr:"Вероятность",
+  la:"Векторы и линейная алгебра"
+};
+// o: варианты (a = индекс правильного) | без o: вписать ответ (a = массив допустимых ответов)
+const Q = [
+// ---------- ML ----------
+{t:"ml",q:"According to Tom Mitchell's definition, a program learns from experience E if its performance on task T, measured by P, improves with E. Which is an example of task T for a spam filter?",o:["Classifying emails as spam or not spam","The set of emails to train on","The percentage of emails correctly classified","The number of training iterations"],a:0,e:"T — сама задача. Письма для обучения — это E, процент верных — P."},
+{t:"ml",q:"In ML definition (Mitchell), 'performance measure P' for a classification task can be:",o:["Accuracy","Sum of feature values","Dataset size","Random seed"],a:0,e:"P — метрика качества; для классификации это accuracy."},
+{t:"ml",q:"Which metric is directly aligned with “ratio of correctly classified emails” in the spam-filter example?",o:["MAE","RMSE","R²","Accuracy"],a:3,e:"Accuracy = верные / все. MAE, RMSE, R² — метрики регрессии."},
+{t:"ml",q:"Accuracy is a valid performance measure for the spam-filter example described as a classification task.",o:["True","False"],a:0,e:"Спам-фильтр — классификация, accuracy подходит."},
+{t:"ml",q:"Accuracy is always the best performance measure for any classification problem.",o:["True","False"],a:1,e:"При несбалансированных классах accuracy обманчива — лучше F1."},
+{t:"ml",q:"Which metric is most appropriate when the dataset has highly imbalanced classes?",o:["Accuracy","F1-score","Dataset size","Number of features"],a:1,e:"Если 99% — класс 0, модель «всегда 0» даст 99% accuracy. F1 учитывает precision и recall."},
+{t:"ml",q:"What is accuracy?",o:["Loss function","Error rate","Correct predictions ratio","Training size"],a:2,e:"Доля верных предсказаний."},
+{t:"ml",q:"KNN is considered instance-based mainly because it:",o:["Learns a closed-form equation during training","Stores training instances and compares new points to them","Uses gradient descent to learn weights","Requires labels only at prediction time"],a:1,e:"KNN запоминает примеры и сравнивает новую точку с ними по расстоянию."},
+{t:"ml",q:"KNN is instance-based because it estimates parameters during training.",o:["True","False"],a:1,e:"Параметры оценивает model-based подход. KNN ничего не оценивает, только хранит примеры."},
+{t:"ml",q:"Which ML system compares data points directly?",o:["Model-based","Instance-based","Deep learning","Regression"],a:1,e:"Instance-based сравнивает новые точки с сохранёнными."},
+{t:"ml",q:"Which statement about batch vs online learning is correct?",o:["Batch learning updates the model continuously with each new sample","Online learning requires retraining from scratch when new data arrives","Batch learning trains on a fixed dataset; online learning updates incrementally","Online learning cannot be used for streaming data"],a:2,e:"Batch — обучение сразу на всём наборе; online — дообучение порциями."},
+{t:"ml",q:"Batch learning updates continuously.",o:["True","False"],a:1,e:"Постоянно обновляется online learning."},
+{t:"ml",q:"Which is the correct order for a typical ML workflow?",o:["Load/explore → clean/prepare → split → train → evaluate","Train model → clean data → visualize → evaluate","Evaluate → split → clean → train","Visualize only → train directly"],a:0,e:"Загрузить → очистить → разделить → обучить → оценить."},
+{t:"ml",q:"In supervised learning, the training data includes:",o:["Only input features X","Only labels y","Both input features X and labels y","Neither X nor y"],a:2,e:"Supervised = есть и признаки, и правильные ответы."},
+{t:"ml",q:"Which statement best matches supervised learning?",o:["Learns patterns without labels","Learns by maximizing reward signals only","Learns by compressing data into fewer dimensions","Learns from input-output pairs (features + target labels)"],a:3,e:"Пары «вход → правильный выход»."},
+{t:"ml",q:"Which type of ML problem is it when the goal is to predict a continuous numeric value (e.g., house price)?",o:["Classification","Clustering","Regression","Reinforcement learning"],a:2,e:"Число на выходе → регрессия."},
+{t:"ml",q:"Predicting house prices is a regression task because the output is a continuous numeric value.",o:["True","False"],a:0,e:"Цена — непрерывное число."},
+{t:"ml",q:"Which type of ML uses reward signals rather than labeled data?",o:["Supervised learning","Unsupervised learning","Reinforcement learning","Semi-supervised learning"],a:2,e:"RL: агент получает награду или штраф за действия."},
+{t:"ml",q:"Which is an unsupervised task?",o:["Classification","Regression","Clustering","Prediction"],a:2,e:"Кластеризация работает без меток."},
+{t:"ml",q:"Which task detects fraud?",o:["Clustering","Anomaly detection","Regression","Classification"],a:1,e:"Мошенничество — редкое отклонение от нормы, то есть аномалия."},
+{t:"ml",q:"In ML, what is a training set?",o:["Testing data","Data used to evaluate","Data used to learn","Random data"],a:2,e:"На train модель учится, на test — оценивается."},
+{t:"ml",q:"What type of problem is Iris species classification?",o:["Regression","Binary classification","Multi-class classification","Clustering"],a:2,e:"3 вида ирисов → больше двух классов."},
+{t:"ml",q:"Your model achieves 99% accuracy on training data but only 70% on test data. What is happening?",o:["Underfitting","The dataset is too large","Overfitting","The model has too few parameters"],a:2,e:"Выучила train наизусть, на новых данных плохо → переобучение."},
+{t:"ml",q:"Underfitting occurs when the model is too complex relative to the data.",o:["True","False"],a:1,e:"Слишком сложная модель → overfitting. Underfitting — модель слишком простая."},
+{t:"ml",q:"Regularization is described as constraining a model to reduce overfitting risk.",o:["True","False"],a:0,e:"Регуляризация ограничивает модель, чтобы она не переобучалась."},
+{t:"ml",q:"In the Penguins dataset, which feature would be LEAST useful for classifying penguin species?",o:["bill_length_mm","flipper_length_mm","island","Individual penguin name/ID"],a:3,e:"ID уникален и ничего не говорит о виде."},
+{t:"ml",q:"Titanic: after dropping 'cabin' and 'ticket' columns, and filling 'age' with median, the next step to prepare data for ML is typically:",o:["Immediately train the model","Encode categorical variables (e.g., 'sex', 'embarked') as numbers","Remove all rows with any remaining NaN","Normalize the target variable"],a:1,e:"Модели работают с числами — текстовые категории нужно закодировать."},
+
+// ---------- SKLEARN ----------
+{t:"sk",q:"Complete:\nfrom sklearn.neighbors import ___",a:["KNeighborsClassifier","KNeighborsRegressor"],e:"KNeighborsClassifier (или KNeighborsRegressor)."},
+{t:"sk",q:"Complete:\nfrom sklearn.model_selection import ___",a:["train_test_split"],e:"train_test_split делит данные на train и test."},
+{t:"sk",q:"Predict and compute accuracy for a trained classifier knn.\ny_pred = knn.___(X_test)\nacc = accuracy_score(y_test, y_pred)",a:["predict"],e:"predict — предсказание."},
+{t:"sk",q:"Predicting from a model:\ny_pred = model.___(X_test)",a:["predict"],e:"predict — предсказание."},
+{t:"sk",q:"knn = KNeighborsClassifier(n_neighbors=___)   (by lecturer)",a:["5"],e:"В практиках преподавателя k = 5 (это и значение по умолчанию)."},
+{t:"sk",q:"knn.fit(X_train, ___)",a:["y_train"],e:"Обучаем на признаках и метках train."},
+{t:"sk",q:"accuracy = knn.score(X_test, ___)",a:["y_test"],e:"Оцениваем на test: признаки и настоящие метки test."},
+{t:"sk",q:"What does the fit() method do in scikit-learn?",o:["Makes predictions on new data","Trains the model on training data","Evaluates model performance on test data","Loads and validates the dataset"],a:1,e:"fit = обучить."},
+{t:"sk",q:"After fitting a LinearRegression model, how do you access the slope (coefficient)?\nmodel = LinearRegression()\nmodel.fit(X, y)\nprint(model.___)",a:["coef_"],e:"coef_ — наклон, intercept_ — сдвиг. Подчёркивание в конце = вычислено при fit."},
+{t:"sk",q:"Which is the best reason to use random_state=42 in train_test_split?",o:["It makes the model more accurate","It guarantees the best hyperparameters","It ensures reproducibility of the split","It increases dataset size"],a:2,e:"Одинаковое разбиение при каждом запуске."},
+{t:"sk",q:"You want to ensure a train/test split keeps the same class proportions for a classification target y. Which argument is required?",o:["shuffle=False","stratify=y","test_size=0.25","random_state=42"],a:1,e:"stratify сохраняет пропорции классов."},
+{t:"sk",q:"Which code correctly splits data with stratification and a fixed random state?",o:["train_test_split(X, y, test_size=0.25)","train_test_split(X, y, test_size=0.25, random_state=42)","train_test_split(X, y, test_size=0.25, stratify=y, random_state=42)","train_test_split(X, y, test_size=0.25, shuffle=True)"],a:2,e:"Нужны оба: stratify=y и random_state."},
+{t:"sk",q:"Create a validation set from the training set (holdout validation). Use 20% of the training set for validation.\nX_train2, X_val, y_train2, y_val = train_test_split(X_train, y_train, test_size=___, random_state=42, stratify=y_train)",a:["0.2",".2"],e:"20% = 0.2."},
+{t:"sk",q:"Fill in the missing argument to return a dense matrix:\nOneHotEncoder(handle_unknown=\"ignore\", sparse_output=___)",a:["False"],e:"sparse_output=False → обычный (плотный) массив."},
+{t:"sk",q:"Fill in the missing part:\nencoder = OneHotEncoder(handle_unknown=\"___\")",a:["ignore"],e:"Неизвестная категория в test не вызовет ошибку."},
+{t:"sk",q:"Convert sparse one-hot encoded output into a dense NumPy array:\noutput = housing_cat_1hot.___",a:["toarray()","toarray"],e:"toarray() превращает sparse-матрицу в обычную."},
+{t:"sk",q:"Handle a missing value for quantitative features:\nimputer = SimpleImputer(strategy=\"___\")",a:["median"],e:"Для чисел — median (устойчива к выбросам). Для категорий — most_frequent."},
+{t:"sk",q:"Fill in the missing part:\nscaler = ___()",a:["StandardScaler"],e:"StandardScaler: среднее 0, std 1."},
+{t:"sk",q:"Visualize transformed numerical data as a DataFrame:\ncolumns=std_scaler.___()",a:["get_feature_names_out"],e:"Возвращает имена столбцов после трансформации."},
+
+// ---------- PANDAS ----------
+{t:"pd",q:"Compute the number of missing values per column.\nmissing = df.isnull().___()",a:["sum"],e:"isnull() даёт True/False, sum() считает True."},
+{t:"pd",q:"Count missing values in all columns:\nmissing = df.___().sum()",a:["isnull","isna"],e:"isnull() или isna() — одно и то же."},
+{t:"pd",q:"In Pandas, what is the key difference between Series.size and Series.count()?",o:["size excludes NaN; count() includes NaN","size counts all elements; count() counts non-null elements","Both always return the same value","count() returns a DataFrame; size returns a Series"],a:1,e:"size — все элементы, count() — без NaN."},
+{t:"pd",q:"Which method returns the label (name) of the maximum value in a Series (e.g., item with highest mean price)?",o:[".argmax()",".whichmax()",".idxmax()",".maxindex()"],a:2,e:"idxmax возвращает метку (имя), argmax — номер позиции."},
+{t:"pd",q:"Compute number of unique products in Chipotle using item_name.\nn_products = chipo['item_name'].___()",a:["nunique"],e:"nunique = number of unique."},
+{t:"pd",q:"Count how many rows correspond to Canned Soda ordered with quantity > 1.\ncond = (chipo['item_name'] == 'Canned Soda') ___ (chipo['quantity'] > 1)",a:["&"],e:"В pandas «И» — это &, не and."},
+{t:"pd",q:"Display rows where Sales > 700 and Rating > 8:\nhigh_sales = df[(df['Sales'] > 700) ___ (df['Rating'] > 8)]",a:["&"],e:"& — «И» для условий."},
+{t:"pd",q:"Fill in the blank to filter customers with no credit card.\nno_cc = df[df['CreditCard'] ___ 'no']",a:["=="],e:"== — сравнение; = — присваивание."},
+{t:"pd",q:"Filter penguins with body mass above average:\nheavy = df_clean[df_clean['body_mass_g'] > ___]",a:["df_clean['body_mass_g'].mean()","df_clean[\"body_mass_g\"].mean()","df_clean.body_mass_g.mean()"],e:"Сравниваем со средним того же столбца."},
+{t:"pd",q:"Drop a column called 'deck' from df and store result in df_clean.\ndf_clean = df.drop(columns=['___'])",a:["deck"],e:"Имя столбца в кавычках внутри списка."},
+{t:"pd",q:"Remove duplicated rows permanently:\ndf.drop_duplicates(___=True)",a:["inplace"],e:"inplace=True меняет сам df, без присваивания."},
+{t:"pd",q:"df.dropna(subset=['age', 'embarked']) removes rows where:",o:["All columns have NaN","Any column in the entire DataFrame has NaN","At least one of 'age' or 'embarked' is NaN","Both 'age' and 'embarked' are non-null"],a:2,e:"subset — проверять только эти столбцы; по умолчанию how='any'."},
+{t:"pd",q:"Compute total quantity sold per product.\nqty_by_item = chipo.groupby('item_name')['quantity'].___()",a:["sum"],e:"Всего = сумма."},
+{t:"pd",q:"Calculate mean sales per city:\ncity_sales = df.groupby('City')['Sales'].___()",a:["mean"],e:"Среднее = mean."},
+{t:"pd",q:"Sort Chipotle by item_name ascending, then item_price descending.\nsorted_df = chipo.sort_values(by=['item_name','item_price'], ascending=[True, ___])",a:["False"],e:"Descending = ascending=False."},
+{t:"pd",q:"Display the top 5 highest sales:\ntop5 = df.sort_values(by='Sales', ascending=False).___(5)",a:["head"],e:"После сортировки по убыванию берём первые 5."},
+{t:"pd",q:"You want the quantity of the most expensive item (single row with max price). Best code:",o:["chipo['quantity'][max(chipo['item_price'])]","chipo['quantity'].max()","chipo.sort_values('item_price', ascending=False)['quantity'].iloc[0]","chipo['quantity'].idxmax()"],a:2,e:"Сортируем по цене ↓ и берём quantity первой строки."},
+{t:"pd",q:"Convert selected columns to categorical dtype:\nfor col in categorical_cols:\n    df_clean[col] = df_clean[col].astype('___')",a:["category"],e:"Тип pandas для категорий — 'category'."},
+{t:"pd",q:"In the credit_card.csv practical, the total number of customers is found with:\nS = df.___[0]",a:["shape"],e:"shape = (строки, столбцы); [0] — строки."},
+{t:"pd",q:"Fill in the blank to calculate skewness:\ndf['height'].___()",a:["skew"],e:"skew() — асимметрия распределения."},
+{t:"pd",q:"Generate summary statistics:\ndf.___()",a:["describe"],e:"describe() — count, mean, std, min, квартили, max."},
+{t:"pd",q:"Fill in the missing part:\ndf.corr(numeric_only=___)",a:["True"],e:"Корреляция только по числовым столбцам."},
+{t:"pd",q:"Normalize sales between 0 and 1 manually:\ndf['normalized_sales'] = (df['Sales'] - df['Sales'].min()) / (df['Sales'].max() - df['Sales'].___())",a:["min"],e:"Min-max: (x − min) / (max − min)."},
+{t:"pd",q:"Binning data in Pandas:\ndf[\"income_cat\"] = pd.___(df[\"median_income\"], bins=[0, 1.5, 3, 4.5, 6, np.inf], labels=[1,2,3,4,5])",a:["cut"],e:"pd.cut режет числа на интервалы."},
+{t:"pd",q:"Bucketizing with percentiles:\nflattened_median_income = pd.cut(housing[\"median_income\"], bins=[-np.inf] + percentiles + [___], labels=range(1, 101))",a:["np.inf"],e:"Последняя граница — бесконечность, чтобы попали все значения."},
+
+// ---------- VIZ ----------
+{t:"vz",q:"Which plot best matches: “Survival count by category with color split by survived”?",o:["sns.scatterplot()","sns.countplot(x=..., hue=...)","sns.lineplot()","sns.heatmap()"],a:1,e:"countplot считает строки; hue разбивает по цвету."},
+{t:"vz",q:"Which plot is best to visually detect outliers in a numeric feature quickly?",o:["Pie chart","Heatmap","Countplot","Boxplot"],a:3,e:"Точки за «усами» boxplot — выбросы."},
+{t:"vz",q:"Which seaborn function creates a grid of pairwise scatter plots for all numeric columns?",o:["sns.heatmap()","sns.pairplot()","sns.scatterplot()","sns.jointplot()"],a:1,e:"pairplot — каждый столбец с каждым."},
+{t:"vz",q:"A heatmap of a correlation matrix is most useful for:",o:["Detecting outliers in a single column","Visualizing the distribution of one variable","Identifying relationships between all pairs of numeric features","Comparing categories"],a:2,e:"Каждая клетка — корреляция пары признаков."},
+{t:"vz",q:"Visualize correlation using Seaborn:\nsns.___(corr, annot=True)",a:["heatmap"],e:"heatmap; annot=True пишет числа в клетках."},
+{t:"vz",q:"Which plot shows the distribution of a single numeric variable with a smooth curve?",o:["Boxplot","Barplot","KDE plot (kdeplot)","Countplot"],a:2,e:"KDE — сглаженная гистограмма."},
+{t:"vz",q:"In the Tips dataset, which plot is most appropriate to see the distribution of total_bill per day?",o:["Pie chart","Boxplot grouped by day","KDE on a single day","Heatmap"],a:1,e:"Один boxplot на каждый день — удобно сравнивать."},
+{t:"vz",q:"Draw a histogram using pandas:\ndf['height'].___()",a:["hist","plot.hist"],e:"df['col'].hist()."},
+
+// ---------- PROBABILITY ----------
+{t:"pr",q:"Probability is simply:",o:["The number of possible outcomes","How likely something is to happen","The sum of all probabilities","The complement of an event"],a:1,e:"Мера того, насколько событие вероятно (от 0 до 1)."},
+{t:"pr",q:"Sample space is:",o:["Subset","Event","Total outcomes","Function"],a:2,e:"Множество всех возможных исходов."},
+{t:"pr",q:"P(A ∩ B) is __ probability",o:["joint","Marginal","Conditional","dependent"],a:0,e:"∩ = «и то, и другое» → совместная (joint)."},
+{t:"pr",q:"Joint probability means:",o:["Single event","Two events together","Independent events","Random event"],a:1,e:"Оба события вместе."},
+{t:"pr",q:"Conditional probability formula:",o:["P(A)/P(B)","P(A∩B)/P(B)","P(B)/P(A)","None"],a:1,e:"P(A|B) = P(A∩B) / P(B)."},
+{t:"pr",q:"P(A∩B) = P(A) × __",o:["P(B|A)","P(A|B)","P(B)","P(A ∪ B)"],a:0,e:"Общее правило умножения: P(A∩B) = P(A)·P(B|A)."},
+{t:"pr",q:"P(A∩B) = P(A) × __ (independent)",o:["P(B)","P(A|B)","P(B|A)","None"],a:0,e:"Для независимых P(B|A) = P(B)."},
+{t:"pr",q:"Independent events satisfy:",o:["P(A|B)=P(A)","P(A|B)=0","P(A|B)=1","None"],a:0,e:"Знание B не меняет вероятность A."},
+{t:"pr",q:"Coin flips are independent.",o:["True","False"],a:0,e:"Прошлый бросок не влияет на следующий."},
+{t:"pr",q:"Disjoint events can occur together.",o:["True","False"],a:1,e:"Disjoint (несовместные) — P(A∩B) = 0."},
+{t:"pr",q:"Drawing with replacement is dependent.",o:["True","False"],a:1,e:"Шар возвращают → состав не меняется → события независимы."},
+{t:"pr",q:"Drawing without replacement is dependent.",o:["True","False"],a:0,e:"Шар не возвращают → состав меняется → зависимы."},
+{t:"pr",q:"Law of total probability considers all cases.",o:["True","False"],a:0,e:"P(B) = Σ P(B|Aᵢ)·P(Aᵢ) по всем случаям."},
+{t:"pr",q:"Law of total probability considers:",o:["One case","Random case","All cases","None"],a:2,e:"Суммирует по всем случаям."},
+{t:"pr",q:"Bayes theorem relates conditional probabilities.",o:["True","False"],a:0,e:"P(A|B) = P(B|A)·P(A) / P(B)."},
+{t:"pr",q:"Calculate the probability of getting exactly 5 heads out of 20 trials of tossing a coin.\nstats.binom.___(5, 20, 0.5)",a:["pmf"],e:"pmf — вероятность ровно k."},
+{t:"pr",q:"Calculate the probability of getting at most 5 heads out of 20 trials of tossing a coin.\nstats.binom.___(5, 20, 0.5)",a:["cdf"],e:"cdf — P(X ≤ k), «не больше»."},
+{t:"pr",q:"Calculate the mean (most likely number of heads) and the variance when tossing a coin 20 times.\navg, variance = stats.binom.___(20, 0.5)",a:["stats"],e:"binom.stats(n, p) возвращает (mean, var)."},
+{t:"pr",q:"Probability of getting a value less than or equal to a weight with a given z-score (z):\np = stats.norm.___(z)",a:["cdf"],e:"cdf = P(Z ≤ z)."},
+{t:"pr",q:"Calculate cumulative probability:\np_value = stats.norm.___(z_stat)",a:["cdf"],e:"Cumulative = cdf."},
+{t:"pr",q:"Calculate probability between two values (one word):\nstats.norm.___(z2) - stats.norm.___(z1)",a:["cdf"],e:"P(z1 < Z < z2) = cdf(z2) − cdf(z1)."},
+
+// ---------- VECTORS ----------
+{t:"la",q:"Vector dimensionality refers to:",o:["Number of elements","Length","Shape","Direction"],a:0,e:"Размерность = сколько чисел в векторе (ℝᴺ)."},
+{t:"la",q:"What is the dimensionality and type of the vector [-1, 3]?",o:["Four-dimensional column vector","Two-dimensional column vector","Two-dimensional row vector","Three-dimensional row vector"],a:2,e:"2 элемента, записан в строку → 2D row vector."},
+{t:"la",q:"What is the shape of a column vector with 3 elements in NumPy (2D array)?",o:["(3,)","(1, 3)","(3, 1)","(3)"],a:2,e:"Столбец: 3 строки × 1 столбец."},
+{t:"la",q:"v = np.array([[1], [2], [3]]). What is v.shape?",a:["(3, 1)","(3,1)"],e:"3 строки, 1 столбец."},
+{t:"la",q:"Which operation requires same orientation?",o:["Broadcasting","Addition","Subtraction","Both B and C","All above"],a:3,e:"В линейной алгебре складывать и вычитать можно только векторы одной ориентации. Broadcasting как раз обходит это."},
+{t:"la",q:"What is broadcasting?",o:["Data storage","Looping","Sorting","Expanding arrays automatically"],a:3,e:"NumPy сам «растягивает» массивы до общей формы."},
+{t:"la",q:"What is broadcasting in NumPy?",o:["A method to send data over a network","The ability to perform operations on arrays of different shapes","A way to visualize vectors","Converting a row vector to a column vector"],a:1,e:"Операции над массивами разных форм."},
+{t:"la",q:"Broadcasting removes loops.",o:["True","False"],a:0,e:"Вместо цикла по строкам — одна операция."},
+{t:"la",q:"Compute [2, 4] + [-4, 2].",o:["[6, 2]","[-2, 6]","[2, -2]","[-2, 2]"],a:1,e:"[2−4, 4+2] = [−2, 6]."},
+{t:"la",q:"Compute the dot product: [-4, -2]ᵀ · [1, 3].",o:["-10","10","2","-4"],a:0,e:"−4·1 + (−2)·3 = −4 − 6 = −10."},
+{t:"la",q:"Compute the dot product: [0, 1, 2]ᵀ · [-2, -1, 0].",o:["0","-1","3","-3"],a:1,e:"0 − 1 + 0 = −1."},
+{t:"la",q:"Compute the dot product of [1, 2, 3] and [4, 5, 6].",o:["32","13","28","31"],a:0,e:"4 + 10 + 18 = 32."},
+{t:"la",q:"Which defines angle between vectors?",o:["Sum","Division","Mean","Dot product"],a:3,e:"cos θ = a·b / (‖a‖‖b‖)."},
+{t:"la",q:"If two vectors are orthogonal, what is true about their dot product?",o:["It is always negative","It equals 1","It equals 0","Their magnitudes multiplied"],a:2,e:"cos 90° = 0 → a·b = 0."},
+{t:"la",q:"The L2 norm (Euclidean length) of vector [3, 4] is:",o:["7","5","12","25"],a:1,e:"√(9 + 16) = 5."},
+{t:"la",q:"To compute a unit vector in the direction of [6, -8], what is the magnitude (L2 norm)?",o:["14","10","100","7"],a:1,e:"√(36 + 64) = 10."},
+{t:"la",q:"A unit vector always has magnitude = 1.",o:["True","False"],a:0,e:"По определению."},
+{t:"la",q:"A set of vectors is linearly independent if:",o:["One vector can be expressed as a linear combination of others","No vector can be expressed as a linear combination of others","They are all orthogonal to each other","They all have the same magnitude"],a:1,e:"Ни один не выражается через остальные."},
+{t:"la",q:"What does np.dot(A, B) compute when A and B are 2D matrices?",o:["Element-wise multiplication","Matrix multiplication","Outer product","Hadamard product"],a:1,e:"Для матриц np.dot = матричное умножение (как @)."},
+{t:"la",q:"Which NumPy function creates a vector of zeros with shape (5,)?",o:["np.empty(5)","np.ones(5)","np.zeros(5)","np.null(5)"],a:2,e:"np.zeros."}
+];
+Q.forEach((q,i)=>q.id=i);
+
+const app=document.getElementById('app');
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmt=s=>esc(s).replace(/\n/g,'<br>').replace(/((?:[\w.\[\]'"()=,\- ]*)___(?:[\w.\[\]'"()=,\- ]*))/g,m=>m);
+const qtext=q=>q.o?`<div class="qt">${esc(q.q)}</div>`:`<div class="qt code">${esc(q.q)}</div>`;
+const norm=s=>s.trim().replace(/\s+/g,'').replace(/^\./,'').replace(/"/g,"'").toLowerCase();
+const correctText=q=>q.o?q.o[q.a]:q.a[0];
+const byTopic=()=>{const c={};Object.keys(T).forEach(k=>c[k]=Q.filter(q=>q.t===k));return c;};
+
+// ---------- LIST MODE ----------
+function renderList(){
+  const g=byTopic();
+  let h=`<div class="summary"><b>Всего вопросов: ${Q.length}</b>
+  <table>${Object.keys(T).map(k=>`<tr><td><a href="#t-${k}">${T[k]}</a></td><td>${g[k].length}</td></tr>`).join('')}</table>
+  <div class="row"><label><input type="checkbox" id="hideA"> Скрыть ответы</label></div></div><div id="list">`;
+  let n=0;
+  for(const k of Object.keys(T)){
+    h+=`<h2 class="topic-h" id="t-${k}">${T[k]} · ${g[k].length}</h2>`;
+    for(const q of g[k]){
+      n++;
+      h+=`<div class="q"><div class="qn">#${n}</div>${qtext(q)}`;
+      if(q.o) h+=q.o.map((o,i)=>`<div class="opt ${i===q.a?'ok':''}">${String.fromCharCode(65+i)}. ${esc(o)}</div>`).join('');
+      else h+=`<div class="ans">Ответ: <b class="code">${esc(q.a[0])}</b></div>`;
+      h+=`<div class="exp">${esc(q.e)}</div></div>`;
+    }
+  }
+  app.innerHTML=h+'</div>';
+  document.getElementById('hideA').onchange=e=>document.getElementById('list').classList.toggle('hideans',e.target.checked);
+}
+
+// ---------- QUIZ MODE ----------
+let S=null;
+function renderSetup(){
+  const g=byTopic();
+  app.innerHTML=`<div class="summary setup"><b>Выбери темы</b>
+  ${Object.keys(T).map(k=>`<label><input type="checkbox" class="tp" value="${k}" checked> ${T[k]} <span class="tag">${g[k].length}</span></label>`).join('')}
+  <label><input type="checkbox" id="shuf" checked> Перемешать вопросы</label>
+  <label>Сколько вопросов: <select id="cnt"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="all" selected>Все</option></select></label>
+  <div class="row"><span></span><button class="primary" id="start">Начать</button></div></div>`;
+  document.getElementById('start').onclick=()=>{
+    const tp=[...document.querySelectorAll('.tp:checked')].map(x=>x.value);
+    let list=Q.filter(q=>tp.includes(q.t));
+    if(!list.length) return;
+    if(document.getElementById('shuf').checked) list=list.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);
+    const c=document.getElementById('cnt').value; if(c!=='all') list=list.slice(0,+c);
+    S={list,i:0,ans:{}}; renderQ();
+  };
+}
+function renderQ(){
+  const q=S.list[S.i], st=S.ans[S.i], n=S.list.length;
+  let h=`<div class="progress"><div style="width:${(S.i)/n*100}%"></div></div>
+  <div class="q"><div class="qn">Вопрос ${S.i+1} из ${n} · <span class="tag">${T[q.t]}</span></div>${qtext(q)}`;
+  if(q.o){
+    h+=q.o.map((o,i)=>{let c='';if(st){if(i===q.a)c='ok';else if(i===st.v)c='bad';}
+      return `<button class="opt ${c}" data-i="${i}" ${st?'disabled':''}>${String.fromCharCode(65+i)}. ${esc(o)}</button>`}).join('');
+  }else{
+    h+=`<input type="text" id="inp" placeholder="Впиши ответ и нажми Enter" ${st?'disabled':''} value="${st?esc(st.v):''}">`;
+    if(!st) h+=`<div class="row"><span></span><button id="chk">Проверить</button></div>`;
+  }
+  if(st){
+    h+=`<div class="verdict ${st.ok?'ok':'bad'}">${st.ok?'Верно':'Неверно'}</div>`;
+    if(!st.ok&&!q.o) h+=`<div class="ans">Правильно: <b class="code">${esc(q.a[0])}</b></div>`;
+    h+=`<div class="exp">${esc(q.e)}</div>`;
+  }
+  h+=`</div><div class="row"><button id="prev" ${S.i===0?'disabled':''}>← Назад</button>
+  <button class="primary" id="next" ${st?'':'disabled'}>${S.i===n-1?'Результат':'Дальше →'}</button></div>`;
+  app.innerHTML=h;
+  const setA=(v,ok)=>{S.ans[S.i]={v,ok};renderQ();};
+  document.querySelectorAll('button.opt').forEach(b=>b.onclick=()=>{const v=+b.dataset.i;setA(v,v===q.a);});
+  const inp=document.getElementById('inp');
+  if(inp&&!st){inp.focus();const go=()=>{if(!inp.value.trim())return;setA(inp.value,q.a.some(a=>norm(a)===norm(inp.value)));};
+    inp.onkeydown=e=>{if(e.key==='Enter')go();};document.getElementById('chk').onclick=go;}
+  document.getElementById('prev').onclick=()=>{S.i--;renderQ();};
+  document.getElementById('next').onclick=()=>{if(S.i===n-1)renderResult();else{S.i++;renderQ();}};
+}
+function renderResult(){
+  const n=S.list.length, ok=Object.values(S.ans).filter(a=>a.ok).length;
+  const per={};S.list.forEach((q,i)=>{per[q.t]=per[q.t]||[0,0];per[q.t][1]++;if(S.ans[i]&&S.ans[i].ok)per[q.t][0]++;});
+  const wrong=S.list.map((q,i)=>[q,S.ans[i]]).filter(([q,a])=>!a||!a.ok);
+  app.innerHTML=`<div class="summary"><div class="big">${ok} / ${n}</div><div>${Math.round(ok/n*100)}% верных</div>
+  <table>${Object.keys(per).map(k=>`<tr><td>${T[k]}</td><td>${per[k][0]} / ${per[k][1]}</td></tr>`).join('')}</table>
+  <div class="row"><button id="again">Заново</button>${wrong.length?'<button class="primary" id="redo">Повторить ошибки</button>':''}</div></div>
+  ${wrong.length?'<h2 class="topic-h">Ошибки</h2>':''}
+  ${wrong.map(([q,a])=>`<div class="q">${qtext(q)}${a?`<div class="verdict bad">Твой ответ: ${esc(q.o?q.o[a.v]:a.v)}</div>`:''}<div class="ans">Правильно: <b>${esc(correctText(q))}</b></div><div class="exp">${esc(q.e)}</div></div>`).join('')}`;
+  document.getElementById('again').onclick=renderSetup;
+  const r=document.getElementById('redo'); if(r) r.onclick=()=>{S={list:wrong.map(w=>w[0]),i:0,ans:{}};renderQ();};
+}
+
+const bL=document.getElementById('mList'), bQ=document.getElementById('mQuiz');
+bL.onclick=()=>{bL.classList.add('on');bQ.classList.remove('on');renderList();scrollTo(0,0);};
+bQ.onclick=()=>{bQ.classList.add('on');bL.classList.remove('on');renderSetup();scrollTo(0,0);};
+renderList();
+</script>
+</body>
+</html>
